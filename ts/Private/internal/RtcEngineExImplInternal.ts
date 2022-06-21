@@ -21,7 +21,7 @@ import { RtcConnection } from "../IAgoraRtcEngineEx";
 import { IAudioDeviceManager } from "../IAudioDeviceManager";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
-import { IAudioDeviceManagerImpl } from "../impl/IAudioDeviceManagerImpl";
+import { AudioDeviceManagerImplInternal } from "./AudioDeviceManagerImplInternal";
 import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
 import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 
@@ -232,7 +232,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override getAudioDeviceManager(): IAudioDeviceManager {
-    return new IAudioDeviceManagerImpl();
+    return new AudioDeviceManagerImplInternal();
   }
 
   override getVideoDeviceManager(): IVideoDeviceManager {
