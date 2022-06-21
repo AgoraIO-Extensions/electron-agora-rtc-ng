@@ -14,6 +14,7 @@ import {
   IVideoDeviceManager,
   Metadata,
   RtcEngineContext,
+  SDKBuildInfo,
   SIZE,
 } from "../IAgoraRtcEngine";
 import { RtcConnection } from "../IAgoraRtcEngineEx";
@@ -65,6 +66,16 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     AgoraEnv.isInitializeEngine = false;
     super.release(sync);
     getBridge().ReleaseEnv();
+  }
+
+  override getVersion(): SDKBuildInfo {
+    const apiType = "RtcEngine_getVersion";
+    const jsonParams = {};
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return {
+      build: jsonResults.build,
+      version: jsonResults.result,
+    };
   }
 
   override createMediaPlayer(): IMediaPlayer {
