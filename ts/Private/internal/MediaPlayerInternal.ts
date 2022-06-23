@@ -4,6 +4,7 @@ import { RenderModeType } from "../AgoraMediaBase";
 import { IMediaPlayerSourceObserver } from "../IAgoraMediaPlayerSource";
 import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
+import { callIrisApi } from "./IrisApiEngine";
 
 const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
 
@@ -27,8 +28,7 @@ export const handlerMPKEvent = function (
     "bufferCount",
     bufferCount
   );
-  
-  
+
   let splitStr = event.split(MediaPlayerSplitString);
   logDebug("agora  ", splitStr);
   AgoraEnv.mediaPlayerEventHandlers.forEach((value) => {
@@ -58,7 +58,6 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
 
   registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
     AgoraEnv.mediaPlayerEventHandlers.push(observer);
-
     return 0;
   }
 
@@ -92,5 +91,37 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       },
     });
     return 0;
+  }
+
+  setPlayerOptionInInt(key: string, value: number): number {
+    const apiType = "MediaPlayer_setPlayerOption";
+    const jsonParams = {
+      key,
+      value,
+      toJSON: () => {
+        return {
+          key,
+          value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  setPlayerOptionInString(key: string, value: string): number {
+    const apiType = "MediaPlayer_setPlayerOption2";
+    const jsonParams = {
+      key,
+      value,
+      toJSON: () => {
+        return {
+          key,
+          value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return jsonResults.result;
   }
 }
