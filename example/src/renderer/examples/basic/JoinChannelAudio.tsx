@@ -1,6 +1,7 @@
 import { Card, List } from 'antd'
 import creteAgoraRtcEngine, {
   ClientRoleType,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,

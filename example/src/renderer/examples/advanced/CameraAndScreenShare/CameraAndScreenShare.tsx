@@ -2,6 +2,7 @@ import { Card, Switch } from 'antd'
 import creteAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
+  ErrorCodeType,
   IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,

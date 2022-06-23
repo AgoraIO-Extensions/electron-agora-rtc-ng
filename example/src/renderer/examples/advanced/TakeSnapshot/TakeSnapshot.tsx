@@ -3,6 +3,7 @@ import creteAgoraRtcEngine, {
   AudioScenarioType,
   ChannelProfileType,
   DegradationPreference,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,

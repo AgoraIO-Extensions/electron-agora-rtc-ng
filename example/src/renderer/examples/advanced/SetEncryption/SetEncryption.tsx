@@ -5,6 +5,7 @@ import creteAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   DegradationPreference,
+  ErrorCodeType,
   IRtcEngine,
   IRtcEngineEx,
   OrientationMode,

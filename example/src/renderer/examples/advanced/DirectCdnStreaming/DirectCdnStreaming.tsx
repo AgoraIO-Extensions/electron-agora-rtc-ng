@@ -7,6 +7,7 @@ import creteAgoraRtcEngine, {
   DirectCdnStreamingError,
   DirectCdnStreamingState,
   DirectCdnStreamingStats,
+  ErrorCodeType,
   IAudioDeviceManager,
   IDirectCdnStreamingEventHandler,
   IRtcEngine,

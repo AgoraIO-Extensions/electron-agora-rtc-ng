@@ -7,6 +7,7 @@ import creteAgoraRtcEngine, {
   ContentInspectResult,
   ContentInspectType,
   DegradationPreference,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,

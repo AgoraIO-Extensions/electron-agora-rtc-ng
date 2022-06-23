@@ -2,6 +2,7 @@ import { Card, Input, List } from 'antd'
 import creteAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
+  ErrorCodeType,
   IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,

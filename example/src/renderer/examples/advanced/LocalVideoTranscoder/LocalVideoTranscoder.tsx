@@ -4,6 +4,7 @@ import creteAgoraRtcEngine, {
   AudioScenarioType,
   ChannelProfileType,
   DegradationPreference,
+  ErrorCodeType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngine,
