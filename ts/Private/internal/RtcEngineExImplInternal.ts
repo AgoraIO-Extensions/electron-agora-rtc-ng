@@ -100,6 +100,10 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const jsonParams = {
       playerId: mediaPlayer.getMediaPlayerId(),
     };
+    AgoraEnv.mediaPlayerEventManager =
+      AgoraEnv.mediaPlayerEventManager.filter(
+        (obj) => obj.mpk !== mediaPlayer
+      );
     const jsonResults = callIrisApi(apiType, jsonParams);
     return jsonResults.result;
   }

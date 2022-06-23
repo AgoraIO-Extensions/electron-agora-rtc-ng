@@ -31,12 +31,12 @@ export const handlerMPKEvent = function (
 
   let splitStr = event.split(MediaPlayerSplitString);
   logDebug("agora  ", splitStr);
-  AgoraEnv.mediaPlayerEventHandlers.forEach((value) => {
+  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
     if (!value) {
       return;
     }
     try {
-      processIMediaPlayerSourceObserver(value, splitStr[1], obj);
+      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
     } catch (error) {
       logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
     }
@@ -57,13 +57,14 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventHandlers.push(observer);
+    AgoraEnv.mediaPlayerEventManager.push({ mpk: this, handler: observer });
     return 0;
   }
 
   unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventHandlers =
-      AgoraEnv.mediaPlayerEventHandlers.filter((value) => value !== observer);
+    AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
+      (value) => value.handler !== observer
+    );
     return 0;
   }
   override setView(view: HTMLElement): number {
