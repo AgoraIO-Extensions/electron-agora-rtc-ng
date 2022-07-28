@@ -704,26 +704,6 @@ export abstract class IAudioFrameObserverBase {
    * @ignore
    */
   onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
-
-  /*
-   * @ignore
-   */
-  getObservedAudioFramePosition?(): number;
-
-  /*
-   * @ignore
-   */
-  getPlaybackAudioParams?(): AudioParams;
-
-  /*
-   * @ignore
-   */
-  getRecordAudioParams?(): AudioParams;
-
-  /*
-   * @ignore
-   */
-  getMixedAudioParams?(): AudioParams;
 }
 
 /*
@@ -861,36 +841,6 @@ export abstract class IVideoFrameObserver {
    * @ignore
    */
   onTranscodedVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /*
-   * @ignore
-   */
-  getVideoFrameProcessMode?(): VideoFrameProcessMode;
-
-  /*
-   * @ignore
-   */
-  getVideoFormatPreference?(): VideoPixelFormat;
-
-  /*
-   * @ignore
-   */
-  getRotationApplied?(): boolean;
-
-  /*
-   * @ignore
-   */
-  getMirrorApplied?(): boolean;
-
-  /*
-   * @ignore
-   */
-  getObservedFramePosition?(): number;
-
-  /*
-   * @ignore
-   */
-  isExternal?(): boolean;
 }
 
 /*

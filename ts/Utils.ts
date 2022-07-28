@@ -1,82 +1,81 @@
-import { VideoSourceType } from "./Private/AgoraBase";
-import { RenderModeType } from "./Private/AgoraMediaBase";
-import { IRtcEngine } from "./Private/IAgoraRtcEngine";
-import { IRtcEngineEx } from "./Private/IAgoraRtcEngineEx";
-import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
-import { AudioDeviceManagerImplInternal } from "./Private/internal/AudioDeviceManagerImplInternal";
-import { RtcEngineExImplInternal } from "./Private/internal/RtcEngineExImplInternal";
+import { VideoSourceType } from './Private/AgoraBase'
+import { RenderModeType } from './Private/AgoraMediaBase'
+import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx'
+import { IVideoDeviceManagerImpl } from './Private/impl/IAgoraRtcEngineImpl'
+import { AudioDeviceManagerImplInternal } from './Private/internal/AudioDeviceManagerImplInternal'
+import { RtcEngineExImplInternal } from './Private/internal/RtcEngineExImplInternal'
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
-  RendererVideoConfig,
-} from "./Types";
+  RendererVideoConfig
+} from './Types'
 
-export const TAG = "[Agora]: ";
-export const DEBUG_TAG = "[Agora Debug]: ";
+export const TAG = '[Agora]: '
+export const DEBUG_TAG = '[Agora Debug]: '
 
 export const deprecate = (originApi?: string, replaceApi?: string) =>
   logError(
     `${TAG} This method ${originApi} will be deprecated soon. `,
-    replaceApi ? `Please use ${replaceApi} instead` : ""
-  );
+    replaceApi ? `Please use ${replaceApi} instead` : ''
+  )
 
 export const logWarn = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
-    return;
+    return
   }
-  console.warn(`${TAG} ${msg}`, ...optParams);
-};
+  console.warn(`${TAG} ${msg}`, ...optParams)
+}
 
 export const logError = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
-    return;
+    return
   }
-  console.error(`${TAG} ${msg}`, ...optParams);
-};
+  console.error(`${TAG} ${msg}`, ...optParams)
+}
 
 export const logInfo = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
-    return;
+    return
   }
-  console.log(`${TAG} ${msg}`, ...optParams);
-};
+  console.log(`${TAG} ${msg}`, ...optParams)
+}
 export const logDebug = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {
-    return;
+    return
   }
-  console.warn(`${DEBUG_TAG} ${msg}`, ...optParams);
-};
+  console.warn(`${DEBUG_TAG} ${msg}`, ...optParams)
+}
 
 export const parseJSON = (jsonString: string) => {
-  if (jsonString === "") {
-    return jsonString;
+  if (jsonString === '') {
+    return jsonString
   }
-  let obj;
+  let obj
   try {
-    obj = JSON.parse(jsonString);
+    obj = JSON.parse(jsonString)
   } catch (error) {
-    logError("parseJSON", error);
+    logError('parseJSON', error)
   }
-  return obj || jsonString;
-};
+  return obj || jsonString
+}
 
 export const objsKeysToLowerCase = (array: Array<any>) => {
   array.forEach((obj) => {
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const element = obj[key];
-        obj[key.toLocaleLowerCase()] = element;
+        const element = obj[key]
+        obj[key.toLocaleLowerCase()] = element
       }
     }
-  });
-};
+  })
+}
 
 export const changeEventNameForOnXX = (eventName: string) =>
-  eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
+  eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3)
 
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
-  originChannelId = "",
+  originChannelId = '',
   originUid = 0
 ): {
   uid: number;
@@ -84,10 +83,10 @@ export const formatConfigByVideoSourceType = (
   videoSourceType: VideoSourceType;
 } => {
   if (videoSourceType === undefined || videoSourceType === null) {
-    throw new Error(`must set videoSourceType`);
+    throw new Error('must set videoSourceType')
   }
-  let uid = originUid;
-  let channelId = originChannelId;
+  let uid = originUid
+  let channelId = originChannelId
 
   switch (videoSourceType) {
     case VideoSourceType.VideoSourceCamera:
@@ -95,25 +94,25 @@ export const formatConfigByVideoSourceType = (
     case VideoSourceType.VideoSourceScreen:
     case VideoSourceType.VideoSourceScreenSecondary:
     case VideoSourceType.VideoSourceTranscoded:
-      channelId = "";
-      uid = 0;
-      break;
+      channelId = ''
+      uid = 0
+      break
     case VideoSourceType.VideoSourceRemote:
       if (!uid || !channelId) {
-        throw new Error(`must set uid:${uid}} and channelId:${channelId}`);
+        throw new Error(`must set uid:${uid}} and channelId:${channelId}`)
       }
-      break;
+      break
     case VideoSourceType.VideoSourceMediaPlayer:
-      channelId = "";
+      channelId = ''
       if (!uid) {
-        throw new Error(`must set uid(mediaPlayerId):${uid}}}`);
+        throw new Error(`must set uid(mediaPlayerId):${uid}}}`)
       }
-      break;
+      break
     default:
-      break;
+      break
   }
-  return { uid, channelId, videoSourceType };
-};
+  return { uid, channelId, videoSourceType }
+}
 
 export const getDefaultRendererVideoConfig = (
   config: RendererVideoConfig
@@ -121,42 +120,42 @@ export const getDefaultRendererVideoConfig = (
   const rendererOptions = Object.assign(
     {
       contentMode: RenderModeType.RenderModeFit,
-      mirror: false,
+      mirror: false
     },
     config.rendererOptions
-  );
+  )
 
   const { uid, channelId, videoSourceType } = formatConfigByVideoSourceType(
     config.videoSourceType,
     config.channelId,
     config.uid
-  );
+  )
 
-  return { ...config, uid, channelId, videoSourceType, rendererOptions };
-};
+  return { ...config, uid, channelId, videoSourceType, rendererOptions }
+}
 
-export function classMix(...mixins: any[]): any {
+export function classMix (...mixins: any[]): any {
   class MixClass {
-    constructor() {
-      for (let mixin of mixins) {
-        copyProperties(this, new mixin()); // 拷贝实例属性
+    constructor () {
+      for (const mixin of mixins) {
+        copyProperties(this, new mixin()) // 拷贝实例属性
       }
     }
   }
 
-  for (let mixin of mixins) {
-    copyProperties(MixClass, mixin); // 拷贝静态属性
-    copyProperties(MixClass.prototype, mixin.prototype); // 拷贝原型属性
+  for (const mixin of mixins) {
+    copyProperties(MixClass, mixin) // 拷贝静态属性
+    copyProperties(MixClass.prototype, mixin.prototype) // 拷贝原型属性
   }
 
-  return MixClass;
+  return MixClass
 }
 
-function copyProperties<T>(target: T, source: any) {
-  for (let key of Reflect.ownKeys(source)) {
-    if (key !== "constructor" && key !== "prototype" && key !== "name") {
-      let desc = Object.getOwnPropertyDescriptor(source, key)!;
-      Object.defineProperty(target, key, desc);
+function copyProperties<T> (target: T, source: any) {
+  for (const key of Reflect.ownKeys(source)) {
+    if (key !== 'constructor' && key !== 'prototype' && key !== 'name') {
+      const desc = Object.getOwnPropertyDescriptor(source, key)!
+      Object.defineProperty(target, key, desc)
     }
   }
 }
@@ -169,7 +168,7 @@ function copyProperties<T>(target: T, source: any) {
  * IRtcEngine object.
  */
 export const createAgoraRtcEngine = (): IRtcEngineEx =>
-  new RtcEngineExImplInternal();
+  new RtcEngineExImplInternal()
 
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
@@ -180,8 +179,8 @@ export const AgoraEnv: AgoraEnvType = {
   metadataObservers: [],
   cdnEventHandlers: [],
   AgoraAudioDeviceManager: new AudioDeviceManagerImplInternal(),
-  AgoraVideoDeviceManager: new IVideoDeviceManagerImpl(),
+  AgoraVideoDeviceManager: new IVideoDeviceManagerImpl()
 };
 
-//@ts-ignore
-(window || global).AgoraEnv = AgoraEnv;
+// @ts-ignore
+(window || global).AgoraEnv = AgoraEnv

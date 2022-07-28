@@ -1,4 +1,4 @@
-import { PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes'
+import { MediaSource, PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes'
 import { RenderModeType, IAudioFrameObserver, IVideoFrameObserver, IAudioSpectrumObserver, AudioDualMonoMode } from './AgoraMediaBase'
 import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource'
 import { SpatialAudioParams } from './AgoraBase'

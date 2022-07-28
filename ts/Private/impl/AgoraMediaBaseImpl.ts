@@ -19,30 +19,6 @@ export function processIAudioFrameObserverBase (handler: IAudioFrameObserverBase
         handler.onMixedAudioFrame(jsonParams.channelId, jsonParams.audioFrame)
       }
       break
-
-    case 'getObservedAudioFramePosition':
-      if (handler.getObservedAudioFramePosition !== undefined) {
-        handler.getObservedAudioFramePosition()
-      }
-      break
-
-    case 'getPlaybackAudioParams':
-      if (handler.getPlaybackAudioParams !== undefined) {
-        handler.getPlaybackAudioParams()
-      }
-      break
-
-    case 'getRecordAudioParams':
-      if (handler.getRecordAudioParams !== undefined) {
-        handler.getRecordAudioParams()
-      }
-      break
-
-    case 'getMixedAudioParams':
-      if (handler.getMixedAudioParams !== undefined) {
-        handler.getMixedAudioParams()
-      }
-      break
   }
 }
 
@@ -147,42 +123,6 @@ export function processIVideoFrameObserver (handler: IVideoFrameObserver, event:
     case 'onTranscodedVideoFrame':
       if (handler.onTranscodedVideoFrame !== undefined) {
         handler.onTranscodedVideoFrame(jsonParams.videoFrame)
-      }
-      break
-
-    case 'getVideoFrameProcessMode':
-      if (handler.getVideoFrameProcessMode !== undefined) {
-        handler.getVideoFrameProcessMode()
-      }
-      break
-
-    case 'getVideoFormatPreference':
-      if (handler.getVideoFormatPreference !== undefined) {
-        handler.getVideoFormatPreference()
-      }
-      break
-
-    case 'getRotationApplied':
-      if (handler.getRotationApplied !== undefined) {
-        handler.getRotationApplied()
-      }
-      break
-
-    case 'getMirrorApplied':
-      if (handler.getMirrorApplied !== undefined) {
-        handler.getMirrorApplied()
-      }
-      break
-
-    case 'getObservedFramePosition':
-      if (handler.getObservedFramePosition !== undefined) {
-        handler.getObservedFramePosition()
-      }
-      break
-
-    case 'isExternal':
-      if (handler.isExternal !== undefined) {
-        handler.isExternal()
       }
       break
   }
