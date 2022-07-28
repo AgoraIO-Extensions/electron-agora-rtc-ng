@@ -12,6 +12,7 @@ import {
   VideoSourceType,
   WatermarkOptions,
 } from "../AgoraBase";
+import { IMediaEngine } from "../IAgoraMediaEngine";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
@@ -22,7 +23,7 @@ import {
   Metadata,
   RtcEngineContext,
   SDKBuildInfo,
-  SIZE,
+  Size,
 } from "../IAgoraRtcEngine";
 import { RtcConnection } from "../IAgoraRtcEngineEx";
 import { IAudioDeviceManager } from "../IAudioDeviceManager";
@@ -30,6 +31,7 @@ import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
 import { AudioDeviceManagerImplInternal } from "./AudioDeviceManagerImplInternal";
 import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
+import { MediaEngineImplInternal } from "./MediaEngineImplInternal";
 import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
@@ -209,8 +211,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override getScreenCaptureSources(
-    thumbSize: SIZE,
-    iconSize: SIZE,
+    thumbSize: Size,
+    iconSize: Size,
     includeScreen: boolean
   ): any[] {
     const apiType = "RtcEngine_getScreenCaptureSources";
@@ -262,6 +264,10 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
 
   override getVideoDeviceManager(): IVideoDeviceManager {
     return new IVideoDeviceManagerImpl();
+  }
+
+  override getMediaEngine(): IMediaEngine {
+    return new MediaEngineImplInternal();
   }
 
   override destroyRendererByConfig(

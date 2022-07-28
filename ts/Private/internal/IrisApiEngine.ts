@@ -90,7 +90,7 @@ export const handlerRTCEvent = function (
 export const sendMsg = (
   funcName: string,
   params: any,
-  buffer?: Uint8Array[],
+  buffer?: (Uint8Array | undefined)[],
   bufferCount = 0
 ): Result => {
   const irisReturnValue = getBridge().CallApi(
@@ -122,7 +122,7 @@ const ResultFail = {
 export function callIrisApi(
   funcName: string,
   params: any,
-  buffer?: Uint8Array[],
+  buffer?:(Uint8Array | undefined)[],
   bufferCount: number = 0
 ): any {
   const isMediaPlayer = funcName.startsWith("MediaPlayer_");
