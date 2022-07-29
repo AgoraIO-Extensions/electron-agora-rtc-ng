@@ -106,4 +106,19 @@ abstract pushEncodedVideoImage(imageBuffer: Uint8Array, length: number, videoEnc
  * @ignore
  */
 abstract release(): void;
+
+/*
+ * @ignore
+ */
+abstract unregisterAudioFrameObserver(observer: IAudioFrameObserver): number;
+
+/*
+ * @ignore
+ */
+abstract unregisterVideoFrameObserver(observer: IVideoFrameObserver): number;
+
+/*
+ * @ignore
+ */
+abstract unregisterVideoEncodedFrameObserver(observer: IVideoEncodedFrameObserver): number;
 }

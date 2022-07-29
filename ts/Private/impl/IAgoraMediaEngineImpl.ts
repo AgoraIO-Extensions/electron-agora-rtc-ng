@@ -243,4 +243,43 @@ export class IMediaEngineImpl implements IMediaEngine {
     }
     callIrisApi.call(this, apiType, jsonParams)
   }
+
+  unregisterAudioFrameObserver (observer: IAudioFrameObserver): number {
+    const apiType = 'MediaEngine_unregisterAudioFrameObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
+
+  unregisterVideoFrameObserver (observer: IVideoFrameObserver): number {
+    const apiType = 'MediaEngine_unregisterVideoFrameObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
+
+  unregisterVideoEncodedFrameObserver (observer: IVideoEncodedFrameObserver): number {
+    const apiType = 'MediaEngine_unregisterVideoEncodedFrameObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
 }
