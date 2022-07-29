@@ -1,5 +1,5 @@
 import { MediaSource, PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes'
-import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode } from './AgoraMediaBase'
+import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode, AudioPcmFrame, VideoFrame } from './AgoraMediaBase'
 import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource'
 import { SpatialAudioParams } from './AgoraBase'
 
@@ -490,7 +490,7 @@ export abstract class IMediaPlayerAudioFrameObserver {
 /*
  * @ignore
  */
-  onFrame?(frame: number): void;
+  onFrame?(frame: AudioPcmFrame): void;
 }
 
 /*
@@ -500,5 +500,5 @@ export abstract class IMediaPlayerVideoFrameObserver {
 /*
  * @ignore
  */
-  onFrame?(frame: number): void;
+  onFrame?(frame: VideoFrame): void;
 }
