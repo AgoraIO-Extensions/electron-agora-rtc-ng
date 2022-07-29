@@ -410,6 +410,11 @@ abstract setSoundPositionParams(pan: number, gain: number): number;
 /*
  * @ignore
  */
+abstract registerAudioFrameObserver(observer: IAudioFrameObserver): number;
+
+/*
+ * @ignore
+ */
 abstract setPlayerOptionInInt(key: string, value: number): number;
 
 /*

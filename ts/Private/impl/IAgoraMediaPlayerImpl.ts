@@ -595,6 +595,19 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     return jsonResults.result
   }
 
+  registerAudioFrameObserver (observer: IAudioFrameObserver): number {
+    const apiType = 'MediaPlayer_registerAudioFrameObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
+
   setPlayerOptionInInt (key: string, value: number): number {
     const apiType = 'MediaPlayer_setPlayerOptionInInt'
     const jsonParams = {

@@ -7,6 +7,7 @@ import { IMediaPlayer } from './IAgoraMediaPlayer'
 import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine'
 import { IAudioDeviceManager } from './IAudioDeviceManager'
 import { IMediaRecorder } from './IAgoraMediaRecorder'
+import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio'
 
 /*
  * Media device types.
@@ -5232,6 +5233,11 @@ abstract getMediaEngine(): IMediaEngine;
  * @ignore
  */
 abstract getMediaRecorder(): IMediaRecorder;
+
+/*
+ * @ignore
+ */
+abstract getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine;
 
 /*
  * Sends media affiliate information.
