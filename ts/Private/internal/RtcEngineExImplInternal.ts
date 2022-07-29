@@ -12,15 +12,19 @@ import {
   VideoSourceType,
   WatermarkOptions,
 } from "../AgoraBase";
+import { IAudioSpectrumObserver } from "../AgoraMediaBase";
 import { IMediaEngine } from "../IAgoraMediaEngine";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
   IDirectCdnStreamingEventHandler,
+  IMetadataObserver,
+  IRtcEngineEventHandler,
   IVideoDeviceManager,
   LeaveChannelOptions,
   Metadata,
+  MetadataType,
   RtcEngineContext,
   SDKBuildInfo,
   Size,
@@ -39,6 +43,7 @@ import {
 } from "./IrisApiEngine";
 import { MediaEngineImplInternal } from "./MediaEngineImplInternal";
 import { MediaPlayerInternal } from "./MediaPlayerInternal";
+
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   private eventKey: string;
 
@@ -74,6 +79,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     });
     return ret;
   }
+
   override release(sync = false): void {
     if (!AgoraEnv.isInitializeEngine) {
       logWarn("release: rtcEngine have not initialize");
@@ -109,7 +115,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const jsonParams = {
       playerId: mediaPlayer.getMediaPlayerId(),
     };
-    AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
+    AgoraEnv.mpkEventHandlers = AgoraEnv.mpkEventHandlers.filter(
       (obj) => obj.mpk !== mediaPlayer
     );
     const jsonResults = callIrisApi(apiType, jsonParams);
@@ -556,5 +562,67 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     };
     const jsonResults = callIrisApi(apiType, jsonParams);
     return jsonResults.streamId;
+  }
+
+  override registerEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
+    const res = AgoraEnv.rtcEventHandlers.filter(
+      (value) => value === eventHandler
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.rtcEventHandlers.push(eventHandler);
+    }
+    return super.registerEventHandler(eventHandler);
+  }
+
+  override unregisterEventHandler(
+    eventHandler: IRtcEngineEventHandler
+  ): boolean {
+    AgoraEnv.rtcEventHandlers = AgoraEnv.rtcEventHandlers.filter(
+      (value) => value !== eventHandler
+    );
+    return super.unregisterEventHandler(eventHandler);
+  }
+
+  override registerMediaMetadataObserver(
+    observer: IMetadataObserver,
+    type: MetadataType
+  ): number {
+    const res = AgoraEnv.metadataObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.metadataObservers.push(observer);
+    }
+    return super.registerMediaMetadataObserver(observer, type);
+  }
+
+  override unregisterMediaMetadataObserver(
+    observer: IMetadataObserver,
+    type: MetadataType
+  ): number {
+    AgoraEnv.metadataObservers = AgoraEnv.metadataObservers.filter(
+      (value) => value !== observer
+    );
+    return super.unregisterMediaMetadataObserver(observer, type);
+  }
+
+  override registerAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver
+  ): number {
+    const res = AgoraEnv.rtcAudioSpectrumObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.rtcAudioSpectrumObservers.push(observer);
+    }
+    return super.registerAudioSpectrumObserver(observer);
+  }
+
+  override unregisterAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver
+  ): number {
+    AgoraEnv.rtcAudioSpectrumObservers =
+      AgoraEnv.rtcAudioSpectrumObservers.filter((value) => value !== observer);
+    return super.unregisterAudioSpectrumObserver(observer);
   }
 }

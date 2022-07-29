@@ -1,5 +1,5 @@
 import { VideoSourceType } from "./Private/AgoraBase";
-import { RenderModeType } from "./Private/AgoraMediaBase";
+import { IAudioFrameObserver, IAudioSpectrumObserver, RenderModeType } from "./Private/AgoraMediaBase";
 import { IRtcEngine } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineEx } from "./Private/IAgoraRtcEngineEx";
 import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
@@ -175,10 +175,17 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   isInitializeEngine: false,
-  engineEventHandlers: [],
-  mediaPlayerEventHandlers: [],
+  rtcEventHandlers: [],
+  rtcVideoFrameObservers: [],
+  rtcVideoEncodedFrameObservers: [],
+  rtcAudioFrameObservers: [],
+  rtcAudioSpectrumObservers: [],
+  mpkEventHandlers: [],
+  mpkAudioFrameObservers: [],
+  mpkVideoFrameObservers: [],
+  mpkAudioSpectrumObservers: [],
   metadataObservers: [],
-  cdnEventHandlers: []
+  cdnEventHandlers: [],
 };
 
 //@ts-ignore

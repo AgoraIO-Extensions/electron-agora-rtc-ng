@@ -1,6 +1,13 @@
-import { logDebug } from "../../Utils";
+import { AgoraEnv, logDebug } from "../../Utils";
 import { EncodedVideoFrameInfo, ErrorCodeType } from "../AgoraBase";
-import { AudioFrame, ExternalVideoFrame, MediaSourceType } from "../AgoraMediaBase";
+import {
+  AudioFrame,
+  ExternalVideoFrame,
+  IAudioFrameObserver,
+  IVideoEncodedFrameObserver,
+  IVideoFrameObserver,
+  MediaSourceType,
+} from "../AgoraMediaBase";
 import { IMediaEngineImpl } from "../impl/IAgoraMediaEngineImpl";
 import { callIrisApi } from "./IrisApiEngine";
 
@@ -107,5 +114,61 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
       bufferArray.length
     );
     return jsonResults.result;
+  }
+
+  override registerAudioFrameObserver(observer: IAudioFrameObserver): number {
+    const res = AgoraEnv.rtcAudioFrameObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.rtcAudioFrameObservers.push(observer);
+    }
+    return super.registerAudioFrameObserver(observer);
+  }
+
+  override unregisterAudioFrameObserver(observer: IAudioFrameObserver): number {
+    AgoraEnv.rtcAudioFrameObservers = AgoraEnv.rtcAudioFrameObservers.filter(
+      (value) => value !== observer
+    );
+    return super.unregisterAudioFrameObserver(observer);
+  }
+
+  override registerVideoFrameObserver(observer: IVideoFrameObserver): number {
+    const res = AgoraEnv.rtcVideoFrameObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.rtcVideoFrameObservers.push(observer);
+    }
+    return super.registerVideoFrameObserver(observer);
+  }
+
+  override unregisterVideoFrameObserver(observer: IVideoFrameObserver): number {
+    AgoraEnv.rtcVideoFrameObservers = AgoraEnv.rtcVideoFrameObservers.filter(
+      (value) => value !== observer
+    );
+    return super.unregisterVideoFrameObserver(observer);
+  }
+
+  override registerVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): number {
+    const res = AgoraEnv.rtcVideoEncodedFrameObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.rtcVideoEncodedFrameObservers.push(observer);
+    }
+    return super.registerVideoEncodedFrameObserver(observer);
+  }
+
+  override unregisterVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): number {
+    AgoraEnv.rtcVideoEncodedFrameObservers =
+      AgoraEnv.rtcVideoEncodedFrameObservers.filter(
+        (value) => value !== observer
+      );
+    return super.unregisterVideoEncodedFrameObserver(observer);
   }
 }

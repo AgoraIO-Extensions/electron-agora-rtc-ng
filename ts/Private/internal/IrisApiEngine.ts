@@ -48,7 +48,7 @@ export const handlerRTCEvent = function (
   preProcessEvent(event, parseData, buffer, bufferLength, bufferCount);
 
   if (!isMetadata) {
-    AgoraEnv.engineEventHandlers.forEach((value) => {
+    AgoraEnv.rtcEventHandlers.forEach((value) => {
       if (!value) {
         return;
       }
@@ -66,7 +66,7 @@ export const handlerRTCEvent = function (
           );
         } catch (error) {
           logError(
-            "engineEventHandlers::processIDirectCdnStreamingEventHandler",
+            "rtcEventHandlers::processIDirectCdnStreamingEventHandler",
             error
           );
         }
@@ -76,7 +76,7 @@ export const handlerRTCEvent = function (
       try {
         processIRtcEngineEventHandler(value, event, parseData);
       } catch (error) {
-        logError("engineEventHandlers::processIRtcEngineEventHandler", error);
+        logError("rtcEventHandlers::processIRtcEngineEventHandler", error);
       }
     });
   }
@@ -112,14 +112,14 @@ export const handlerMPKEvent = function (
 
   let splitStr = event.split(MediaPlayerSplitString);
   logDebug("agora  ", splitStr);
-  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
+  AgoraEnv.mpkEventHandlers.forEach((value) => {
     if (!value) {
       return;
     }
     try {
       processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
     } catch (error) {
-      logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
+      logError("mpkEventHandlers::processIMediaPlayerSourceObserver");
     }
   });
 };
@@ -166,6 +166,7 @@ const ResultOk = {
 const ResultFail = {
   result: 0,
 };
+
 export function callIrisApi(
   funcName: string,
   params: any,
@@ -180,42 +181,7 @@ export function callIrisApi(
     params.toJSON = function () {
       return { ...json, playerId: params.mediaPlayerId };
     };
-  } else {
-    switch (funcName) {
-      case "RtcEngine_registerEventHandler": {
-        const res = AgoraEnv.engineEventHandlers.filter(
-          (handler) => handler === params.eventHandler
-        );
-        if (res && res.length > 0) {
-          logWarn(`ignore this call ${funcName}: EventHandler has exist`);
-          return;
-        }
-        AgoraEnv.engineEventHandlers.push(params.eventHandler);
-        return ResultOk;
-      }
-      case "RtcEngine_unregisterEventHandler":
-        AgoraEnv.engineEventHandlers = AgoraEnv.engineEventHandlers.filter(
-          (value) => value !== params.eventHandler
-        );
-        return ResultOk;
-      case "RtcEngine_registerMediaMetadataObserver":
-        const res = AgoraEnv.metadataObservers.filter(
-          (observer) => observer === params.observer
-        );
-        if (res && res.length > 0) {
-          logWarn(`ignore this call ${funcName}: Observer has exist`);
-          break;
-        }
-        AgoraEnv.metadataObservers.push(params.observer);
-        break;
-      case "RtcEngine_unregisterMediaMetadataObserver":
-        AgoraEnv.metadataObservers = AgoraEnv.metadataObservers.filter(
-          (value) => value !== params.observer
-        );
-        break;
-    }
   }
-
   return sendMsg(funcName, params, buffer, bufferCount);
 }
 
