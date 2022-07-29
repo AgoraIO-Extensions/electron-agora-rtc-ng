@@ -176,11 +176,9 @@ export const AgoraEnv: AgoraEnvType = {
   enableDebugLogging: false,
   isInitializeEngine: false,
   engineEventHandlers: [],
-  mediaPlayerEventManager: [],
+  mediaPlayerEventHandlers: [],
   metadataObservers: [],
-  cdnEventHandlers: [],
-  AgoraAudioDeviceManager: new AudioDeviceManagerImplInternal(),
-  AgoraVideoDeviceManager: new IVideoDeviceManagerImpl(),
+  cdnEventHandlers: []
 };
 
 //@ts-ignore
