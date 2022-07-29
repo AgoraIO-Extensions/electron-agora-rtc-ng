@@ -6,43 +6,6 @@ import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
 import { callIrisApi } from "./IrisApiEngine";
 
-const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
-
-export const handlerMPKEvent = function (
-  event: string,
-  data: string,
-  buffer: Uint8Array[],
-  bufferLength: number,
-  bufferCount: number
-) {
-  const obj = parseJSON(data);
-  logDebug(
-    "event",
-    event,
-    "data",
-    obj,
-    "buffer",
-    buffer,
-    "bufferLength",
-    bufferLength,
-    "bufferCount",
-    bufferCount
-  );
-
-  let splitStr = event.split(MediaPlayerSplitString);
-  logDebug("agora  ", splitStr);
-  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
-    if (!value) {
-      return;
-    }
-    try {
-      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
-    } catch (error) {
-      logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
-    }
-  });
-};
-
 export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _observers: IMediaPlayerSourceObserver[] = [];
   _mediaPlayerId: number;

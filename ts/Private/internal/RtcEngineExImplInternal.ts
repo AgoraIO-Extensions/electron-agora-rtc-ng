@@ -30,11 +30,18 @@ import { IAudioDeviceManager } from "../IAudioDeviceManager";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
 import { AudioDeviceManagerImplInternal } from "./AudioDeviceManagerImplInternal";
-import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
+import {
+  callIrisApi,
+  getBridge,
+  handlerMPKEvent,
+  handlerObserverEvent,
+  handlerRTCEvent,
+} from "./IrisApiEngine";
 import { MediaEngineImplInternal } from "./MediaEngineImplInternal";
-import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
-
+import { MediaPlayerInternal } from "./MediaPlayerInternal";
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
+  private eventKey: string;
+
   constructor() {
     super();
     if (AgoraEnv.isInitializeEngine) {
@@ -42,6 +49,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     }
 
     logDebug("AgoraRtcEngine constructor()");
+    this.eventKey = "call_back_with_buffer";
   }
 
   override initialize(context: RtcEngineContext): number {
@@ -52,15 +60,12 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     AgoraEnv.isInitializeEngine = true;
     const bridge = getBridge();
     bridge.InitializeEnv();
+    bridge.OnEvent(CallBackModule.RTC, this.eventKey, handlerRTCEvent);
+    bridge.OnEvent(CallBackModule.MPK, this.eventKey, handlerMPKEvent);
     bridge.OnEvent(
-      CallBackModule.RTC,
-      "call_back_with_buffer",
-      handlerRTCEvent
-    );
-    bridge.OnEvent(
-      CallBackModule.MPK,
-      "call_back_with_buffer",
-      handlerMPKEvent
+      CallBackModule.OBSERVER,
+      this.eventKey,
+      handlerObserverEvent
     );
     AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);

@@ -93,6 +93,7 @@ export interface Result {
 export enum CallBackModule {
   RTC = 0,
   MPK,
+  OBSERVER,
 }
 
 export interface AgoraElectronBridge {
@@ -103,14 +104,14 @@ export interface AgoraElectronBridge {
       event: string,
       data: string,
       buffer: Uint8Array[],
-      bufferLength: number,
+      bufferLength: number[],
       bufferCount: number
     ) => void
   ): void;
   CallApi(
     funcName: string,
     params: any,
-    buffer?: Uint8Array[],
+    buffer?: (Uint8Array | undefined)[],
     bufferCount?: number
   ): Result;
   InitializeEnv(): void;
@@ -119,7 +120,7 @@ export interface AgoraElectronBridge {
   EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
   DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
   GetBuffer(ptr: number, length: number): Buffer;
-  GetVideoStreamData(streamInfo: ShareVideoFrame): {
+  GetVideoFrame(streamInfo: ShareVideoFrame): {
     ret: number;
     isNewFrame: boolean;
     yStride: number;

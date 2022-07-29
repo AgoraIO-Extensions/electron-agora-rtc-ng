@@ -2,6 +2,7 @@ import { AgoraElectronBridge, Result } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
+import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
@@ -10,6 +11,7 @@ import {
 const agora = require("../../../build/Release/agora_node_ext");
 
 const MetadataSplitString = "MetadataObserver_";
+const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -25,7 +27,7 @@ export const handlerRTCEvent = function (
   event: string,
   data: string,
   buffer: Uint8Array[],
-  bufferLength: number,
+  bufferLength: number[],
   bufferCount: number
 ) {
   const parseData = "onApiError" === event ? data : parseJSON(data);
@@ -87,6 +89,51 @@ export const handlerRTCEvent = function (
   }
 };
 
+export const handlerMPKEvent = function (
+  event: string,
+  data: string,
+  buffer: Uint8Array[],
+  bufferLength: number[],
+  bufferCount: number
+) {
+  const obj = parseJSON(data);
+  logDebug(
+    "event",
+    event,
+    "data",
+    obj,
+    "buffer",
+    buffer,
+    "bufferLength",
+    bufferLength,
+    "bufferCount",
+    bufferCount
+  );
+
+  let splitStr = event.split(MediaPlayerSplitString);
+  logDebug("agora  ", splitStr);
+  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
+    if (!value) {
+      return;
+    }
+    try {
+      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
+    } catch (error) {
+      logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
+    }
+  });
+};
+
+export const handlerObserverEvent = function (
+  event: string,
+  data: string,
+  buffer: Uint8Array[],
+  bufferLength: number[],
+  bufferCount: number
+) {
+  logDebug("handlerObserverEvent ==");
+};
+
 export const sendMsg = (
   funcName: string,
   params: any,
@@ -122,7 +169,7 @@ const ResultFail = {
 export function callIrisApi(
   funcName: string,
   params: any,
-  buffer?:(Uint8Array | undefined)[],
+  buffer?: (Uint8Array | undefined)[],
   bufferCount: number = 0
 ): any {
   const isMediaPlayer = funcName.startsWith("MediaPlayer_");
@@ -176,7 +223,7 @@ function preProcessEvent(
   event: string,
   data: any,
   buffer: Uint8Array[],
-  bufferLength: number,
+  bufferLength: number[],
   bufferCount: number
 ): any {
   switch (event) {
