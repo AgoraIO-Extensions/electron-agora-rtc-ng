@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-07-27 10:27:25
+ * @Last Modified time: 2022-07-29 10:07:41
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
@@ -51,7 +51,7 @@ void NodeIrisEventHandler::OnEvent(const char* event,
                                    const void** buffer,
                                    unsigned int* length,
                                    unsigned int buffer_count) {
-  fireEvent("call_back_with_buffer", event, data, buffer, length, buffer_count);
+  fireEvent(_callback_key, event, data, buffer, length, buffer_count);
 }
 
 void NodeIrisEventHandler::OnEvent(const char* event,
@@ -60,7 +60,7 @@ void NodeIrisEventHandler::OnEvent(const char* event,
                                    const void** buffer,
                                    unsigned int* length,
                                    unsigned int buffer_count) {
-  fireEvent("call_back_with_observer", event, data, buffer, length,
+  fireEvent(_callback_key, event, data, buffer, length,
             buffer_count);
 }
 

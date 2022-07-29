@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:53
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-07-27 10:27:50
+ * @Last Modified time: 2022-07-29 10:08:04
  */
 #pragma once
 #include <unordered_map>
@@ -57,6 +57,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
 
  private:
   std::unordered_map<std::string, EventCallback*> _callbacks;
+  const char * _callback_key = "call_back_with_buffer";
 };
 }  // namespace electron
 }  // namespace rtc
