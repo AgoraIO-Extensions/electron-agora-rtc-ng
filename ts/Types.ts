@@ -17,7 +17,7 @@ export interface AgoraEnvType {
   enableDebugLogging: boolean;
   isInitializeEngine: boolean;
   engineEventHandlers: IRtcEngineEventHandler[];
-  mediaPlayerEventManager: {
+  mediaPlayerEventHandlers: {
     mpk: IMediaPlayerImpl;
     handler: IMediaPlayerSourceObserver;
   }[];
@@ -25,8 +25,6 @@ export interface AgoraEnvType {
   cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
-  AgoraAudioDeviceManager: IAudioDeviceManager;
-  AgoraVideoDeviceManager: IVideoDeviceManager;
 }
 
 export interface CanvasOptions {
