@@ -1,7 +1,17 @@
 import { AgoraElectronBridge, Result } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
+import { AudioFrame, VideoFrame } from "../AgoraMediaBase";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
+import { processIAudioEncodedFrameObserver } from "../impl/AgoraBaseImpl";
+import {
+  processIAudioFrameObserver,
+  processIAudioFrameObserverBase,
+  processIAudioSpectrumObserver,
+  processIVideoEncodedFrameObserver,
+  processIVideoFrameObserver,
+} from "../impl/AgoraMediaBaseImpl";
+import { processIMediaPlayerAudioFrameObserver, processIMediaPlayerVideoFrameObserver } from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
 import {
   processIDirectCdnStreamingEventHandler,
@@ -116,10 +126,12 @@ export const handlerMPKEvent = function (
     if (!value) {
       return;
     }
-    try {
-      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
-    } catch (error) {
-      logError("mpkEventHandlers::processIMediaPlayerSourceObserver");
+    if (value.mpk.getMediaPlayerId() === obj.playerId) {
+      try {
+        processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
+      } catch (error) {
+        logError("mpkEventHandlers::processIMediaPlayerSourceObserver");
+      }
     }
   });
 };
@@ -131,7 +143,109 @@ export const handlerObserverEvent = function (
   bufferLength: number[],
   bufferCount: number
 ) {
-  logDebug("handlerObserverEvent ==");
+  if (data == "")
+    return;
+
+  let object = parseJSON(data);
+  if (event.startsWith("AudioFrameObserver_")) {
+    event = event.replace("AudioFrameObserver_", "");
+    if (object.audioFrame) {
+      (object.audioFrame as AudioFrame).buffer = buffer[0];
+    }
+    AgoraEnv.rtcAudioFrameObservers.forEach((value) => {
+      processIAudioFrameObserver(value, event, object);
+      processIAudioFrameObserverBase(value, event, object);
+    });
+  } else if (event.startsWith("VideoFrameObserver_")) {
+    event = event.replace("VideoFrameObserver_", "");
+    if (object.videoFrame) {
+      (object.videoFrame as VideoFrame).yBuffer = buffer[0];
+      (object.videoFrame as VideoFrame).uBuffer = buffer[1];
+      (object.videoFrame as VideoFrame).vBuffer = buffer[2];
+    }
+    AgoraEnv.rtcVideoFrameObservers.forEach((value) => {
+      processIVideoFrameObserver(value, event, object);
+    });
+  } else if (event.indexOf("RtcEngine") != -1 && event.indexOf("AudioSpectrumObserver_") != -1) {
+    event = event.replace("RtcEngine_AudioSpectrumObserver_", "");
+    AgoraEnv.rtcAudioSpectrumObservers.forEach((value) => {
+      processIAudioSpectrumObserver(value, event, object);
+    });
+  } else if (event.startsWith("AudioEncodedFrameObserver_")) {
+    event = event.replace("AudioEncodedFrameObserver_", "");
+    object.frameBuffer = buffer[0];
+    AgoraEnv.rtcAudioEncodedFrameObservers.forEach((value) => {
+      processIAudioEncodedFrameObserver(value, event, object);
+    });
+  } else if (event.startsWith("VideoEncodedFrameObserver_")) {
+    event = event.replace("VideoEncodedFrameObserver_", "");
+    object.imageBuffer = buffer[0];
+    object.length = buffer[0].length;
+    AgoraEnv.rtcVideoEncodedFrameObservers.forEach((value) => {
+      processIVideoEncodedFrameObserver(value, event, object);
+    });
+  } else if (event.indexOf("MediaPlayer") != -1 && event.indexOf("AudioSpectrumObserver_") != -1) {
+    event = event.replace("MediaPlayer_AudioSpectrumObserver_", "");
+    AgoraEnv.mpkAudioSpectrumObservers.forEach((value) => {
+      processIAudioSpectrumObserver(value.handler, event, object);
+    });
+  } else if (event.indexOf("MediaPlayer") != -1 && event.indexOf("VideoFrameObserver_") != -1) {
+    event = event.replace("MediaPlayer_VideoFrameObserver_", "");
+    if (object.videoFrame) {
+      (object.videoFrame as VideoFrame).yBuffer = buffer[0];
+      (object.videoFrame as VideoFrame).uBuffer = buffer[1];
+      (object.videoFrame as VideoFrame).vBuffer = buffer[2];
+    }
+    AgoraEnv.mpkVideoFrameObservers.forEach((value) => {
+      processIMediaPlayerVideoFrameObserver(value.handler, event, object);
+    });
+  }
+  //   event = event.replace('MediaPlayerVideoFrameObserver_', '');
+  //   if (data.frame) {
+  //     (data.frame as VideoFrame).yBuffer = Buffer.from(
+  //       utf8.decode(base64.decode(buffers[0]))
+  //     );
+  //     (data.frame as VideoFrame).uBuffer = Buffer.from(
+  //       utf8.decode(base64.decode(buffers[1]))
+  //     );
+  //     (data.frame as VideoFrame).vBuffer = Buffer.from(
+  //       utf8.decode(base64.decode(buffers[2]))
+  //     );
+  //     (data.frame as VideoFrame).metadata_buffer = Buffer.from(
+  //       utf8.decode(base64.decode(buffers[3]))
+  //     );
+  //     (data.frame as VideoFrame).alphaBuffer = Buffer.from(
+  //       utf8.decode(base64.decode(buffers[4]))
+  //     );
+  //   }
+  //   MediaPlayerInternal._video_frame_observers
+  //     .get(data.playerId)
+  //     ?.forEach((value) => {
+  //       processIMediaPlayerVideoFrameObserver(value, event, data);
+  //     });
+  // } else if (event.startsWith('MediaRecorderObserver_')) {
+  //   event = event.replace('MediaRecorderObserver_', '');
+  //   const key = data.connection.channelId ?? '' + data.connection.localUid;
+  //   if (MediaRecorderInternal._observers.has(key)) {
+  //     processIMediaRecorderObserver(
+  //       MediaRecorderInternal._observers.get(key)!,
+  //       event,
+  //       data
+  //     );
+  //   }
+  // } else if (event.startsWith('MetadataObserver_')) {
+  //   event = event.replace('MetadataObserver_', '');
+  //   switch (event) {
+  //     case 'onMetadataReceived':
+  //       if (data.metadata) {
+  //         (data.metadata as Metadata).buffer = Buffer.from(
+  //           utf8.decode(base64.decode(buffers[0]))
+  //         );
+  //       }
+  //       break;
+  //   }
+  //   RtcEngineInternal._handlers.forEach((value) => {
+  //processIMetadataObserver(value as IMetadataObserver, event, data);
 };
 
 export const sendMsg = (

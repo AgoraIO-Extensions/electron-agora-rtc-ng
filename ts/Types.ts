@@ -1,5 +1,5 @@
 import { IMediaPlayerAudioFrameObserver, IMediaPlayerVideoFrameObserver } from "./AgoraSdk";
-import { VideoSourceType } from "./Private/AgoraBase";
+import { IAudioEncodedFrameObserver, VideoSourceType } from "./Private/AgoraBase";
 import { IAudioFrameObserver, IAudioSpectrumObserver, IVideoEncodedFrameObserver, IVideoFrameObserver, RenderModeType } from "./Private/AgoraMediaBase";
 import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
 import {
@@ -22,14 +22,24 @@ export interface AgoraEnvType {
     mpk: IMediaPlayerImpl;
     handler: IMediaPlayerSourceObserver;
   }[];
-  mpkAudioFrameObservers: IMediaPlayerAudioFrameObserver[];
-  mpkVideoFrameObservers: IMediaPlayerVideoFrameObserver[];
-  mpkAudioSpectrumObservers: IAudioSpectrumObserver[];
+  mpkAudioFrameObservers: {
+    mpk: IMediaPlayerImpl;
+    handler: IMediaPlayerAudioFrameObserver;
+  }[];
+  mpkVideoFrameObservers: {
+    mpk: IMediaPlayerImpl;
+    handler: IMediaPlayerVideoFrameObserver;
+  }[];
+  mpkAudioSpectrumObservers: {
+    mpk: IMediaPlayerImpl;
+    handler: IAudioSpectrumObserver;
+  }[];
   metadataObservers: IMetadataObserver[];
   rtcVideoFrameObservers: IVideoFrameObserver[];
   rtcVideoEncodedFrameObservers: IVideoEncodedFrameObserver[];
   rtcAudioFrameObservers: IAudioFrameObserver[];
   rtcAudioSpectrumObservers: IAudioSpectrumObserver[];
+  rtcAudioEncodedFrameObservers: IAudioEncodedFrameObserver[];
   cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;

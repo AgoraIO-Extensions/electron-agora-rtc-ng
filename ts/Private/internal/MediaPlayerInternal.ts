@@ -103,7 +103,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       (value) => value === observer
     );
     if (res && res.length == 0) {
-      AgoraEnv.mpkAudioSpectrumObservers.push(observer);
+      AgoraEnv.mpkAudioSpectrumObservers.push({mpk: this, handler: observer});
     }
     return super.registerMediaPlayerAudioSpectrumObserver(
       observer,
@@ -124,7 +124,10 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       (value) => value === observer
     );
     if (res && res.length == 0) {
-      AgoraEnv.mpkAudioFrameObservers.push(observer);
+      AgoraEnv.mpkAudioFrameObservers.push({
+        mpk: this,
+        handler: observer
+      });
     }
     return super.registerAudioFrameObserver(observer);
   }
@@ -141,7 +144,9 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       (value) => value === observer
     );
     if (res && res.length == 0) {
-      AgoraEnv.mpkVideoFrameObservers.push(observer);
+      AgoraEnv.mpkVideoFrameObservers.push({
+        mpk: this,
+        handler: observer});
     }
     return super.registerVideoFrameObserver(observer);
   }

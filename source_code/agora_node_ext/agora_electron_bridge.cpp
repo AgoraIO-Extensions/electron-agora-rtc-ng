@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-07-27 22:47:37
+ * @Last Modified time: 2022-08-01 14:55:52
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -162,9 +162,12 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         if (registerApi) {
           auto observer = irisApiEngine->CreateObserver(
               funcName.c_str(),
-              agoraElectronBridge->_iris_observer_event_handler.get(), 0);
+              agoraElectronBridge->_iris_observer_event_handler.get(), parameter.c_str(), parameter.length());
+
+          void* ptrList[1];
+          ptrList[0] = observer;
           ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-                                           parameter.length(), (void**)observer,
+                                           parameter.length(), ptrList,
                                            1, agoraElectronBridge->_result);
         } else if (unRegisterApi) {
           ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
@@ -480,6 +483,7 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   auto rtcEventHandler = std::make_shared<NodeIrisEventHandler>();
   auto mpkEventHandler = std::make_shared<NodeIrisEventHandler>();
   auto observerEventHandler = std::make_shared<NodeIrisEventHandler>();
+  ::enableUseJsonArray(true);
 
   // combine
   engine->SetIrisRtcEngineEventHandler(rtcEventHandler.get());

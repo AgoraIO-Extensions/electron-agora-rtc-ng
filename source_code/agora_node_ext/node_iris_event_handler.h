@@ -22,8 +22,7 @@ typedef struct NodeEventCallback {
 } EventCallback;
 
 class AgoraElectronBridge;
-class NodeIrisEventHandler : public iris::IrisEventHandler,
-                             public iris::IrisEventHandlerEx {
+class NodeIrisEventHandler : public iris::IrisEventHandler {
  public:
   NodeIrisEventHandler();
   virtual ~NodeIrisEventHandler();

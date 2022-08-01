@@ -180,6 +180,7 @@ export const AgoraEnv: AgoraEnvType = {
   rtcVideoEncodedFrameObservers: [],
   rtcAudioFrameObservers: [],
   rtcAudioSpectrumObservers: [],
+  rtcAudioEncodedFrameObservers: [],
   mpkEventHandlers: [],
   mpkAudioFrameObservers: [],
   mpkVideoFrameObservers: [],

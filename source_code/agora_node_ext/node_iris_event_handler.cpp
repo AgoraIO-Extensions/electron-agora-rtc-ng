@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-07-29 10:07:41
+ * @Last Modified time: 2022-07-31 14:38:39
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
@@ -70,8 +70,14 @@ void NodeIrisEventHandler::fireEvent(const char* callback_name,
                                      const void** buffer,
                                      unsigned int* length,
                                      unsigned int buffer_count) {
-  std::string eventName(event);
-  std::string eventData(data);
+  std::string eventName = "";
+  if (event) {
+    eventName = event;
+  }
+  std::string eventData = "";
+  if (data) {
+    eventData = data;
+  }
   std::string callback_name_str(callback_name);
   std::vector<std::vector<unsigned char>> buffer_array;
   buffer_array.resize(buffer_count);

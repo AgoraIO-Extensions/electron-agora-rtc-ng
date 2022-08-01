@@ -571,7 +571,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     if (res && res.length == 0) {
       AgoraEnv.rtcEventHandlers.push(eventHandler);
     }
-    return super.registerEventHandler(eventHandler);
+    return true;
   }
 
   override unregisterEventHandler(
