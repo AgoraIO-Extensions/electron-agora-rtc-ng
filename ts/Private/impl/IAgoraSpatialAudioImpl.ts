@@ -1,5 +1,5 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
-import { IBaseSpatialAudioEngine, RemoteVoicePositionInfo, ILocalSpatialAudioEngine, LocalSpatialAudioConfig } from '../IAgoraSpatialAudio'
+import { IBaseSpatialAudioEngine, RemoteVoicePositionInfo, ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio'
 import { RtcConnection } from '../IAgoraRtcEngineEx'
 
 export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
@@ -142,13 +142,9 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
 }
 
 export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl implements ILocalSpatialAudioEngine {
-  initialize (config: LocalSpatialAudioConfig): number {
+  initialize (): number {
     const apiType = 'LocalSpatialAudioEngine_initialize'
     const jsonParams = {
-      config,
-      toJSON: () => {
-        return { config }
-      }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
