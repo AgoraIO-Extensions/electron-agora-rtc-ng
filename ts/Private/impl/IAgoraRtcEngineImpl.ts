@@ -158,7 +158,7 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onLocalVideoStateChanged':
       if (handler.onLocalVideoStateChanged !== undefined) {
-        handler.onLocalVideoStateChanged(jsonParams.connection, jsonParams.state, jsonParams.errorCode)
+        handler.onLocalVideoStateChanged(jsonParams.source, jsonParams.state, jsonParams.error)
       }
       break
 

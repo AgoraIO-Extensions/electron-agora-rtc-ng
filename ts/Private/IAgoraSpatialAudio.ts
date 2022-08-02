@@ -1,4 +1,3 @@
-import { IRtcEngine } from './IAgoraRtcEngine'
 import { RtcConnection } from './IAgoraRtcEngineEx'
 
 /*
@@ -13,16 +12,6 @@ export class RemoteVoicePositionInfo {
    * @ignore
    */
   forward?: number[]
-}
-
-/*
- * @ignore
- */
-export class LocalSpatialAudioConfig {
-/*
- * @ignore
- */
-  rtcEngine?: IRtcEngine
 }
 
 /*
@@ -87,7 +76,7 @@ export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
 /*
  * @ignore
  */
-abstract initialize(config: LocalSpatialAudioConfig): number;
+abstract initialize(): number;
 
 /*
  * @ignore
