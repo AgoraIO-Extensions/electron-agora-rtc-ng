@@ -1,4 +1,3 @@
-
 /*
  * @ignore
  */
@@ -55,9 +54,9 @@ RhythmPlayerErrorFileOverDurationLimit = 803,
  * @ignore
  */
 export class AgoraRhythmPlayerConfig {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   beatsPerMeasure?: number
   /*
    * @ignore

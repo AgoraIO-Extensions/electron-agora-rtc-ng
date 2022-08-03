@@ -1,4 +1,3 @@
-
 /*
  * The playback state.
  */
@@ -266,9 +265,9 @@ PlayerPreloadEventError = 2,
  * The detailed information of the media stream.
  */
 export class PlayerStreamInfo {
-/*
- * The index of the media stream.
- */
+  /*
+   * The index of the media stream.
+   */
   streamIndex?: number
   /*
    * The type of the media stream. See MediaStreamType .
@@ -324,9 +323,9 @@ export class PlayerStreamInfo {
  * Information about the video bitrate of the media resource being played.
  */
 export class SrcInfo {
-/*
- * The video bitrate (Kbps) of the media resource being played.
- */
+  /*
+   * The video bitrate (Kbps) of the media resource being played.
+   */
   bitrateInKbps?: number
   /*
    * The name of the media resource.
@@ -352,9 +351,9 @@ PlayerMetadataTypeSei = 1,
  * @ignore
  */
 export class CacheStatistics {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   fileSize?: number
   /*
    * @ignore
@@ -370,9 +369,9 @@ export class CacheStatistics {
  * Information related to the media player.
  */
 export class PlayerUpdatedInfo {
-/*
- * The ID of a media player.
- */
+  /*
+   * The ID of a media player.
+   */
   playerId?: string
   /*
    * The ID of a deivce.
@@ -388,9 +387,9 @@ export class PlayerUpdatedInfo {
  * @ignore
  */
 export class MediaSource {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   url?: string
   /*
    * @ignore

@@ -734,9 +734,9 @@ Disabled = 100,
  * The video dimension.
  */
 export class VideoDimensions {
-/*
- * The width (pixels) of the video.
- */
+  /*
+   * The width (pixels) of the video.
+   */
   width?: number
   /*
    * The height (pixels) of the video.
@@ -805,9 +805,9 @@ CcDisabled = 1,
  * @ignore
  */
 export class SenderOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   ccMode?: TCcMode
   /*
    * @ignore
@@ -929,9 +929,9 @@ FitModeUseImageRatio = 1,
  * @ignore
  */
 export class EncodedAudioFrameAdvancedSettings {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   speech?: boolean
   /*
    * @ignore
@@ -943,9 +943,9 @@ export class EncodedAudioFrameAdvancedSettings {
  * Audio information after encoding.
  */
 export class EncodedAudioFrameInfo {
-/*
- * Audio Codec type: AudioCodecType .
- */
+  /*
+   * Audio Codec type: AudioCodecType .
+   */
   codec?: AudioCodecType
   /*
    * Audio sample rate (Hz).
@@ -973,9 +973,9 @@ export class EncodedAudioFrameInfo {
  * @ignore
  */
 export class AudioPcmDataInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   samplesPerChannel?: number
   /*
    * @ignore
@@ -1027,9 +1027,9 @@ VideoStreamLow = 1,
  * @ignore
  */
 export class VideoSubscriptionOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   type?: VideoStreamType
   /*
    * @ignore
@@ -1041,9 +1041,9 @@ export class VideoSubscriptionOptions {
  * The information about the external encoded video frame.
  */
 export class EncodedVideoFrameInfo {
-/*
- * The codec type of the local video stream. See VideoCodecType . The default value is VideoCodecH264(2).
- */
+  /*
+   * The codec type of the local video stream. See VideoCodecType . The default value is VideoCodecH264(2).
+   */
   codecType?: VideoCodecType
   /*
    * The width (pixel) of the video frame.
@@ -1106,9 +1106,9 @@ VideoMirrorModeDisabled = 2,
  * Video encoder configurations.
  */
 export class VideoEncoderConfiguration {
-/*
- * The codec type of the local video stream. See VideoCodecType .
- */
+  /*
+   * The codec type of the local video stream. See VideoCodecType .
+   */
   codecType?: VideoCodecType
   /*
    * The dimensions of the encoded video (px). See VideoDimensions . This parameter measures the video encoding quality in the format of length × width. The default value is 640 × 360. You can set a custom value.
@@ -1148,12 +1148,12 @@ export class VideoEncoderConfiguration {
  * The following table shows the SDK behaviors under different parameter settings:
  */
 export class DataStreamConfig {
-/*
- * Whether to synchronize the data packet with the published audio packet.
- * true: Synchronize the data packet with the audio packet.
- * false: Do not synchronize the data packet with the audio packet.
- * When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out. Do not set this parameter as true if you need the receiver to receive the data packet immediately. Agora recommends that you set this parameter to `true` only when you need to implement specific functions, for example, lyric synchronization.
- */
+  /*
+   * Whether to synchronize the data packet with the published audio packet.
+   * true: Synchronize the data packet with the audio packet.
+   * false: Do not synchronize the data packet with the audio packet.
+   * When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out. Do not set this parameter as true if you need the receiver to receive the data packet immediately. Agora recommends that you set this parameter to `true` only when you need to implement specific functions, for example, lyric synchronization.
+   */
   syncWithAudio?: boolean
   /*
    * Whether the SDK guarantees that the receiver receives the data in the sent order.
@@ -1186,9 +1186,9 @@ EnableSimulcastStream = 1,
  * The configuration of the low-quality video stream.
  */
 export class SimulcastStreamConfig {
-/*
- * The video dimension.  The default value is 160 × 120. VideoDimensions 
- */
+  /*
+   * The video dimension.  The default value is 160 × 120. VideoDimensions 
+   */
   dimensions?: VideoDimensions
   /*
    * Video receive bitrate (Kbps). The default value is 65.
@@ -1204,9 +1204,9 @@ export class SimulcastStreamConfig {
  * The location of the target area relative to the screen or window. If you do not set this parameter, the SDK selects the whole screen or window.
  */
 export class Rectangle {
-/*
- * x: The horizontal offset from the top-left corner.
- */
+  /*
+   * x: The horizontal offset from the top-left corner.
+   */
   x?: number
   /*
    * y: The vertical offset from the top-left corner.
@@ -1229,9 +1229,9 @@ export class Rectangle {
  * The widthRatio determines the width of the watermark.
  */
 export class WatermarkRatio {
-/*
- * The x-coordinate of the upper left corner of the watermark. The x-coordinate of the upper left corner of the watermark. The horizontal position relative to the origin, where the upper left corner of the screen is the origin, and the x-coordinate is the upper left corner of the watermark. The value range is [0.0,1.0], and the default value is 0.
- */
+  /*
+   * The x-coordinate of the upper left corner of the watermark. The x-coordinate of the upper left corner of the watermark. The horizontal position relative to the origin, where the upper left corner of the screen is the origin, and the x-coordinate is the upper left corner of the watermark. The value range is [0.0,1.0], and the default value is 0.
+   */
   xRatio?: number
   /*
    * The y-coordinate of the upper left corner of the watermark. The vertical position relative to the origin, where the upper left corner of the screen is the origin, and the y-coordinate is the upper left corner of the screen. The value range is [0.0,1.0], and the default value is 0.
@@ -1247,9 +1247,9 @@ export class WatermarkRatio {
  * Configurations of the watermark image.
  */
 export class WatermarkOptions {
-/*
- * Reserved for future use.
- */
+  /*
+   * Reserved for future use.
+   */
   visibleInPreview?: boolean
   /*
    * When the adaptation mode of the watermark isFIT_MODE_COVER_POSITION, it is used to set the area of the watermark image in landscape mode. See Rectangle .
@@ -1273,9 +1273,9 @@ export class WatermarkOptions {
  * Statistics of the channel.
  */
 export class RtcStats {
-/*
- * Call duration of the local user in seconds, represented by an aggregate value.
- */
+  /*
+   * Call duration of the local user in seconds, represented by an aggregate value.
+   */
   duration?: number
   /*
    * Total number of bytes transmitted, represented by an aggregate value.
@@ -1523,9 +1523,9 @@ AudienceLatencyLevelUltraLowLatency = 2,
  * The detailed options of a user.
  */
 export class ClientRoleOptions {
-/*
- * The latency level of an audience member in interactive live streaming. See AudienceLatencyLevelType .
- */
+  /*
+   * The latency level of an audience member in interactive live streaming. See AudienceLatencyLevelType .
+   */
   audienceLatencyLevel?: AudienceLatencyLevelType
 }
 
@@ -1573,9 +1573,9 @@ WifiBluetoothCoexist = 8,
  * Audio statistics of the remote user.
  */
 export class RemoteAudioStats {
-/*
- * The user ID of the remote user.
- */
+  /*
+   * The user ID of the remote user.
+   */
   uid?: number
   /*
    * The quality of the audio stream sent by the user.  QualityType 
@@ -1720,9 +1720,9 @@ AudioScenarioNum = 9,
  * The format of the video frame.
  */
 export class VideoFormat {
-/*
- * The width (px) of the video frame.
- */
+  /*
+   * The width (px) of the video frame.
+   */
   width?: number
   /*
    * The height (px) of the video frame.
@@ -2134,9 +2134,9 @@ UserStateEnableLocalVideo = (1 << 8),
  * @ignore
  */
 export class VideoTrackInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   isLocal?: boolean
   /*
    * @ignore
@@ -2202,10 +2202,10 @@ RemoteVideoDownscaleLevel4 = 4,
  * The volume information of users.
  */
 export class AudioVolumeInfo {
-/*
- * The user ID. In the local user's callback, uid = 0.
- * In the remote users' callback, uid is the user ID of a remote user whose instantaneous volume is one of the three highest. 
- */
+  /*
+   * The user ID. In the local user's callback, uid = 0.
+   * In the remote users' callback, uid is the user ID of a remote user whose instantaneous volume is one of the three highest. 
+   */
   uid?: number
   /*
    * The volume of the user. The value ranges between 0 (the lowest volume) and 255 (the highest volume). 
@@ -2229,9 +2229,9 @@ export class AudioVolumeInfo {
  * @ignore
  */
 export class DeviceInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   isLowLatencyAudioSupported?: boolean
 }
 
@@ -2239,9 +2239,9 @@ export class DeviceInfo {
  * @ignore
  */
 export class Packet {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   buffer?: Uint8Array
   /*
    * @ignore
@@ -2321,9 +2321,9 @@ AudioCodecProfileHeAacV2 = 2,
  * Local audio statistics.
  */
 export class LocalAudioStats {
-/*
- * The number of audio channels.
- */
+  /*
+   * The number of audio channels.
+   */
   numChannels?: number
   /*
    * The sampling rate (Hz) of sending the local user's audio stream.
@@ -2484,9 +2484,9 @@ RtmpStreamingEventRequestTooOften = 4,
  * This class sets the properties of the watermark and background images in the live video.
  */
 export class RtcImage {
-/*
- * The HTTP/HTTPS URL address of the image in the live video. The maximum length of this parameter is 1024 bytes.
- */
+  /*
+   * The HTTP/HTTPS URL address of the image in the live video. The maximum length of this parameter is 1024 bytes.
+   */
   url?: string
   /*
    * The x coordinate (pixel) of the image on the video frame (taking the upper left corner of the video frame as the origin).
@@ -2521,9 +2521,9 @@ export class RtcImage {
  * If you want to enable the advanced features of streaming with transcoding, contact .
  */
 export class LiveStreamAdvancedFeature {
-/*
- * The feature names, including LBHQ (high-quality video with a lower bitrate) and VEO (optimized video encoder).
- */
+  /*
+   * The feature names, including LBHQ (high-quality video with a lower bitrate) and VEO (optimized video encoder).
+   */
   featureName?: string
   /*
    * Whether to enable the advanced features of streaming with transcoding:
@@ -2572,9 +2572,9 @@ ConnectionStateFailed = 5,
  * Transcoding configurations of each host.
  */
 export class TranscodingUser {
-/*
- * The user ID of the host.
- */
+  /*
+   * The user ID of the host.
+   */
   uid?: number
   /*
    * The x coordinate (pixel) of the host's video on the output video frame (taking the upper left corner of the video frame as the origin). The value range is [0, width], where width is thewidth set in LiveTranscoding .
@@ -2623,10 +2623,10 @@ export class TranscodingUser {
  * Transcoding configurations for Media Push.
  */
 export class LiveTranscoding {
-/*
- * The width of the video in pixels. The default value is 360. When pushing video streams to the CDN, the value range of width is [64,1920]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1920, Agora server automatically adjusts it to 1920.
- * When pushing audio streams to the CDN, set width and height as 0.
- */
+  /*
+   * The width of the video in pixels. The default value is 360. When pushing video streams to the CDN, the value range of width is [64,1920]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1920, Agora server automatically adjusts it to 1920.
+   * When pushing audio streams to the CDN, set width and height as 0.
+   */
   width?: number
   /*
    * The height of the video in pixels. The default value is 640. When pushing video streams to the CDN, the value range of height is [64,1080]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1080, Agora server automatically adjusts it to 1080.
@@ -2734,9 +2734,9 @@ export class LiveTranscoding {
  * The video streams for the video mixing on the local client.
  */
 export class TranscodingVideoStream {
-/*
- * The source type of video for the video mixing on the local client. See VideoSourceType .
- */
+  /*
+   * The source type of video for the video mixing on the local client. See VideoSourceType .
+   */
   sourceType?: MediaSourceType
   /*
    * The ID of the remote user.Use this parameter only when the source type of the video for the video mixingonthe local client is VideoSourceRemote.
@@ -2784,9 +2784,9 @@ export class TranscodingVideoStream {
  * The configuration of the video mixing on the local client.
  */
 export class LocalTranscoderConfiguration {
-/*
- * The number of the video streams for the video mixing on the local client.
- */
+  /*
+   * The number of the video streams for the video mixing on the local client.
+   */
   streamCount?: number
   /*
    * The video streams for the video mixing on the local client. See TranscodingVideoStream .
@@ -2802,11 +2802,11 @@ export class LocalTranscoderConfiguration {
  * Configurations of the last-mile network test.
  */
 export class LastmileProbeConfig {
-/*
- * Sets whether to test the uplink network. Some users, for example, the audience members in a LIVE_BROADCASTING channel, do not need such a test.
- * true: Test.
- * false: Not test. 
- */
+  /*
+   * Sets whether to test the uplink network. Some users, for example, the audience members in a LIVE_BROADCASTING channel, do not need such a test.
+   * true: Test.
+   * false: Not test. 
+   */
   probeUplink?: boolean
   /*
    * Sets whether to test the downlink network:
@@ -2846,9 +2846,9 @@ LastmileProbeResultUnavailable = 3,
  * Results of the uplink or downlink last-mile network test.
  */
 export class LastmileProbeOneWayResult {
-/*
- * The packet loss rate (%).
- */
+  /*
+   * The packet loss rate (%).
+   */
   packetLossRate?: number
   /*
    * The network jitter (ms).
@@ -2864,9 +2864,9 @@ export class LastmileProbeOneWayResult {
  * Results of the uplink and downlink last-mile network tests.
  */
 export class LastmileProbeResult {
-/*
- * The status of the last-mile probe test. See LastmileProbeResultState .
- */
+  /*
+   * The status of the last-mile probe test. See LastmileProbeResultState .
+   */
   state?: LastmileProbeResultState
   /*
    * Results of the uplink last-mile network test. See LastmileProbeOneWayResult .
@@ -3038,9 +3038,9 @@ WlaccSuggestActionModifySsid = 3,
  * @ignore
  */
 export class WlAccStats {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   e2eDelayPercent?: number
   /*
    * @ignore
@@ -3108,9 +3108,9 @@ VideoViewSetupRemove = 2,
  * Attributes of video canvas object.
  */
 export class VideoCanvas {
-/*
- * Video display window.
- */
+  /*
+   * Video display window.
+   */
   view?: any
   /*
    * The rendering mode of the video. See RenderModeType .
@@ -3173,9 +3173,9 @@ LighteningContrastHigh = 2,
  * Image enhancement options.
  */
 export class BeautyOptions {
-/*
- * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel .
- */
+  /*
+   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel .
+   */
   lighteningContrastLevel?: LighteningContrastLevel
   /*
    * The brightness level. The value ranges from 0.0 (original) to 1.0. The default value is 0.0. The greater the value, the greater the degree of whitening.
@@ -3227,9 +3227,9 @@ LowLightEnhanceLevelFast = 1,
  * @ignore
  */
 export class LowlightEnhanceOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   mode?: LowLightEnhanceMode
   /*
    * @ignore
@@ -3273,9 +3273,9 @@ VideoDenoiserLevelStrength = 2,
  * @ignore
  */
 export class VideoDenoiserOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   mode?: VideoDenoiserMode
   /*
    * @ignore
@@ -3287,9 +3287,9 @@ export class VideoDenoiserOptions {
  * @ignore
  */
 export class ColorEnhanceOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   strengthLevel?: number
   /*
    * @ignore
@@ -3337,9 +3337,9 @@ BlurDegreeHigh = 3,
  * The custom background image.
  */
 export class VirtualBackgroundSource {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   background_source_type?: BackgroundSourceType
   /*
    * The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image.This parameter takes effect only when the type of the custom background image is BackgroundColor.
@@ -3373,9 +3373,9 @@ SegModelGreen = 2,
  * @ignore
  */
 export class SegmentationProperty {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   modelType?: SegModelType
   /*
    * @ignore
@@ -3590,12 +3590,12 @@ VoiceChangerBass = 0x03010400,
  * Screen sharing configurations.
  */
 export class ScreenCaptureParameters {
-/*
- * The maximum dimensions of encoding the shared region.  The default value is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. VideoDimensions 
- * If the aspect ratio is different between the encoding dimensions and screen dimensions, Agora applies the following algorithms for encoding. Suppose dimensions are 1920 x 1080:
- * If the value of the screen dimensions is lower than that of dimensions, for example, 1000 x 1000 pixels, the SDK uses 1000 x 1000 pixels for encoding.
- * If the value of the screen dimensions is higher than that of dimensions, for example, 2000 x 1500, the SDK uses the maximum value under dimensions with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 x 1080. 
- */
+  /*
+   * The maximum dimensions of encoding the shared region.  The default value is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. VideoDimensions 
+   * If the aspect ratio is different between the encoding dimensions and screen dimensions, Agora applies the following algorithms for encoding. Suppose dimensions are 1920 x 1080:
+   * If the value of the screen dimensions is lower than that of dimensions, for example, 1000 x 1000 pixels, the SDK uses 1000 x 1000 pixels for encoding.
+   * If the value of the screen dimensions is higher than that of dimensions, for example, 2000 x 1500, the SDK uses the maximum value under dimensions with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 x 1080. 
+   */
   dimensions?: VideoDimensions
   /*
    * On Windows and macOS, it represents the video encoding frame rate (fps) of the shared screen stream. The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
@@ -3701,9 +3701,9 @@ AudioEncodedFrameObserverPositionMixed = 3,
  * Recording configuration.
  */
 export class AudioRecordingConfiguration {
-/*
- * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4. Ensure that the path for the recording file exists and is writable.
- */
+  /*
+   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4. Ensure that the path for the recording file exists and is writable.
+   */
   filePath?: string
   /*
    * Whether to encode the audio data: true
@@ -3737,9 +3737,9 @@ export class AudioRecordingConfiguration {
  * @ignore
  */
 export class AudioEncodedFrameObserverConfig {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   postionType?: AudioEncodedFrameObserverPosition
   /*
    * @ignore
@@ -3751,20 +3751,20 @@ export class AudioEncodedFrameObserverConfig {
  * @ignore
  */
 export abstract class IAudioEncodedFrameObserver {
-/*
- * @ignore
- */
-  OnRecordAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
+  /*
+   * @ignore
+   */
+  onRecordAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
 
   /*
    * @ignore
    */
-  OnPlaybackAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
+  onPlaybackAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
 
   /*
    * @ignore
    */
-  OnMixedAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
+  onMixedAudioEncodedFrame?(frameBuffer: Uint8Array, length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
 }
 
 /*
@@ -3987,9 +3987,9 @@ RelayStateFailure = 3,
  * The definition of ChannelMediaInfo.
  */
 export class ChannelMediaInfo {
-/*
- * The channel name.
- */
+  /*
+   * The channel name.
+   */
   channelName?: string
   /*
    * The token that enables the user to join the channel.
@@ -4005,14 +4005,14 @@ export class ChannelMediaInfo {
  * The definition of ChannelMediaRelayConfiguration.
  */
 export class ChannelMediaRelayConfiguration {
-/*
- * The information of the source channel ChannelMediaInfo . It contains the following members:
- * channelName: The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel.
- * uid: The unique ID to identify the relay stream in the source channel. The default value is 0, which means the SDK generates a random uid. You must set it as 0.
- * token: The token for joining the source channel. It is generated with the channelName and uid you set in srcInfo.
- * If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
- * If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0. 
- */
+  /*
+   * The information of the source channel ChannelMediaInfo . It contains the following members:
+   * channelName: The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel.
+   * uid: The unique ID to identify the relay stream in the source channel. The default value is 0, which means the SDK generates a random uid. You must set it as 0.
+   * token: The token for joining the source channel. It is generated with the channelName and uid you set in srcInfo.
+   * If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
+   * If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0. 
+   */
   srcInfo?: ChannelMediaInfo
   /*
    * The information of the destination channel ChannelMediaInfo. It contains the following members:
@@ -4033,9 +4033,9 @@ export class ChannelMediaRelayConfiguration {
  * The uplink network information.
  */
 export class UplinkNetworkInfo {
-/*
- * The target video encoder bitrate (bps).
- */
+  /*
+   * The target video encoder bitrate (bps).
+   */
   video_encoder_target_bitrate_bps?: number
 }
 
@@ -4043,9 +4043,9 @@ export class UplinkNetworkInfo {
  * @ignore
  */
 export class PeerDownlinkInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   uid?: string
   /*
    * @ignore
@@ -4065,9 +4065,9 @@ export class PeerDownlinkInfo {
  * @ignore
  */
 export class DownlinkNetworkInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   lastmile_buffer_delay_time_ms?: number
   /*
    * @ignore
@@ -4134,9 +4134,9 @@ ModeEnd = 9,
  * Built-in encryption configurations.
  */
 export class EncryptionConfig {
-/*
- * The built-in encryption mode. See EncryptionMode . Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
- */
+  /*
+   * The built-in encryption mode. See EncryptionMode . Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
+   */
   encryptionMode?: EncryptionMode
   /*
    * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key.
@@ -4274,9 +4274,9 @@ PubStatePublished = 3,
  * @ignore
  */
 export class EchoTestConfiguration {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   view?: any
   /*
    * @ignore
@@ -4300,9 +4300,9 @@ export class EchoTestConfiguration {
  * The information of the user.
  */
 export class UserInfo {
-/*
- * The user ID.
- */
+  /*
+   * The user ID.
+   */
   uid?: number
   /*
    * User account. The maximum data length is MaxUserAccountLengthType .
@@ -4363,9 +4363,9 @@ Critical = 5,
  * @ignore
  */
 export class ScreenVideoParameters {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   dimensions?: VideoDimensions
   /*
    * @ignore
@@ -4385,9 +4385,9 @@ export class ScreenVideoParameters {
  * @ignore
  */
 export class ScreenAudioParameters {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   sampleRate?: number
   /*
    * @ignore
@@ -4403,9 +4403,9 @@ export class ScreenAudioParameters {
  * @ignore
  */
 export class ScreenCaptureParameters2 {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   captureAudio?: boolean
   /*
    * @ignore
@@ -4425,9 +4425,9 @@ export class ScreenCaptureParameters2 {
  * @ignore
  */
 export class SpatialAudioParams {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   speaker_azimuth?: number
   /*
    * @ignore

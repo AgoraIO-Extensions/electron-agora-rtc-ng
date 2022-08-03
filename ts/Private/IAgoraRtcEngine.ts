@@ -253,9 +253,9 @@ PriorityNormal = 100,
  * The statistics of the local video stream.
  */
 export class LocalVideoStats {
-/*
- * The ID of the local user.
- */
+  /*
+   * The ID of the local user.
+   */
   uid?: number
   /*
    * The actual bitrate (Kbps) while sending the local video stream.This value does not include the bitrate for resending the video after packet loss.
@@ -347,9 +347,9 @@ export class LocalVideoStats {
  * The statistics of the remote video stream.
  */
 export class RemoteVideoStats {
-/*
- * The ID of the remote user sending the video stream.
- */
+  /*
+   * The ID of the remote user sending the video stream.
+   */
   uid?: number
   /*
    *  Deprecated:
@@ -421,9 +421,9 @@ export class RemoteVideoStats {
  * @ignore
  */
 export class Region {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   uid?: number
   /*
    * @ignore
@@ -459,9 +459,9 @@ export class Region {
  * @ignore
  */
 export class VideoCompositingLayout {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   canvasWidth?: number
   /*
    * @ignore
@@ -493,9 +493,9 @@ export class VideoCompositingLayout {
  * Configurations of injecting an external audio or video stream.
  */
 export class InjectStreamConfig {
-/*
- * The width of the external video stream after injecting. The default value is 0, which represents the same width as the original.
- */
+  /*
+   * The width of the external video stream after injecting. The default value is 0, which represents the same width as the original.
+   */
   width?: number
   /*
    * The height of the external video stream after injecting. The default value is 0, which represents the same height as the original.
@@ -551,9 +551,9 @@ RtmpStreamLifeCycleBind2owner = 2,
  * @ignore
  */
 export class PublisherConfiguration {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   width?: number
   /*
    * @ignore
@@ -609,9 +609,9 @@ export class PublisherConfiguration {
  * @ignore
  */
 export class AudioTrackConfig {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   enableLocalPlayback?: boolean
 }
 
@@ -651,9 +651,9 @@ TcpProxy = 2,
  * The camera capturer preference.
  */
 export class CameraCapturerConfiguration {
-/*
- * This parameter applies to Android and iOS only.The camera direction. 
- */
+  /*
+   * This parameter applies to Android and iOS only.The camera direction. 
+   */
   cameraDirection?: CameraDirection
   /*
    * The device ID of the playback device. The maximum length is MaxDeviceIdLengthType .
@@ -673,11 +673,11 @@ export class CameraCapturerConfiguration {
  * The configuration of the captured screen.
  */
 export class ScreenCaptureConfiguration {
-/*
- * Whether to capture the window on the screen:
- * true: Capture the window.
- * false: (Default) Capture the screen, not the window.
- */
+  /*
+   * Whether to capture the window on the screen:
+   * true: Capture the window.
+   * false: (Default) Capture the screen, not the window.
+   */
   isCaptureWindow?: boolean
   /*
    * (macOS only) The display ID of the screen.This parameter takes effect only when you want to capture the screen on macOS.
@@ -706,9 +706,9 @@ export class ScreenCaptureConfiguration {
  * @ignore
  */
 export class Size {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   width?: number
   /*
    * @ignore
@@ -721,9 +721,9 @@ export class Size {
  * The default image is in the RGBA format. If you need to use another format, you need to convert the image on your own.
  */
 export class ThumbImageBuffer {
-/*
- * The buffer of the thumbnail ot icon.
- */
+  /*
+   * The buffer of the thumbnail ot icon.
+   */
   buffer?: Uint8Array
   /*
    * The buffer length of the thumbnail or icon, in bytes.
@@ -765,9 +765,9 @@ ScreencapturesourcetypeCustom = 2,
  * The information about the specified shareable window or screen. 
  */
 export class ScreenCaptureSourceInfo {
-/*
- * The type of the shared target. See ScreenCaptureSourceType .
- */
+  /*
+   * The type of the shared target. See ScreenCaptureSourceType .
+   */
   type?: ScreenCaptureSourceType
   /*
    * The window ID for a window or the display ID for a screen.
@@ -809,9 +809,9 @@ export class ScreenCaptureSourceInfo {
  * The advanced options for audio.
  */
 export class AdvancedAudioOptions {
-/*
- * The number of channels for audio preprocessing. See AudioProcessingChannels .
- */
+  /*
+   * The number of channels for audio preprocessing. See AudioProcessingChannels .
+   */
   audioProcessingChannels?: number
 }
 
@@ -819,9 +819,9 @@ export class AdvancedAudioOptions {
  * @ignore
  */
 export class ImageTrackOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   imageUrl?: string
   /*
    * @ignore
@@ -834,11 +834,11 @@ export class ImageTrackOptions {
  * Agora supports publishing multiple audio streams and one video stream at the same time and in the same RtcConnection . For example, publishAudioTrack, publishCustomAudioTrack and publishMediaPlayerAudioTrack can be true at the same time; but only one of publishCameraTrack, publishScreenTrack, publishCustomVideoTrack, and publishEncodedVideoTrack can be true at the same time.
  */
 export class ChannelMediaOptions {
-/*
- * Whether to publish the video captured by the camera:
- * true: (Default) Publish the video captured by the camera.
- * false: Do not publish the video captured by the camera.
- */
+  /*
+   * Whether to publish the video captured by the camera:
+   * true: (Default) Publish the video captured by the camera.
+   * false: Do not publish the video captured by the camera.
+   */
   publishCameraTrack?: boolean
   /*
    * Whether to publish the video captured by the second camera:
@@ -1042,9 +1042,9 @@ TcpProxyAutoFallbackType = 4,
  * @ignore
  */
 export class LocalAccessPointConfiguration {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   ipList?: string[]
   /*
    * @ignore
@@ -1072,10 +1072,10 @@ export class LocalAccessPointConfiguration {
  * The options for leaving a channel.
  */
 export class LeaveChannelOptions {
-/*
- * Whether to stop playing and mixing the music file when a user leaves the channel. true: (Default) Stop playing and mixing the music file.
- * false: Do not stop playing and mixing the music file.
- */
+  /*
+   * Whether to stop playing and mixing the music file when a user leaves the channel. true: (Default) Stop playing and mixing the music file.
+   * false: Do not stop playing and mixing the music file.
+   */
   stopAudioMixing?: boolean
   /*
    * Whether to stop playing all audio effects when a user leaves the channel. true: (Default) Stop playing all audio effects.
@@ -1093,14 +1093,14 @@ export class LeaveChannelOptions {
  * The SDK uses the IRtcEngineEventHandler interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.
  */
 export abstract class IRtcEngineEventHandler {
-/*
- * Occurs when a user joins a channel.
- * This callback notifies the application that a user joins a specified channel.
- *
- * @param connection The connection information. See RtcConnection .
- *
- * @param elapsed The time elapsed (ms) from the local user calling joinChannelWithOptions until the SDK triggers this callback.
- */
+  /*
+   * Occurs when a user joins a channel.
+   * This callback notifies the application that a user joins a specified channel.
+   *
+   * @param connection The connection information. See RtcConnection .
+   *
+   * @param elapsed The time elapsed (ms) from the local user calling joinChannelWithOptions until the SDK triggers this callback.
+   */
   onJoinChannelSuccess?(connection: RtcConnection, elapsed: number): void;
 
   /*
@@ -2153,9 +2153,9 @@ abstract release(): void;
  * Definition of RtcEngineContext.
  */
 export class RtcEngineContext {
-/*
- * The App ID issued by Agora for your project. Only users in apps with the same App ID can join the same channel and communicate with each other. An App ID can only be used to create one IRtcEngine instance. To change your App ID, call release to destroy the current IRtcEngine instance, and then create a new one.
- */
+  /*
+   * The App ID issued by Agora for your project. Only users in apps with the same App ID can join the same channel and communicate with each other. An App ID can only be used to create one IRtcEngine instance. To change your App ID, call release to destroy the current IRtcEngine instance, and then create a new one.
+   */
   appId?: string
   /*
    * The channel profile. See ChannelProfileType .
@@ -2229,11 +2229,11 @@ MaxMetadataSizeInByte = 1024,
  * Media metadata.
  */
 export class Metadata {
-/*
- * The user ID.
- * For the recipient:the ID of the remote user who sent the Metadata.
- * Ignore it for sender. 
- */
+  /*
+   * The user ID.
+   * For the recipient:the ID of the remote user who sent the Metadata.
+   * Ignore it for sender. 
+   */
   uid?: number
   /*
    * Buffer size for received or sent Metadata.
@@ -2253,11 +2253,11 @@ export class Metadata {
  * The metadata observer.
  */
 export abstract class IMetadataObserver {
-/*
- * Occurs when the local user receives the metadata.
- *
- * @param metadata The metadata received, see Metadata .
- */
+  /*
+   * Occurs when the local user receives the metadata.
+   *
+   * @param metadata The metadata received, see Metadata .
+   */
   onMetadataReceived?(metadata: Metadata): void;
 }
 
@@ -2321,9 +2321,9 @@ DirectCdnStreamingStateRecovering = 4,
  * @ignore
  */
 export class DirectCdnStreamingStats {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   videoWidth?: number
   /*
    * @ignore
@@ -2347,9 +2347,9 @@ export class DirectCdnStreamingStats {
  * @ignore
  */
 export abstract class IDirectCdnStreamingEventHandler {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onDirectCdnStreamingStateChanged?(state: DirectCdnStreamingState, error: DirectCdnStreamingError, message: string): void;
 
   /*
@@ -2362,9 +2362,9 @@ export abstract class IDirectCdnStreamingEventHandler {
  * @ignore
  */
 export class DirectCdnStreamingMediaOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   publishCameraTrack?: boolean
   /*
    * @ignore
@@ -5611,9 +5611,9 @@ VideoProfileDefault = 30,
  * @ignore
  */
 export class SDKBuildInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   build?: number
   /*
    * @ignore
@@ -5625,9 +5625,9 @@ export class SDKBuildInfo {
  * The VideoDeviceInfo class that contains the ID and device name of the video devices.
  */
 export class VideoDeviceInfo {
-/*
- * The device ID.
- */
+  /*
+   * The device ID.
+   */
   deviceId?: string
   /*
    * The device name.
@@ -5639,9 +5639,9 @@ export class VideoDeviceInfo {
  * The AudioDeviceInfo class that contains the ID and device name of the audio devices.
  */
 export class AudioDeviceInfo {
-/*
- * The device ID.
- */
+  /*
+   * The device ID.
+   */
   deviceId?: string
   /*
    * The device name.

@@ -51,8 +51,8 @@ export function processIAudioSpectrumObserver (handler: IAudioSpectrumObserver, 
 export function processIVideoEncodedFrameObserver (handler: IVideoEncodedFrameObserver, event: string, jsonParams: any) {
   switch (event) {
     case 'OnEncodedVideoFrameReceived':
-      if (handler.OnEncodedVideoFrameReceived !== undefined) {
-        handler.OnEncodedVideoFrameReceived(jsonParams.uid, jsonParams.imageBuffer, jsonParams.length, jsonParams.videoEncodedFrameInfo)
+      if (handler.onEncodedVideoFrameReceived !== undefined) {
+        handler.onEncodedVideoFrameReceived(jsonParams.uid, jsonParams.imageBuffer, jsonParams.length, jsonParams.videoEncodedFrameInfo)
       }
       break
   }

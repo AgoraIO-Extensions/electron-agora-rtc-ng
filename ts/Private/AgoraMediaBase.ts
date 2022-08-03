@@ -64,9 +64,9 @@ TwoBytesPerSample = 2,
  * @ignore
  */
 export class AudioParameters {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   sample_rate?: number
   /*
    * @ignore
@@ -194,9 +194,9 @@ ContentInspectSupervision = 2,
  * @ignore
  */
 export class ContentInspectModule {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   type?: ContentInspectType
   /*
    * @ignore
@@ -208,9 +208,9 @@ export class ContentInspectModule {
  * @ignore
  */
 export class ContentInspectConfig {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   extraInfo?: string
   /*
    * @ignore
@@ -226,9 +226,9 @@ export class ContentInspectConfig {
  * @ignore
  */
 export class PacketOptions {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   timestamp?: number
   /*
    * @ignore
@@ -240,9 +240,9 @@ export class PacketOptions {
  * @ignore
  */
 export class AudioEncodedFrameInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   sendTs?: number
   /*
    * @ignore
@@ -254,9 +254,9 @@ export class AudioEncodedFrameInfo {
  * @ignore
  */
 export class AudioPcmFrame {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   capture_timestamp?: number
   /*
    * @ignore
@@ -410,9 +410,9 @@ VideoBufferTexture = 3,
  * @ignore
  */
 export class ExternalVideoFrame {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   type?: VideoBufferType
   /*
    * @ignore
@@ -480,9 +480,9 @@ export class ExternalVideoFrame {
  * @ignore
  */
 export class VideoFrame {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   type?: VideoPixelFormat
   /*
    * @ignore
@@ -604,9 +604,9 @@ FrameTypePcm16 = 0,
  * @ignore
  */
 export class AudioFrame {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   type?: AudioFrameType
   /*
    * @ignore
@@ -668,9 +668,9 @@ AudioFramePositionBeforeMixing = 0x0008,
  * @ignore
  */
 export class AudioParams {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   sample_rate?: number
   /*
    * @ignore
@@ -690,9 +690,9 @@ export class AudioParams {
  * @ignore
  */
 export abstract class IAudioFrameObserverBase {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 
   /*
@@ -710,9 +710,9 @@ export abstract class IAudioFrameObserverBase {
  * @ignore
  */
 export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onPlaybackAudioFrameBeforeMixing?(channelId: string, uid: number, audioFrame: AudioFrame): boolean;
 }
 
@@ -720,9 +720,9 @@ export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
  * @ignore
  */
 export class AudioSpectrumData {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   audioSpectrumData?: number[]
   /*
    * @ignore
@@ -734,9 +734,9 @@ export class AudioSpectrumData {
  * @ignore
  */
 export class UserAudioSpectrumInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   uid?: number
   /*
    * @ignore
@@ -748,9 +748,9 @@ export class UserAudioSpectrumInfo {
  * @ignore
  */
 export abstract class IAudioSpectrumObserver {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
 
   /*
@@ -763,10 +763,10 @@ export abstract class IAudioSpectrumObserver {
  * @ignore
  */
 export abstract class IVideoEncodedFrameObserver {
-/*
- * @ignore
- */
-  OnEncodedVideoFrameReceived?(uid: number, imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): boolean;
+  /*
+   * @ignore
+   */
+  onEncodedVideoFrameReceived?(uid: number, imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): boolean;
 }
 
 /*
@@ -787,9 +787,9 @@ ProcessModeReadWrite = 1,
  * @ignore
  */
 export abstract class IVideoFrameObserver {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /*
@@ -933,9 +933,9 @@ RecorderErrorConfigChanged = 4,
  * @ignore
  */
 export class MediaRecorderConfiguration {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   storagePath?: string
   /*
    * @ignore
@@ -959,9 +959,9 @@ export class MediaRecorderConfiguration {
  * @ignore
  */
 export class RecorderInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   fileName?: string
   /*
    * @ignore
@@ -977,9 +977,9 @@ export class RecorderInfo {
  * @ignore
  */
 export abstract class IMediaRecorderObserver {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onRecorderStateChanged?(state: RecorderState, error: RecorderErrorCode): void;
 
   /*

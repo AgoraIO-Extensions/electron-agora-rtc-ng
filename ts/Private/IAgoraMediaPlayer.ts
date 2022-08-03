@@ -487,9 +487,9 @@ abstract getCacheFileCount(): number;
  * @ignore
  */
 export abstract class IMediaPlayerAudioFrameObserver {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onFrame?(frame: AudioPcmFrame): void;
 }
 
@@ -497,8 +497,8 @@ export abstract class IMediaPlayerAudioFrameObserver {
  * @ignore
  */
 export abstract class IMediaPlayerVideoFrameObserver {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   onFrame?(frame: VideoFrame): void;
 }

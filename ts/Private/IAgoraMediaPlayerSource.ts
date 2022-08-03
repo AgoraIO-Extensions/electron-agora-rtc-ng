@@ -4,14 +4,14 @@ import { MediaPlayerState, MediaPlayerError, MediaPlayerEvent, PlayerPreloadEven
  * Provides callbacks for media players.
  */
 export abstract class IMediaPlayerSourceObserver {
-/*
- * Reports the playback state change.
- * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
- *
- * @param state The playback state, see MediaPlayerState .
- *
- * @param ec The error code. See MediaPlayerError .
- */
+  /*
+   * Reports the playback state change.
+   * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
+   *
+   * @param state The playback state, see MediaPlayerState .
+   *
+   * @param ec The error code. See MediaPlayerError .
+   */
   onPlayerSourceStateChanged?(state: MediaPlayerState, ec: MediaPlayerError): void;
 
   /*

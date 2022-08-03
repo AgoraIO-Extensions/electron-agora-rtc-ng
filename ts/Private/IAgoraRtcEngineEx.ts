@@ -6,9 +6,9 @@ import { RenderModeType } from './AgoraMediaBase'
  * Contains connection information.
  */
 export class RtcConnection {
-/*
- * The channel name.
- */
+  /*
+   * The channel name.
+   */
   channelId?: string
   /*
    * The ID of the local user.

@@ -4,9 +4,9 @@ import { RtcConnection } from './IAgoraRtcEngineEx'
  * @ignore
  */
 export class RemoteVoicePositionInfo {
-/*
- * @ignore
- */
+  /*
+   * @ignore
+   */
   position?: number[]
   /*
    * @ignore
