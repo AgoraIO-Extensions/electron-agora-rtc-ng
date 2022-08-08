@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-08-01 14:55:52
+ * @Last Modified time: 2022-08-05 11:12:05
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -162,13 +162,14 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         if (registerApi) {
           auto observer = irisApiEngine->CreateObserver(
               funcName.c_str(),
-              agoraElectronBridge->_iris_observer_event_handler.get(), parameter.c_str(), parameter.length());
+              agoraElectronBridge->_iris_observer_event_handler.get(),
+              parameter.c_str(), parameter.length());
 
           void* ptrList[1];
           ptrList[0] = observer;
           ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-                                           parameter.length(), ptrList,
-                                           1, agoraElectronBridge->_result);
+                                           parameter.length(), ptrList, 1,
+                                           agoraElectronBridge->_result);
         } else if (unRegisterApi) {
           ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
                                            parameter.length(), nullptr, 0,
@@ -488,6 +489,7 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   // combine
   engine->SetIrisRtcEngineEventHandler(rtcEventHandler.get());
   engine->SetIrisMediaPlayerEventHandler(mpkEventHandler.get());
+  engine->SetIrisMediaRecorderEventHandler(rtcEventHandler.get());
   engine->Attach(bufferManager.get());
 
   // assign
@@ -531,7 +533,8 @@ void AgoraElectronBridge::Release() {
         _iris_rtc_event_handler.get());
     _iris_api_engine->UnsetIrisMediaPlayerEventHandler(
         _iris_mpk_event_handler.get());
-
+    _iris_api_engine->UnsetIrisMediaRecorderEventHandler(
+        _iris_rtc_event_handler.get());
     // reset
     _iris_rtc_event_handler.reset();
     _iris_mpk_event_handler.reset();

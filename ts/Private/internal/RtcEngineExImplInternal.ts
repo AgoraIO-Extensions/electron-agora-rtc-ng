@@ -15,6 +15,7 @@ import {
 import { IAudioSpectrumObserver } from "../AgoraMediaBase";
 import { IMediaEngine } from "../IAgoraMediaEngine";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
+import { IMediaRecorder } from "../IAgoraMediaRecorder";
 import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
@@ -43,6 +44,7 @@ import {
 } from "./IrisApiEngine";
 import { MediaEngineImplInternal } from "./MediaEngineImplInternal";
 import { MediaPlayerInternal } from "./MediaPlayerInternal";
+import { MediaRecorderInternal } from "./MediaRecorderImplInternal";
 
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   private eventKey: string;
@@ -279,6 +281,10 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
 
   override getMediaEngine(): IMediaEngine {
     return new MediaEngineImplInternal();
+  }
+
+  override getMediaRecorder(): IMediaRecorder {
+    return new MediaRecorderInternal();
   }
 
   override destroyRendererByConfig(

@@ -185,6 +185,7 @@ export const AgoraEnv: AgoraEnvType = {
   mpkAudioFrameObservers: [],
   mpkVideoFrameObservers: [],
   mpkAudioSpectrumObservers: [],
+  mediaRecorderObservers: [],
   metadataObservers: [],
   cdnEventHandlers: [],
 };

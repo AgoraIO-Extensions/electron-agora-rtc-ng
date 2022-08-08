@@ -8,10 +8,14 @@ import {
   processIAudioFrameObserver,
   processIAudioFrameObserverBase,
   processIAudioSpectrumObserver,
+  processIMediaRecorderObserver,
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from "../impl/AgoraMediaBaseImpl";
-import { processIMediaPlayerAudioFrameObserver, processIMediaPlayerVideoFrameObserver } from "../impl/IAgoraMediaPlayerImpl";
+import {
+  processIMediaPlayerAudioFrameObserver,
+  processIMediaPlayerVideoFrameObserver,
+} from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
 import {
   processIDirectCdnStreamingEventHandler,
@@ -22,6 +26,7 @@ const agora = require("../../../build/Release/agora_node_ext");
 
 const MetadataSplitString = "MetadataObserver_";
 const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
+const MediaRecorderSplitString = "MediaRecorder_";
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -53,11 +58,14 @@ export const handlerRTCEvent = function (
     "bufferCount",
     bufferCount
   );
-  const isEx = event.endsWith("Ex");
-  const isMetadata = event.startsWith("MetadataObserver");
+  const isMetadata = event.startsWith("MetadataObserver_");
+  const isMediaRecorder = event.startsWith("MediaRecorderObserver_");
+
+  const isRtcEngine = !isMetadata && !isMediaRecorder;
+
   preProcessEvent(event, parseData, buffer, bufferLength, bufferCount);
 
-  if (!isMetadata) {
+  if (isRtcEngine) {
     AgoraEnv.rtcEventHandlers.forEach((value) => {
       if (!value) {
         return;
@@ -91,10 +99,20 @@ export const handlerRTCEvent = function (
     });
   }
 
+  if (isMediaRecorder) {
+    event = event.replace(MediaRecorderSplitString, "");
+    let key = parseData.connection.channelId + parseData.connection.localUid;
+    AgoraEnv.mediaRecorderObservers.forEach((value) => {
+      if (value.key === key) {
+        processIMediaRecorderObserver(value.handler, event, parseData);
+      }
+    });
+  }
+
   if (isMetadata) {
-    let splitStr = event.split(MetadataSplitString);
+    event = event.replace(MetadataSplitString, "");
     AgoraEnv.metadataObservers.forEach((value) => {
-      processIMetadataObserver(value, splitStr[1], parseData);
+      processIMetadataObserver(value, event, parseData);
     });
   }
 };
@@ -143,8 +161,7 @@ export const handlerObserverEvent = function (
   bufferLength: number[],
   bufferCount: number
 ) {
-  if (data == "")
-    return;
+  if (data == "") return;
 
   let object = parseJSON(data);
   if (event.startsWith("AudioFrameObserver_")) {
@@ -166,7 +183,10 @@ export const handlerObserverEvent = function (
     AgoraEnv.rtcVideoFrameObservers.forEach((value) => {
       processIVideoFrameObserver(value, event, object);
     });
-  } else if (event.indexOf("RtcEngine") != -1 && event.indexOf("AudioSpectrumObserver_") != -1) {
+  } else if (
+    event.indexOf("RtcEngine") != -1 &&
+    event.indexOf("AudioSpectrumObserver_") != -1
+  ) {
     event = event.replace("RtcEngine_AudioSpectrumObserver_", "");
     AgoraEnv.rtcAudioSpectrumObservers.forEach((value) => {
       processIAudioSpectrumObserver(value, event, object);
@@ -184,12 +204,18 @@ export const handlerObserverEvent = function (
     AgoraEnv.rtcVideoEncodedFrameObservers.forEach((value) => {
       processIVideoEncodedFrameObserver(value, event, object);
     });
-  } else if (event.indexOf("MediaPlayer") != -1 && event.indexOf("AudioSpectrumObserver_") != -1) {
+  } else if (
+    event.indexOf("MediaPlayer") != -1 &&
+    event.indexOf("AudioSpectrumObserver_") != -1
+  ) {
     event = event.replace("MediaPlayer_AudioSpectrumObserver_", "");
     AgoraEnv.mpkAudioSpectrumObservers.forEach((value) => {
       processIAudioSpectrumObserver(value.handler, event, object);
     });
-  } else if (event.indexOf("MediaPlayer") != -1 && event.indexOf("VideoFrameObserver_") != -1) {
+  } else if (
+    event.indexOf("MediaPlayer") != -1 &&
+    event.indexOf("VideoFrameObserver_") != -1
+  ) {
     event = event.replace("MediaPlayer_VideoFrameObserver_", "");
     if (object.videoFrame) {
       (object.videoFrame as VideoFrame).yBuffer = buffer[0];

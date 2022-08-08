@@ -17,7 +17,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     logDebug("MediaEngineImplInternal constructor()");
   }
 
-  override pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0): number {
+  override pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0,  bufferArray: Uint8Array[]): number {
     const apiType = "MediaEngine_pushVideoFrame";
     const jsonParams = {
       frame,
@@ -33,7 +33,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     if (frame.buffer == null || frame.buffer == undefined)
       return ErrorCodeType.ErrInvalidArgument;
 
-    let bufferArray = [frame.buffer, undefined, frame.metadata_buffer];
+    
     const jsonResults = callIrisApi.call(
       this,
       apiType,
