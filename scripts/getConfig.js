@@ -40,6 +40,7 @@ const getConfig = () => {
     argv,
     env: {
       npm_config_agora_electron_sdk_pre_built,
+      npm_config_agora_electron_sdk_platform,
       npm_config_agora_electron_sdk_arch,
     },
   } = process;
@@ -53,6 +54,10 @@ const getConfig = () => {
   //argv from ci/npm_config
   if (npm_config_agora_electron_sdk_pre_built !== undefined) {
     config.prebuilt = !!npm_config_agora_electron_sdk_pre_built;
+  }
+
+  if (npm_config_agora_electron_sdk_platform !== undefined) {
+    config.platform = npm_config_agora_electron_sdk_platform;
   }
 
   if (npm_config_agora_electron_sdk_arch !== undefined) {
