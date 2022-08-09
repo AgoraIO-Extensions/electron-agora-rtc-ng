@@ -1,12 +1,12 @@
-import { VideoSourceType } from "../Private/AgoraBase";
-import { RenderModeType } from "../Private/AgoraMediaBase";
-import AgoraRendererManager from "./RendererManager";
+import { VideoSourceType } from '../Private/AgoraBase';
+import { RenderModeType } from '../Private/AgoraMediaBase';
+import AgoraRendererManager from './RendererManager';
 
-const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
-const UID_STRING = "uid";
-const CHANNEL_ID_STRING = "channel-id";
-const RENDERER_CONTENT_MODE_STRING = "renderer-content-mode";
-const RENDERER_MIRROR_STRING = "renderer-mirror";
+const VIDEO_SOURCE_TYPE_STRING = 'video-source-type';
+const UID_STRING = 'uid';
+const CHANNEL_ID_STRING = 'channel-id';
+const RENDERER_CONTENT_MODE_STRING = 'renderer-content-mode';
+const RENDERER_MIRROR_STRING = 'renderer-mirror';
 
 const observedAttributes = [
   VIDEO_SOURCE_TYPE_STRING,
@@ -17,42 +17,42 @@ const observedAttributes = [
 ];
 
 declare global {
-  /*
+  /**
    * Attributes of the Agora custom element.
    * You can use this custom element as follows: <agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}"></agora-view>
    */
   interface AgoraView {
-    /*
+    /**
      * @ignore
      */
-    "video-source-type": VideoSourceType;
-    /*
+    'video-source-type': VideoSourceType;
+    /**
      * The ID of the remote user.
      */
-    uid: number;
-    /*
+    'uid': number;
+    /**
      * @ignore
      */
-    "channel-id": string;
-    /*
+    'channel-id': string;
+    /**
      * @ignore
      */
-    "renderer-content-mode": RenderModeType;
-    /*
+    'renderer-content-mode': RenderModeType;
+    /**
      * @ignore
      */
-    "renderer-mirror": boolean;
-    /*
+    'renderer-mirror': boolean;
+    /**
      * The inline style of elements. See style .
      */
-    style: any;
+    'style': any;
   }
   namespace JSX {
-    /*
+    /**
      * The custom HTML elements defined by Agora.
      */
     interface IntrinsicElements {
-      "agora-view": AgoraView | HTMLElement;
+      'agora-view': AgoraView | HTMLElement;
     }
   }
 }
@@ -88,7 +88,7 @@ export default class AgoraView extends HTMLElement {
     }
   }
   get channelId(): string {
-    return this.getAttribute(CHANNEL_ID_STRING) || "";
+    return this.getAttribute(CHANNEL_ID_STRING) || '';
   }
 
   set channelId(val) {
@@ -115,7 +115,7 @@ export default class AgoraView extends HTMLElement {
     }
   }
   get renderMirror(): boolean {
-    return this.getAttribute(RENDERER_MIRROR_STRING) === "true";
+    return this.getAttribute(RENDERER_MIRROR_STRING) === 'true';
   }
 
   set renderMirror(val) {
@@ -180,4 +180,4 @@ export default class AgoraView extends HTMLElement {
   }
 }
 
-window.customElements.define("agora-view", AgoraView);
+window.customElements.define('agora-view', AgoraView);

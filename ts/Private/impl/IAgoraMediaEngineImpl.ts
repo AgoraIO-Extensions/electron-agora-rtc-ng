@@ -1,366 +1,477 @@
-import { callIrisApi } from '../internal/IrisApiEngine'
-import { IMediaEngine } from '../IAgoraMediaEngine'
-import { IAudioFrameObserver, IVideoFrameObserver, IVideoEncodedFrameObserver, MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from '../AgoraMediaBase'
-import { SenderOptions, EncodedVideoFrameInfo } from '../AgoraBase'
+import { callIrisApi } from '../internal/IrisApiEngine';
+import { IMediaEngine } from '../IAgoraMediaEngine';
+import {
+  IAudioFrameObserver,
+  IVideoFrameObserver,
+  IVideoEncodedFrameObserver,
+  MediaSourceType,
+  AudioFrame,
+  ExternalVideoSourceType,
+  ExternalVideoFrame,
+} from '../AgoraMediaBase';
+import { SenderOptions, EncodedVideoFrameInfo } from '../AgoraBase';
 export class IMediaEngineImpl implements IMediaEngine {
-  registerAudioFrameObserver (observer: IAudioFrameObserver): number {
-    const apiType = this.getApiTypeFromRegisterAudioFrameObserver(observer)
+  registerAudioFrameObserver(observer: IAudioFrameObserver): number {
+    const apiType = this.getApiTypeFromRegisterAudioFrameObserver(observer);
     const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromRegisterAudioFrameObserver (observer: IAudioFrameObserver): string {
-    return 'MediaEngine_registerAudioFrameObserver'
+  protected getApiTypeFromRegisterAudioFrameObserver(
+    observer: IAudioFrameObserver
+  ): string {
+    return 'MediaEngine_registerAudioFrameObserver';
   }
 
-  registerVideoFrameObserver (observer: IVideoFrameObserver): number {
-    const apiType = this.getApiTypeFromRegisterVideoFrameObserver(observer)
+  registerVideoFrameObserver(observer: IVideoFrameObserver): number {
+    const apiType = this.getApiTypeFromRegisterVideoFrameObserver(observer);
     const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromRegisterVideoFrameObserver (observer: IVideoFrameObserver): string {
-    return 'MediaEngine_registerVideoFrameObserver'
+  protected getApiTypeFromRegisterVideoFrameObserver(
+    observer: IVideoFrameObserver
+  ): string {
+    return 'MediaEngine_registerVideoFrameObserver';
   }
 
-  registerVideoEncodedFrameObserver (observer: IVideoEncodedFrameObserver): number {
-    const apiType = this.getApiTypeFromRegisterVideoEncodedFrameObserver(observer)
+  registerVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): number {
+    const apiType =
+      this.getApiTypeFromRegisterVideoEncodedFrameObserver(observer);
     const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromRegisterVideoEncodedFrameObserver (observer: IVideoEncodedFrameObserver): string {
-    return 'MediaEngine_registerVideoEncodedFrameObserver'
+  protected getApiTypeFromRegisterVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): string {
+    return 'MediaEngine_registerVideoEncodedFrameObserver';
   }
 
-  pushAudioFrame (type: MediaSourceType, frame: AudioFrame, wrap = false, sourceId = 0): number {
-    const apiType = this.getApiTypeFromPushAudioFrame(type, frame, wrap, sourceId)
-    const jsonParams = {
+  pushAudioFrame(
+    type: MediaSourceType,
+    frame: AudioFrame,
+    wrap = false,
+    sourceId = 0
+  ): number {
+    const apiType = this.getApiTypeFromPushAudioFrame(
       type,
       frame,
       wrap,
-      sourceId,
+      sourceId
+    );
+    const jsonParams = {
+      type: type,
+      frame: frame,
+      wrap: wrap,
+      sourceId: sourceId,
       toJSON: () => {
         return {
-          type,
-          frame,
-          wrap,
-          sourceId
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          type: type,
+          frame: frame,
+          wrap: wrap,
+          sourceId: sourceId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushAudioFrame (type: MediaSourceType, frame: AudioFrame, wrap = false, sourceId = 0): string {
-    return 'MediaEngine_pushAudioFrame'
+  protected getApiTypeFromPushAudioFrame(
+    type: MediaSourceType,
+    frame: AudioFrame,
+    wrap = false,
+    sourceId = 0
+  ): string {
+    return 'MediaEngine_pushAudioFrame';
   }
 
-  pushCaptureAudioFrame (frame: AudioFrame): number {
-    const apiType = this.getApiTypeFromPushCaptureAudioFrame(frame)
+  pushCaptureAudioFrame(frame: AudioFrame): number {
+    const apiType = this.getApiTypeFromPushCaptureAudioFrame(frame);
     const jsonParams = {
-      frame,
+      frame: frame,
       toJSON: () => {
         return {
-          frame
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          frame: frame,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushCaptureAudioFrame (frame: AudioFrame): string {
-    return 'MediaEngine_pushCaptureAudioFrame'
+  protected getApiTypeFromPushCaptureAudioFrame(frame: AudioFrame): string {
+    return 'MediaEngine_pushCaptureAudioFrame';
   }
 
-  pushReverseAudioFrame (frame: AudioFrame): number {
-    const apiType = this.getApiTypeFromPushReverseAudioFrame(frame)
+  pushReverseAudioFrame(frame: AudioFrame): number {
+    const apiType = this.getApiTypeFromPushReverseAudioFrame(frame);
     const jsonParams = {
-      frame,
+      frame: frame,
       toJSON: () => {
         return {
-          frame
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          frame: frame,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushReverseAudioFrame (frame: AudioFrame): string {
-    return 'MediaEngine_pushReverseAudioFrame'
+  protected getApiTypeFromPushReverseAudioFrame(frame: AudioFrame): string {
+    return 'MediaEngine_pushReverseAudioFrame';
   }
 
-  pushDirectAudioFrame (frame: AudioFrame): number {
-    const apiType = this.getApiTypeFromPushDirectAudioFrame(frame)
+  pushDirectAudioFrame(frame: AudioFrame): number {
+    const apiType = this.getApiTypeFromPushDirectAudioFrame(frame);
     const jsonParams = {
-      frame,
+      frame: frame,
       toJSON: () => {
         return {
-          frame
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          frame: frame,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushDirectAudioFrame (frame: AudioFrame): string {
-    return 'MediaEngine_pushDirectAudioFrame'
+  protected getApiTypeFromPushDirectAudioFrame(frame: AudioFrame): string {
+    return 'MediaEngine_pushDirectAudioFrame';
   }
 
-  pullAudioFrame (): AudioFrame {
-    const apiType = this.getApiTypeFromPullAudioFrame()
-    const jsonParams = {
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const frame = jsonResults.frame
-    return frame
+  pullAudioFrame(): AudioFrame {
+    const apiType = this.getApiTypeFromPullAudioFrame();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const frame = jsonResults.frame;
+    return frame;
   }
 
-  protected getApiTypeFromPullAudioFrame (): string {
-    return 'MediaEngine_pullAudioFrame'
+  protected getApiTypeFromPullAudioFrame(): string {
+    return 'MediaEngine_pullAudioFrame';
   }
 
-  setExternalVideoSource (enabled: boolean, useTexture: boolean, sourceType: ExternalVideoSourceType = ExternalVideoSourceType.VideoFrame, encodedVideoOption: SenderOptions = new SenderOptions()): number {
-    const apiType = this.getApiTypeFromSetExternalVideoSource(enabled, useTexture, sourceType, encodedVideoOption)
-    const jsonParams = {
+  setExternalVideoSource(
+    enabled: boolean,
+    useTexture: boolean,
+    sourceType: ExternalVideoSourceType = ExternalVideoSourceType.VideoFrame,
+    encodedVideoOption: SenderOptions = new SenderOptions()
+  ): number {
+    const apiType = this.getApiTypeFromSetExternalVideoSource(
       enabled,
       useTexture,
       sourceType,
-      encodedVideoOption,
+      encodedVideoOption
+    );
+    const jsonParams = {
+      enabled: enabled,
+      useTexture: useTexture,
+      sourceType: sourceType,
+      encodedVideoOption: encodedVideoOption,
       toJSON: () => {
         return {
-          enabled,
-          useTexture,
-          sourceType,
-          encodedVideoOption
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          enabled: enabled,
+          useTexture: useTexture,
+          sourceType: sourceType,
+          encodedVideoOption: encodedVideoOption,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromSetExternalVideoSource (enabled: boolean, useTexture: boolean, sourceType: ExternalVideoSourceType = ExternalVideoSourceType.VideoFrame, encodedVideoOption: SenderOptions = new SenderOptions()): string {
-    return 'MediaEngine_setExternalVideoSource'
+  protected getApiTypeFromSetExternalVideoSource(
+    enabled: boolean,
+    useTexture: boolean,
+    sourceType: ExternalVideoSourceType = ExternalVideoSourceType.VideoFrame,
+    encodedVideoOption: SenderOptions = new SenderOptions()
+  ): string {
+    return 'MediaEngine_setExternalVideoSource';
   }
 
-  setExternalAudioSource (enabled: boolean, sampleRate: number, channels: number, sourceNumber = 1, localPlayback = false, publish = true): number {
-    const apiType = this.getApiTypeFromSetExternalAudioSource(enabled, sampleRate, channels, sourceNumber, localPlayback, publish)
-    const jsonParams = {
+  setExternalAudioSource(
+    enabled: boolean,
+    sampleRate: number,
+    channels: number,
+    sourceNumber = 1,
+    localPlayback = false,
+    publish = true
+  ): number {
+    const apiType = this.getApiTypeFromSetExternalAudioSource(
       enabled,
       sampleRate,
       channels,
       sourceNumber,
       localPlayback,
-      publish,
+      publish
+    );
+    const jsonParams = {
+      enabled: enabled,
+      sampleRate: sampleRate,
+      channels: channels,
+      sourceNumber: sourceNumber,
+      localPlayback: localPlayback,
+      publish: publish,
       toJSON: () => {
         return {
-          enabled,
-          sampleRate,
-          channels,
-          sourceNumber,
-          localPlayback,
-          publish
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          enabled: enabled,
+          sampleRate: sampleRate,
+          channels: channels,
+          sourceNumber: sourceNumber,
+          localPlayback: localPlayback,
+          publish: publish,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromSetExternalAudioSource (enabled: boolean, sampleRate: number, channels: number, sourceNumber = 1, localPlayback = false, publish = true): string {
-    return 'MediaEngine_setExternalAudioSource'
+  protected getApiTypeFromSetExternalAudioSource(
+    enabled: boolean,
+    sampleRate: number,
+    channels: number,
+    sourceNumber = 1,
+    localPlayback = false,
+    publish = true
+  ): string {
+    return 'MediaEngine_setExternalAudioSource';
   }
 
-  setExternalAudioSink (enabled: boolean, sampleRate: number, channels: number): number {
-    const apiType = this.getApiTypeFromSetExternalAudioSink(enabled, sampleRate, channels)
-    const jsonParams = {
+  setExternalAudioSink(
+    enabled: boolean,
+    sampleRate: number,
+    channels: number
+  ): number {
+    const apiType = this.getApiTypeFromSetExternalAudioSink(
       enabled,
       sampleRate,
-      channels,
+      channels
+    );
+    const jsonParams = {
+      enabled: enabled,
+      sampleRate: sampleRate,
+      channels: channels,
       toJSON: () => {
         return {
-          enabled,
-          sampleRate,
-          channels
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          enabled: enabled,
+          sampleRate: sampleRate,
+          channels: channels,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromSetExternalAudioSink (enabled: boolean, sampleRate: number, channels: number): string {
-    return 'MediaEngine_setExternalAudioSink'
+  protected getApiTypeFromSetExternalAudioSink(
+    enabled: boolean,
+    sampleRate: number,
+    channels: number
+  ): string {
+    return 'MediaEngine_setExternalAudioSink';
   }
 
-  enableCustomAudioLocalPlayback (sourceId: number, enabled: boolean): number {
-    const apiType = this.getApiTypeFromEnableCustomAudioLocalPlayback(sourceId, enabled)
-    const jsonParams = {
+  enableCustomAudioLocalPlayback(sourceId: number, enabled: boolean): number {
+    const apiType = this.getApiTypeFromEnableCustomAudioLocalPlayback(
       sourceId,
-      enabled,
+      enabled
+    );
+    const jsonParams = {
+      sourceId: sourceId,
+      enabled: enabled,
       toJSON: () => {
         return {
-          sourceId,
-          enabled
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          sourceId: sourceId,
+          enabled: enabled,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromEnableCustomAudioLocalPlayback (sourceId: number, enabled: boolean): string {
-    return 'MediaEngine_enableCustomAudioLocalPlayback'
+  protected getApiTypeFromEnableCustomAudioLocalPlayback(
+    sourceId: number,
+    enabled: boolean
+  ): string {
+    return 'MediaEngine_enableCustomAudioLocalPlayback';
   }
 
-  setDirectExternalAudioSource (enable: boolean, localPlayback = false): number {
-    const apiType = this.getApiTypeFromSetDirectExternalAudioSource(enable, localPlayback)
-    const jsonParams = {
+  setDirectExternalAudioSource(enable: boolean, localPlayback = false): number {
+    const apiType = this.getApiTypeFromSetDirectExternalAudioSource(
       enable,
-      localPlayback,
+      localPlayback
+    );
+    const jsonParams = {
+      enable: enable,
+      localPlayback: localPlayback,
       toJSON: () => {
         return {
-          enable,
-          localPlayback
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          enable: enable,
+          localPlayback: localPlayback,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromSetDirectExternalAudioSource (enable: boolean, localPlayback = false): string {
-    return 'MediaEngine_setDirectExternalAudioSource'
+  protected getApiTypeFromSetDirectExternalAudioSource(
+    enable: boolean,
+    localPlayback = false
+  ): string {
+    return 'MediaEngine_setDirectExternalAudioSource';
   }
 
-  pushVideoFrame (frame: ExternalVideoFrame, videoTrackId = 0): number {
-    const apiType = this.getApiTypeFromPushVideoFrame(frame, videoTrackId)
+  pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0): number {
+    const apiType = this.getApiTypeFromPushVideoFrame(frame, videoTrackId);
     const jsonParams = {
-      frame,
-      videoTrackId,
+      frame: frame,
+      videoTrackId: videoTrackId,
       toJSON: () => {
         return {
-          frame,
-          videoTrackId
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          frame: frame,
+          videoTrackId: videoTrackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushVideoFrame (frame: ExternalVideoFrame, videoTrackId = 0): string {
-    return 'MediaEngine_pushVideoFrame'
+  protected getApiTypeFromPushVideoFrame(
+    frame: ExternalVideoFrame,
+    videoTrackId = 0
+  ): string {
+    return 'MediaEngine_pushVideoFrame';
   }
 
-  pushEncodedVideoImage (imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, videoTrackId = 0): number {
-    const apiType = this.getApiTypeFromPushEncodedVideoImage(imageBuffer, length, videoEncodedFrameInfo, videoTrackId)
-    const jsonParams = {
+  pushEncodedVideoImage(
+    imageBuffer: Uint8Array,
+    length: number,
+    videoEncodedFrameInfo: EncodedVideoFrameInfo,
+    videoTrackId = 0
+  ): number {
+    const apiType = this.getApiTypeFromPushEncodedVideoImage(
       imageBuffer,
       length,
       videoEncodedFrameInfo,
-      videoTrackId,
+      videoTrackId
+    );
+    const jsonParams = {
+      imageBuffer: imageBuffer,
+      length: length,
+      videoEncodedFrameInfo: videoEncodedFrameInfo,
+      videoTrackId: videoTrackId,
       toJSON: () => {
         return {
-          length,
-          videoEncodedFrameInfo,
-          videoTrackId
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+          length: length,
+          videoEncodedFrameInfo: videoEncodedFrameInfo,
+          videoTrackId: videoTrackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromPushEncodedVideoImage (imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, videoTrackId = 0): string {
-    return 'MediaEngine_pushEncodedVideoImage'
+  protected getApiTypeFromPushEncodedVideoImage(
+    imageBuffer: Uint8Array,
+    length: number,
+    videoEncodedFrameInfo: EncodedVideoFrameInfo,
+    videoTrackId = 0
+  ): string {
+    return 'MediaEngine_pushEncodedVideoImage';
   }
 
-  release (): void {
-    const apiType = this.getApiTypeFromRelease()
+  release(): void {
+    const apiType = this.getApiTypeFromRelease();
+    const jsonParams = {};
+    callIrisApi.call(this, apiType, jsonParams);
+  }
+
+  protected getApiTypeFromRelease(): string {
+    return 'MediaEngine_release';
+  }
+
+  unregisterAudioFrameObserver(observer: IAudioFrameObserver): number {
+    const apiType = this.getApiTypeFromUnregisterAudioFrameObserver(observer);
     const jsonParams = {
-    }
-    callIrisApi.call(this, apiType, jsonParams)
-  }
-
-  protected getApiTypeFromRelease (): string {
-    return 'MediaEngine_release'
-  }
-
-  unregisterAudioFrameObserver (observer: IAudioFrameObserver): number {
-    const apiType = this.getApiTypeFromUnregisterAudioFrameObserver(observer)
-    const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromUnregisterAudioFrameObserver (observer: IAudioFrameObserver): string {
-    return 'MediaEngine_unregisterAudioFrameObserver'
+  protected getApiTypeFromUnregisterAudioFrameObserver(
+    observer: IAudioFrameObserver
+  ): string {
+    return 'MediaEngine_unregisterAudioFrameObserver';
   }
 
-  unregisterVideoFrameObserver (observer: IVideoFrameObserver): number {
-    const apiType = this.getApiTypeFromUnregisterVideoFrameObserver(observer)
+  unregisterVideoFrameObserver(observer: IVideoFrameObserver): number {
+    const apiType = this.getApiTypeFromUnregisterVideoFrameObserver(observer);
     const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromUnregisterVideoFrameObserver (observer: IVideoFrameObserver): string {
-    return 'MediaEngine_unregisterVideoFrameObserver'
+  protected getApiTypeFromUnregisterVideoFrameObserver(
+    observer: IVideoFrameObserver
+  ): string {
+    return 'MediaEngine_unregisterVideoFrameObserver';
   }
 
-  unregisterVideoEncodedFrameObserver (observer: IVideoEncodedFrameObserver): number {
-    const apiType = this.getApiTypeFromUnregisterVideoEncodedFrameObserver(observer)
+  unregisterVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): number {
+    const apiType =
+      this.getApiTypeFromUnregisterVideoEncodedFrameObserver(observer);
     const jsonParams = {
-      observer,
+      observer: observer,
       toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromUnregisterVideoEncodedFrameObserver (observer: IVideoEncodedFrameObserver): string {
-    return 'MediaEngine_unregisterVideoEncodedFrameObserver'
+  protected getApiTypeFromUnregisterVideoEncodedFrameObserver(
+    observer: IVideoEncodedFrameObserver
+  ): string {
+    return 'MediaEngine_unregisterVideoEncodedFrameObserver';
   }
 }

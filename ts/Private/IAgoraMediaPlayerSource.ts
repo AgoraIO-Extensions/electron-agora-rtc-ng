@@ -1,10 +1,17 @@
-import { MediaPlayerState, MediaPlayerError, MediaPlayerEvent, PlayerPreloadEvent, SrcInfo, PlayerUpdatedInfo } from './AgoraMediaPlayerTypes'
+import {
+  MediaPlayerState,
+  MediaPlayerError,
+  MediaPlayerEvent,
+  PlayerPreloadEvent,
+  SrcInfo,
+  PlayerUpdatedInfo,
+} from './AgoraMediaPlayerTypes';
 
-/*
+/**
  * Provides callbacks for media players.
  */
 export abstract class IMediaPlayerSourceObserver {
-  /*
+  /**
    * Reports the playback state change.
    * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
    *
@@ -12,9 +19,12 @@ export abstract class IMediaPlayerSourceObserver {
    *
    * @param ec The error code. See MediaPlayerError .
    */
-  onPlayerSourceStateChanged?(state: MediaPlayerState, ec: MediaPlayerError): void;
+  onPlayerSourceStateChanged?(
+    state: MediaPlayerState,
+    ec: MediaPlayerError
+  ): void;
 
-  /*
+  /**
    * Reports the current playback progress.
    * When playing media files, the SDK triggers this callback every one second to report current playback progress.
    *
@@ -22,7 +32,7 @@ export abstract class IMediaPlayerSourceObserver {
    */
   onPositionChanged?(positionMs: number): void;
 
-  /*
+  /**
    * Reports the playback event.
    * After calling the seek method, the SDK triggers the callback to report the results of the seek operation.
    *
@@ -32,9 +42,13 @@ export abstract class IMediaPlayerSourceObserver {
    *
    * @param message Information about the event.
    */
-  onPlayerEvent?(eventCode: MediaPlayerEvent, elapsedTime: number, message: string): void;
+  onPlayerEvent?(
+    eventCode: MediaPlayerEvent,
+    elapsedTime: number,
+    message: string
+  ): void;
 
-  /*
+  /**
    * Occurs when the media metadata is received.
    * The callback occurs when the player receives the media metadata and reports the detailed information of the media metadata.
    *
@@ -44,37 +58,37 @@ export abstract class IMediaPlayerSourceObserver {
    */
   onMetaData?(data: Uint8Array, length: number): void;
 
-  /*
+  /**
    * @ignore
    */
   onPlayBufferUpdated?(playCachedBuffer: number): void;
 
-  /*
+  /**
    * @ignore
    */
   onPreloadEvent?(src: string, event: PlayerPreloadEvent): void;
 
-  /*
+  /**
    * @ignore
    */
   onCompleted?(): void;
 
-  /*
+  /**
    * @ignore
    */
   onAgoraCDNTokenWillExpire?(): void;
 
-  /*
+  /**
    * @ignore
    */
   onPlayerSrcInfoChanged?(from: SrcInfo, to: SrcInfo): void;
 
-  /*
+  /**
    * @ignore
    */
   onPlayerInfoUpdated?(info: PlayerUpdatedInfo): void;
 
-  /*
+  /**
    * @ignore
    */
   onAudioVolumeIndication?(volume: number): void;

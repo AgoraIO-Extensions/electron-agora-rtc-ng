@@ -1,10 +1,10 @@
-﻿import { AudioDeviceInfo } from "../IAgoraRtcEngine";
-import { IAudioDeviceManagerImpl } from "../impl/IAudioDeviceManagerImpl";
-import { callIrisApi } from "./IrisApiEngine";
+﻿import { AudioDeviceInfo } from '../IAgoraRtcEngine';
+import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
+import { callIrisApi } from './IrisApiEngine';
 
 export class AudioDeviceManagerImplInternal extends IAudioDeviceManagerImpl {
   override getPlaybackDeviceInfo(): AudioDeviceInfo {
-    const apiType = "AudioDeviceManager_getPlaybackDeviceInfo";
+    const apiType = 'AudioDeviceManager_getPlaybackDeviceInfo';
     const jsonParams = {};
     const jsonResults = callIrisApi(apiType, jsonParams);
     if (jsonResults.result === 0) {
@@ -14,7 +14,7 @@ export class AudioDeviceManagerImplInternal extends IAudioDeviceManagerImpl {
   }
 
   override getRecordingDeviceInfo(): AudioDeviceInfo {
-    const apiType = "AudioDeviceManager_getRecordingDeviceInfo";
+    const apiType = 'AudioDeviceManager_getRecordingDeviceInfo';
     const jsonParams = {};
     const jsonResults = callIrisApi(apiType, jsonParams);
     if (jsonResults.result === 0) {

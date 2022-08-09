@@ -1,9 +1,9 @@
-import { AgoraElectronBridge, Result } from "../../Types";
-import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
-import { AudioFrame, VideoFrame } from "../AgoraMediaBase";
-import { IMediaPlayer } from "../IAgoraMediaPlayer";
-import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
-import { processIAudioEncodedFrameObserver } from "../impl/AgoraBaseImpl";
+import { AgoraElectronBridge, Result } from '../../Types';
+import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from '../../Utils';
+import { AudioFrame, VideoFrame } from '../AgoraMediaBase';
+import { IMediaPlayer } from '../IAgoraMediaPlayer';
+import { IDirectCdnStreamingEventHandler } from '../IAgoraRtcEngine';
+import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
   processIAudioFrameObserverBase,
@@ -11,22 +11,22 @@ import {
   processIMediaRecorderObserver,
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
-} from "../impl/AgoraMediaBaseImpl";
+} from '../impl/AgoraMediaBaseImpl';
 import {
   processIMediaPlayerAudioFrameObserver,
   processIMediaPlayerVideoFrameObserver,
-} from "../impl/IAgoraMediaPlayerImpl";
-import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
+} from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
   processIRtcEngineEventHandler,
-} from "../impl/IAgoraRtcEngineImpl";
-const agora = require("../../../build/Release/agora_node_ext");
+} from '../impl/IAgoraRtcEngineImpl';
+const agora = require('../../../build/Release/agora_node_ext');
 
-const MetadataSplitString = "MetadataObserver_";
-const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
-const MediaRecorderSplitString = "MediaRecorder_";
+const MetadataSplitString = 'MetadataObserver_';
+const MediaPlayerSplitString = 'MediaPlayerSourceObserver_';
+const MediaRecorderSplitString = 'MediaRecorder_';
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -45,21 +45,21 @@ export const handlerRTCEvent = function (
   bufferLength: number[],
   bufferCount: number
 ) {
-  const parseData = "onApiError" === event ? data : parseJSON(data);
+  const parseData = 'onApiError' === event ? data : parseJSON(data);
   logDebug(
-    "event",
+    'event',
     event,
-    "data",
+    'data',
     parseData,
-    "buffer",
+    'buffer',
     buffer,
-    "bufferLength",
+    'bufferLength',
     bufferLength,
-    "bufferCount",
+    'bufferCount',
     bufferCount
   );
-  const isMetadata = event.startsWith("MetadataObserver_");
-  const isMediaRecorder = event.startsWith("MediaRecorderObserver_");
+  const isMetadata = event.startsWith('MetadataObserver_');
+  const isMediaRecorder = event.startsWith('MediaRecorderObserver_');
 
   const isRtcEngine = !isMetadata && !isMediaRecorder;
 
@@ -70,12 +70,12 @@ export const handlerRTCEvent = function (
       if (!value) {
         return;
       }
-      if (event.endsWith("Ex")) {
-        event = event.replace("Ex", "");
+      if (event.endsWith('Ex')) {
+        event = event.replace('Ex', '');
       }
 
-      if (event.startsWith("DirectCdnStreamingEventHandler_")) {
-        event = event.replace("DirectCdnStreamingEventHandler_", "");
+      if (event.startsWith('DirectCdnStreamingEventHandler_')) {
+        event = event.replace('DirectCdnStreamingEventHandler_', '');
         try {
           processIDirectCdnStreamingEventHandler(
             value as IDirectCdnStreamingEventHandler,
@@ -84,7 +84,7 @@ export const handlerRTCEvent = function (
           );
         } catch (error) {
           logError(
-            "rtcEventHandlers::processIDirectCdnStreamingEventHandler",
+            'rtcEventHandlers::processIDirectCdnStreamingEventHandler',
             error
           );
         }
@@ -94,13 +94,13 @@ export const handlerRTCEvent = function (
       try {
         processIRtcEngineEventHandler(value, event, parseData);
       } catch (error) {
-        logError("rtcEventHandlers::processIRtcEngineEventHandler", error);
+        logError('rtcEventHandlers::processIRtcEngineEventHandler', error);
       }
     });
   }
 
   if (isMediaRecorder) {
-    event = event.replace(MediaRecorderSplitString, "");
+    event = event.replace(MediaRecorderSplitString, '');
     let key = parseData.connection.channelId + parseData.connection.localUid;
     AgoraEnv.mediaRecorderObservers.forEach((value) => {
       if (value.key === key) {
@@ -110,7 +110,7 @@ export const handlerRTCEvent = function (
   }
 
   if (isMetadata) {
-    event = event.replace(MetadataSplitString, "");
+    event = event.replace(MetadataSplitString, '');
     AgoraEnv.metadataObservers.forEach((value) => {
       processIMetadataObserver(value, event, parseData);
     });
@@ -126,20 +126,20 @@ export const handlerMPKEvent = function (
 ) {
   const obj = parseJSON(data);
   logDebug(
-    "event",
+    'event',
     event,
-    "data",
+    'data',
     obj,
-    "buffer",
+    'buffer',
     buffer,
-    "bufferLength",
+    'bufferLength',
     bufferLength,
-    "bufferCount",
+    'bufferCount',
     bufferCount
   );
 
   let splitStr = event.split(MediaPlayerSplitString);
-  logDebug("agora  ", splitStr);
+  logDebug('agora  ', splitStr);
   AgoraEnv.mpkEventHandlers.forEach((value) => {
     if (!value) {
       return;
@@ -148,7 +148,7 @@ export const handlerMPKEvent = function (
       try {
         processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
       } catch (error) {
-        logError("mpkEventHandlers::processIMediaPlayerSourceObserver");
+        logError('mpkEventHandlers::processIMediaPlayerSourceObserver');
       }
     }
   });
@@ -161,11 +161,11 @@ export const handlerObserverEvent = function (
   bufferLength: number[],
   bufferCount: number
 ) {
-  if (data == "") return;
+  if (data == '') return;
 
   let object = parseJSON(data);
-  if (event.startsWith("AudioFrameObserver_")) {
-    event = event.replace("AudioFrameObserver_", "");
+  if (event.startsWith('AudioFrameObserver_')) {
+    event = event.replace('AudioFrameObserver_', '');
     if (object.audioFrame) {
       (object.audioFrame as AudioFrame).buffer = buffer[0];
     }
@@ -173,8 +173,8 @@ export const handlerObserverEvent = function (
       processIAudioFrameObserver(value, event, object);
       processIAudioFrameObserverBase(value, event, object);
     });
-  } else if (event.startsWith("VideoFrameObserver_")) {
-    event = event.replace("VideoFrameObserver_", "");
+  } else if (event.startsWith('VideoFrameObserver_')) {
+    event = event.replace('VideoFrameObserver_', '');
     if (object.videoFrame) {
       (object.videoFrame as VideoFrame).yBuffer = buffer[0];
       (object.videoFrame as VideoFrame).uBuffer = buffer[1];
@@ -184,39 +184,39 @@ export const handlerObserverEvent = function (
       processIVideoFrameObserver(value, event, object);
     });
   } else if (
-    event.indexOf("RtcEngine") != -1 &&
-    event.indexOf("AudioSpectrumObserver_") != -1
+    event.indexOf('RtcEngine') != -1 &&
+    event.indexOf('AudioSpectrumObserver_') != -1
   ) {
-    event = event.replace("RtcEngine_AudioSpectrumObserver_", "");
+    event = event.replace('RtcEngine_AudioSpectrumObserver_', '');
     AgoraEnv.rtcAudioSpectrumObservers.forEach((value) => {
       processIAudioSpectrumObserver(value, event, object);
     });
-  } else if (event.startsWith("AudioEncodedFrameObserver_")) {
-    event = event.replace("AudioEncodedFrameObserver_", "");
+  } else if (event.startsWith('AudioEncodedFrameObserver_')) {
+    event = event.replace('AudioEncodedFrameObserver_', '');
     object.frameBuffer = buffer[0];
     AgoraEnv.rtcAudioEncodedFrameObservers.forEach((value) => {
       processIAudioEncodedFrameObserver(value, event, object);
     });
-  } else if (event.startsWith("VideoEncodedFrameObserver_")) {
-    event = event.replace("VideoEncodedFrameObserver_", "");
+  } else if (event.startsWith('VideoEncodedFrameObserver_')) {
+    event = event.replace('VideoEncodedFrameObserver_', '');
     object.imageBuffer = buffer[0];
     object.length = buffer[0].length;
     AgoraEnv.rtcVideoEncodedFrameObservers.forEach((value) => {
       processIVideoEncodedFrameObserver(value, event, object);
     });
   } else if (
-    event.indexOf("MediaPlayer") != -1 &&
-    event.indexOf("AudioSpectrumObserver_") != -1
+    event.indexOf('MediaPlayer') != -1 &&
+    event.indexOf('AudioSpectrumObserver_') != -1
   ) {
-    event = event.replace("MediaPlayer_AudioSpectrumObserver_", "");
+    event = event.replace('MediaPlayer_AudioSpectrumObserver_', '');
     AgoraEnv.mpkAudioSpectrumObservers.forEach((value) => {
       processIAudioSpectrumObserver(value.handler, event, object);
     });
   } else if (
-    event.indexOf("MediaPlayer") != -1 &&
-    event.indexOf("VideoFrameObserver_") != -1
+    event.indexOf('MediaPlayer') != -1 &&
+    event.indexOf('VideoFrameObserver_') != -1
   ) {
-    event = event.replace("MediaPlayer_VideoFrameObserver_", "");
+    event = event.replace('MediaPlayer_VideoFrameObserver_', '');
     if (object.videoFrame) {
       (object.videoFrame as VideoFrame).yBuffer = buffer[0];
       (object.videoFrame as VideoFrame).uBuffer = buffer[1];
@@ -287,12 +287,12 @@ export const sendMsg = (
     bufferCount
   );
   logDebug(
-    "sendMsg",
-    "funcName",
+    'sendMsg',
+    'funcName',
     funcName,
-    "params",
+    'params',
     params,
-    "irisReturnValue",
+    'irisReturnValue',
     irisReturnValue
   );
 
@@ -313,7 +313,7 @@ export function callIrisApi(
   buffer?: (Uint8Array | undefined)[],
   bufferCount: number = 0
 ): any {
-  const isMediaPlayer = funcName.startsWith("MediaPlayer_");
+  const isMediaPlayer = funcName.startsWith('MediaPlayer_');
   if (isMediaPlayer) {
     //@ts-ignore
     params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
@@ -333,11 +333,11 @@ function preProcessEvent(
   bufferCount: number
 ): any {
   switch (event) {
-    case "onStreamMessage":
-    case "onStreamMessageEx":
+    case 'onStreamMessage':
+    case 'onStreamMessageEx':
       data.data = buffer[0];
       break;
-    case "MetadataObserver_onMetadataReceived":
+    case 'MetadataObserver_onMetadataReceived':
       data.metadata.buffer = buffer[0];
       break;
   }

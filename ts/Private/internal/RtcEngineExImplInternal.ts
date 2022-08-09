@@ -1,5 +1,5 @@
-﻿import { CallBackModule, Channel } from "../../Types";
-import { AgoraEnv, logDebug, logError, logWarn } from "../../Utils";
+﻿import { CallBackModule, Channel } from '../../Types';
+import { AgoraEnv, logDebug, logError, logWarn } from '../../Utils';
 import {
   AudioRecordingConfiguration,
   ClientRoleOptions,
@@ -11,11 +11,11 @@ import {
   VideoMirrorModeType,
   VideoSourceType,
   WatermarkOptions,
-} from "../AgoraBase";
-import { IAudioSpectrumObserver } from "../AgoraMediaBase";
-import { IMediaEngine } from "../IAgoraMediaEngine";
-import { IMediaPlayer } from "../IAgoraMediaPlayer";
-import { IMediaRecorder } from "../IAgoraMediaRecorder";
+} from '../AgoraBase';
+import { IAudioSpectrumObserver } from '../AgoraMediaBase';
+import { IMediaEngine } from '../IAgoraMediaEngine';
+import { IMediaPlayer } from '../IAgoraMediaPlayer';
+import { IMediaRecorder } from '../IAgoraMediaRecorder';
 import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
@@ -29,22 +29,22 @@ import {
   RtcEngineContext,
   SDKBuildInfo,
   Size,
-} from "../IAgoraRtcEngine";
-import { RtcConnection } from "../IAgoraRtcEngineEx";
-import { IAudioDeviceManager } from "../IAudioDeviceManager";
-import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
-import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
-import { AudioDeviceManagerImplInternal } from "./AudioDeviceManagerImplInternal";
+} from '../IAgoraRtcEngine';
+import { RtcConnection } from '../IAgoraRtcEngineEx';
+import { IAudioDeviceManager } from '../IAudioDeviceManager';
+import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
+import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';
+import { AudioDeviceManagerImplInternal } from './AudioDeviceManagerImplInternal';
 import {
   callIrisApi,
   getBridge,
   handlerMPKEvent,
   handlerObserverEvent,
   handlerRTCEvent,
-} from "./IrisApiEngine";
-import { MediaEngineImplInternal } from "./MediaEngineImplInternal";
-import { MediaPlayerInternal } from "./MediaPlayerInternal";
-import { MediaRecorderInternal } from "./MediaRecorderImplInternal";
+} from './IrisApiEngine';
+import { MediaEngineImplInternal } from './MediaEngineImplInternal';
+import { MediaPlayerInternal } from './MediaPlayerInternal';
+import { MediaRecorderInternal } from './MediaRecorderImplInternal';
 
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   private eventKey: string;
@@ -52,16 +52,16 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   constructor() {
     super();
     if (AgoraEnv.isInitializeEngine) {
-      logError("initialize: already initialize rtcEngine");
+      logError('initialize: already initialize rtcEngine');
     }
 
-    logDebug("AgoraRtcEngine constructor()");
-    this.eventKey = "call_back_with_buffer";
+    logDebug('AgoraRtcEngine constructor()');
+    this.eventKey = 'call_back_with_buffer';
   }
 
   override initialize(context: RtcEngineContext): number {
     if (AgoraEnv.isInitializeEngine) {
-      logWarn("initialize: already initialize rtcEngine");
+      logWarn('initialize: already initialize rtcEngine');
       return -1;
     }
     AgoraEnv.isInitializeEngine = true;
@@ -76,7 +76,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     );
     AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
-    callIrisApi("RtcEngine_setAppType", {
+    callIrisApi('RtcEngine_setAppType', {
       appType: 3,
     });
     return ret;
@@ -84,7 +84,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
 
   override release(sync = false): void {
     if (!AgoraEnv.isInitializeEngine) {
-      logWarn("release: rtcEngine have not initialize");
+      logWarn('release: rtcEngine have not initialize');
       return;
     }
     AgoraEnv.AgoraRendererManager?.enableRender(false);
@@ -94,7 +94,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override getVersion(): SDKBuildInfo {
-    const apiType = "RtcEngine_getVersion";
+    const apiType = 'RtcEngine_getVersion';
     const jsonParams = {};
     const jsonResults = callIrisApi(apiType, jsonParams);
     return {
@@ -105,7 +105,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
 
   override createMediaPlayer(): IMediaPlayer {
     if (!AgoraEnv.isInitializeEngine) {
-      logError("createMediaPlayer: rtcEngine have not initialize");
+      logError('createMediaPlayer: rtcEngine have not initialize');
     }
     // @ts-ignore
     const mediaPlayerId = super.createMediaPlayer() as number;
@@ -113,7 +113,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override destroyMediaPlayer(mediaPlayer: IMediaPlayer): number {
-    const apiType = "RtcEngine_destroyMediaPlayer";
+    const apiType = 'RtcEngine_destroyMediaPlayer';
     const jsonParams = {
       playerId: mediaPlayer.getMediaPlayerId(),
     };
@@ -128,7 +128,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
     AgoraEnv.AgoraRendererManager?.setupLocalVideo({
       videoSourceType: sourceType,
-      channelId: "",
+      channelId: '',
       uid,
       view,
       rendererOptions: {
@@ -143,7 +143,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
     AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
       videoSourceType: sourceType,
-      channelId: "",
+      channelId: '',
       uid,
       view,
       rendererOptions: {
@@ -178,7 +178,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     data: Uint8Array,
     length: number
   ): number {
-    const apiType = "RtcEngine_sendStreamMessage";
+    const apiType = 'RtcEngine_sendStreamMessage';
     const jsonParams = {
       streamId,
       length,
@@ -228,7 +228,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     iconSize: Size,
     includeScreen: boolean
   ): any[] {
-    const apiType = "RtcEngine_getScreenCaptureSources";
+    const apiType = 'RtcEngine_getScreenCaptureSources';
     const jsonParams = {
       thumbSize,
       iconSize,
@@ -263,11 +263,11 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       }
     });
 
-    logDebug("getScreenCaptureSource ===== ", jsonResults.result);
+    logDebug('getScreenCaptureSource ===== ', jsonResults.result);
     return jsonResults.result;
   }
 
-  override destroyRendererByView(view: Element): void {
+  override destroyRendererByView(view: any): void {
     AgoraEnv.AgoraRendererManager?.destroyRendererByView(view);
   }
 
@@ -303,7 +303,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     metadata: Metadata,
     sourceType: VideoSourceType
   ): number {
-    const apiType = "RtcEngine_sendMetaData";
+    const apiType = 'RtcEngine_sendMetaData';
     const jsonParams = {
       metadata,
       source_type: sourceType,
@@ -337,7 +337,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     uid: number,
     options: ChannelMediaOptions
   ): number {
-    const apiType = "RtcEngine_joinChannel2";
+    const apiType = 'RtcEngine_joinChannel2';
     const jsonParams = {
       token,
       channelId,
@@ -359,8 +359,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   leaveChannel(options?: LeaveChannelOptions): number {
     const apiType =
       options === undefined
-        ? "RtcEngine_leaveChannel"
-        : "RtcEngine_leaveChannel2";
+        ? 'RtcEngine_leaveChannel'
+        : 'RtcEngine_leaveChannel2';
     const jsonParams = {
       options,
       toJSON: () => {
@@ -374,8 +374,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   setClientRole(role: ClientRoleType, options?: ClientRoleOptions): number {
     const apiType =
       options === undefined
-        ? "RtcEngine_setClientRole"
-        : "RtcEngine_setClientRole2";
+        ? 'RtcEngine_setClientRole'
+        : 'RtcEngine_setClientRole2';
     const jsonParams = {
       role,
       options,
@@ -391,7 +391,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   startEchoTest(intervalInSeconds: number = 10): number {
-    const apiType = "RtcEngine_startEchoTest2";
+    const apiType = 'RtcEngine_startEchoTest2';
     const jsonParams = {
       intervalInSeconds,
       toJSON: () => {
@@ -405,7 +405,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   startPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): number {
-    const apiType = "RtcEngine_startPreview2";
+    const apiType = 'RtcEngine_startPreview2';
     const jsonParams = {
       sourceType,
       toJSON: () => {
@@ -419,7 +419,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   stopPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): number {
-    const apiType = "RtcEngine_stopPreview2";
+    const apiType = 'RtcEngine_stopPreview2';
     const jsonParams = {
       sourceType,
       toJSON: () => {
@@ -431,7 +431,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   startAudioRecording(config: AudioRecordingConfiguration): number {
-    const apiType = "RtcEngine_startAudioRecording3";
+    const apiType = 'RtcEngine_startAudioRecording3';
     const jsonParams = {
       config,
       toJSON: () => {
@@ -449,7 +449,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     cycle: number,
     startPos: number = 0
   ): number {
-    const apiType = "RtcEngine_startAudioMixing2";
+    const apiType = 'RtcEngine_startAudioMixing2';
     const jsonParams = {
       filePath,
       loopback,
@@ -477,8 +477,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   ): number {
     const apiType =
       streamConfig === undefined
-        ? "RtcEngine_enableDualStreamMode2"
-        : "RtcEngine_enableDualStreamMode3";
+        ? 'RtcEngine_enableDualStreamMode2'
+        : 'RtcEngine_enableDualStreamMode3';
     const jsonParams = {
       enabled,
       sourceType,
@@ -496,7 +496,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   createDataStream(config: DataStreamConfig): number {
-    const apiType = "RtcEngine_createDataStream2";
+    const apiType = 'RtcEngine_createDataStream2';
     const jsonParams = {
       config,
       toJSON: () => {
@@ -508,7 +508,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   addVideoWatermark(watermarkUrl: string, options: WatermarkOptions): number {
-    const apiType = "RtcEngine_addVideoWatermark2";
+    const apiType = 'RtcEngine_addVideoWatermark2';
     const jsonParams = {
       watermarkUrl,
       options,
@@ -531,8 +531,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   ): number {
     const apiType =
       options === undefined
-        ? "RtcEngine_joinChannelWithUserAccount"
-        : "RtcEngine_joinChannelWithUserAccount2";
+        ? 'RtcEngine_joinChannelWithUserAccount'
+        : 'RtcEngine_joinChannelWithUserAccount2';
     const jsonParams = {
       token,
       channelId,
@@ -555,7 +555,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     config: DataStreamConfig,
     connection: RtcConnection
   ): number {
-    const apiType = "RtcEngineEx_createDataStreamEx2";
+    const apiType = 'RtcEngineEx_createDataStreamEx2';
     const jsonParams = {
       config,
       connection,

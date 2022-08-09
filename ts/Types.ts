@@ -1,17 +1,30 @@
-import { IMediaPlayerAudioFrameObserver, IMediaPlayerVideoFrameObserver } from "./AgoraSdk";
-import { IAudioEncodedFrameObserver, VideoSourceType } from "./Private/AgoraBase";
-import { IAudioFrameObserver, IAudioSpectrumObserver, IMediaRecorderObserver, IVideoEncodedFrameObserver, IVideoFrameObserver, RenderModeType } from "./Private/AgoraMediaBase";
-import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
+import {
+  IMediaPlayerAudioFrameObserver,
+  IMediaPlayerVideoFrameObserver,
+} from './AgoraSdk';
+import {
+  IAudioEncodedFrameObserver,
+  VideoSourceType,
+} from './Private/AgoraBase';
+import {
+  IAudioFrameObserver,
+  IAudioSpectrumObserver,
+  IMediaRecorderObserver,
+  IVideoEncodedFrameObserver,
+  IVideoFrameObserver,
+  RenderModeType,
+} from './Private/AgoraMediaBase';
+import { IMediaPlayerSourceObserver } from './Private/IAgoraMediaPlayerSource';
 import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
-} from "./Private/IAgoraRtcEngine";
-import { IAudioDeviceManager } from "./Private/IAudioDeviceManager";
-import { IMediaPlayerImpl } from "./Private/impl/IAgoraMediaPlayerImpl";
-import { IRenderer } from "./Renderer/IRenderer";
-import { RendererManager } from "./Renderer/RendererManager";
+} from './Private/IAgoraRtcEngine';
+import { IAudioDeviceManager } from './Private/IAudioDeviceManager';
+import { IMediaPlayerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
+import { IRenderer } from './Renderer/IRenderer';
+import { RendererManager } from './Renderer/RendererManager';
 
 export interface AgoraEnvType {
   enableLogging: boolean;
@@ -42,9 +55,9 @@ export interface AgoraEnvType {
   rtcAudioEncodedFrameObservers: IAudioEncodedFrameObserver[];
   cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   mediaRecorderObservers: {
-    key: string, 
-    handler: IMediaRecorderObserver
-  } [];
+    key: string;
+    handler: IMediaRecorderObserver;
+  }[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
 }
@@ -68,9 +81,9 @@ export enum RENDER_MODE {
   SOFTWARE = 2,
 }
 
-export type User = "local" | "videoSource" | number | string;
+export type User = 'local' | 'videoSource' | number | string;
 
-export type Channel = "" | string;
+export type Channel = '' | string;
 
 export interface RendererVideoConfig {
   videoSourceType?: VideoSourceType;

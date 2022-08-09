@@ -1,5 +1,5 @@
-import { AgoraEnv, logDebug } from "../../Utils";
-import { EncodedVideoFrameInfo, ErrorCodeType } from "../AgoraBase";
+import { AgoraEnv, logDebug } from '../../Utils';
+import { EncodedVideoFrameInfo, ErrorCodeType } from '../AgoraBase';
 import {
   AudioFrame,
   ExternalVideoFrame,
@@ -7,18 +7,18 @@ import {
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
   MediaSourceType,
-} from "../AgoraMediaBase";
-import { IMediaEngineImpl } from "../impl/IAgoraMediaEngineImpl";
-import { callIrisApi } from "./IrisApiEngine";
+} from '../AgoraMediaBase';
+import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
+import { callIrisApi } from './IrisApiEngine';
 
 export class MediaEngineImplInternal extends IMediaEngineImpl {
   constructor() {
     super();
-    logDebug("MediaEngineImplInternal constructor()");
+    logDebug('MediaEngineImplInternal constructor()');
   }
 
-  override pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0,  bufferArray: Uint8Array[]): number {
-    const apiType = "MediaEngine_pushVideoFrame";
+  override pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0): number {
+    const apiType = 'MediaEngine_pushVideoFrame';
     const jsonParams = {
       frame,
       videoTrackId,
@@ -33,14 +33,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     if (frame.buffer == null || frame.buffer == undefined)
       return ErrorCodeType.ErrInvalidArgument;
 
-    
-    const jsonResults = callIrisApi.call(
-      this,
-      apiType,
-      jsonParams,
-      bufferArray,
-      bufferArray.length
-    );
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -50,7 +43,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     videoEncodedFrameInfo: EncodedVideoFrameInfo,
     videoTrackId?: number
   ): number {
-    const apiType = "MediaEngine_pushEncodedVideoImage";
+    const apiType = 'MediaEngine_pushEncodedVideoImage';
     const jsonParams = {
       imageBuffer,
       length,
@@ -86,7 +79,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     wrap = false,
     sourceId = 0
   ): number {
-    const apiType = "MediaEngine_pushAudioFrame";
+    const apiType = 'MediaEngine_pushAudioFrame';
     const jsonParams = {
       type,
       frame,
