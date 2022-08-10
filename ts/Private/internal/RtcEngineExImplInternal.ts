@@ -319,6 +319,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       return ErrorCodeType.ErrInvalidArgument;
 
     let bufferArray = [metadata.buffer!];
+    metadata.buffer = undefined;
 
     const jsonResults = callIrisApi.call(
       this,

@@ -53,7 +53,6 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
   ): number {
     const apiType = 'MediaEngine_pushEncodedVideoImage';
     const jsonParams = {
-      imageBuffer,
       length,
       videoEncodedFrameInfo,
       videoTrackId,
@@ -106,6 +105,7 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
       return ErrorCodeType.ErrInvalidArgument;
 
     let bufferArray = [frame.buffer];
+    frame.buffer = undefined;
 
     const jsonResults = callIrisApi.call(
       this,
