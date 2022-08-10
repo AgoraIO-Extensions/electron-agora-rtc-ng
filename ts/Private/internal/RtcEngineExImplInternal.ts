@@ -445,7 +445,6 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   startAudioMixing(
     filePath: string,
     loopback: boolean,
-    replace: boolean,
     cycle: number,
     startPos: number = 0
   ): number {
@@ -453,14 +452,12 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const jsonParams = {
       filePath,
       loopback,
-      replace,
       cycle,
       startPos,
       toJSON: () => {
         return {
           filePath,
           loopback,
-          replace,
           cycle,
           startPos,
         };
