@@ -33,7 +33,15 @@ export class MediaEngineImplInternal extends IMediaEngineImpl {
     if (frame.buffer == null || frame.buffer == undefined)
       return ErrorCodeType.ErrInvalidArgument;
 
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    let buffers = [frame.buffer, undefined, undefined];
+    frame.buffer = undefined;
+    const jsonResults = callIrisApi.call(
+      this,
+      apiType,
+      jsonParams,
+      buffers,
+      buffers.length
+    );
     return jsonResults.result;
   }
 
