@@ -1,18 +1,12 @@
-import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from '../../Utils';
+import { AgoraEnv, logWarn } from '../../Utils';
 import { VideoSourceType } from '../AgoraBase';
-import {
-  IAudioFrameObserver,
-  IAudioSpectrumObserver,
-  IVideoFrameObserver,
-  RenderModeType,
-} from '../AgoraMediaBase';
+import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
 import {
   IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { callIrisApi } from './IrisApiEngine';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
@@ -39,6 +33,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
     return 0;
   }
+
   override setView(view: HTMLElement): number {
     logWarn('Also can use other api setupLocalVideo');
     AgoraEnv.AgoraRendererManager?.setupVideo({
@@ -48,6 +43,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     });
     return 0;
   }
+
   override setRenderMode(renderMode: RenderModeType): number {
     logWarn(
       'Also can use other api setRenderOption or setRenderOptionByConfig'
