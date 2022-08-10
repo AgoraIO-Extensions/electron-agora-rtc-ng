@@ -8,14 +8,12 @@ import createAgoraRtcEngine, {
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   MediaSourceType,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -53,6 +51,7 @@ interface State {
   enableVirtual: boolean
   isColorMode: boolean
 }
+
 const localUid = getRandomInt(1, 9999999)
 
 export default class VirtualBackground
@@ -232,7 +231,8 @@ export default class VirtualBackground
     }
     this.getRtcEngine().enableVirtualBackground(
       enableVirtual,
-      virtualBackgroundSource
+      virtualBackgroundSource,
+      {}
     )
 
     this.setState({ enableVirtual })

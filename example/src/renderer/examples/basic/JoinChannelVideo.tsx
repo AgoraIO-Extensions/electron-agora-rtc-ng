@@ -7,13 +7,11 @@ import createAgoraRtcEngine, {
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -31,6 +29,7 @@ import { configMapToOptions, getRandomInt } from '../util'
 
 const localUid1 = getRandomInt(1, 9999999)
 const localUid2 = getRandomInt(1, 9999999)
+
 interface Device {
   deviceId: string
   deviceName: string
@@ -77,6 +76,8 @@ export default class JoinChannelVideo
     isPreview: false,
   }
 
+  users: User[] = []
+
   componentDidMount() {
     this.getRtcEngine().registerEventHandler(this)
     this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
@@ -111,16 +112,15 @@ export default class JoinChannelVideo
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser, isPreview } = this.state
+    const { isPreview } = this.state
     if (isPreview) {
       return
     }
     console.log('onJoinChannelSuccess', channelId, localUid)
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    this.users.push({ isMyself: true, uid: localUid })
     this.setState({
       isJoined: true,
-      allUser: newAllUser,
+      allUser: this.users,
     })
   }
 
@@ -137,11 +137,9 @@ export default class JoinChannelVideo
       remoteUid
     )
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    this.users.push({ isMyself: false, uid: remoteUid })
     this.setState({
-      allUser: newAllUser,
+      allUser: this.users,
     })
   }
 
@@ -152,17 +150,17 @@ export default class JoinChannelVideo
   ): void {
     console.log('onUserOffline', channelId, remoteUid)
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    this.users = [...this.users.filter((obj) => obj.uid !== remoteUid)]
     this.setState({
-      allUser: newAllUser,
+      allUser: this.users,
     })
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
+    this.users = []
     this.setState({
       isJoined: false,
-      allUser: [],
+      allUser: this.users,
     })
   }
 
@@ -241,15 +239,14 @@ export default class JoinChannelVideo
   }
 
   onPressPreview = () => {
-    const { allUser: oldAllUser, isJoined, isPreview } = this.state
+    const { isPreview } = this.state
     if (isPreview) {
       return
     }
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid1 })
+    this.users.push({ isMyself: true, uid: localUid1 })
     this.setState({
       isPreview: true,
-      allUser: newAllUser,
+      allUser: this.users,
     })
   }
 
@@ -362,11 +359,9 @@ export default class JoinChannelVideo
           />
           <Button
             onClick={() => {
-              const { allUser: oldAllUser } = this.state
-              const newAllUser = [...oldAllUser]
-              newAllUser.push({ isMyself, uid })
+              this.users.push({ isMyself, uid })
               this.setState({
-                allUser: newAllUser,
+                allUser: this.users,
               })
             }}
           >

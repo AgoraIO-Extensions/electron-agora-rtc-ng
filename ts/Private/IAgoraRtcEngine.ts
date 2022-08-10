@@ -5726,7 +5726,6 @@ export abstract class IRtcEngine {
   abstract startAudioMixing(
     filePath: string,
     loopback: boolean,
-    replace: boolean,
     cycle: number,
     startPos?: number
   ): number;

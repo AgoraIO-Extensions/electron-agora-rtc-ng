@@ -27,15 +27,18 @@
     "release": "release-it",
     "test": "jest",
     "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\""
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "example": "yarn --cwd example",
+    "bootstrap": "yarn example && yarn"
   },
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.0.0_DCG_Windows_Video_20220808_0612.zip",
     "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.0.0_DCG_Mac_Video_20220808_0612.zip",
     "no_symbol": true,
-    "prebuilt": true
+    "prebuilt": false
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "yuv-buffer": "1.0.0",
     "yuv-canvas": "1.2.6"
   },

@@ -3,11 +3,9 @@ import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -17,7 +15,9 @@ import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
 import createDataStreamStyle from './CreateDataStream.scss'
+
 const { Search } = Input
+
 interface User {
   isMyself: boolean
   uid: number
@@ -137,10 +137,11 @@ export default class CreateDataStream
     length: number,
     sentTs: number
   ): void {
-    const string = String.fromCharCode.apply(null, data)
-    const formatStr = decodeURIComponent(string)
     this.setState({
-      msgs: [...this.state.msgs, `from:${remoteUid} message:${formatStr}`],
+      msgs: [
+        ...this.state.msgs,
+        `from:${remoteUid} message:${data.toString()}`,
+      ],
     })
     console.log('received message: ', remoteUid, streamId, data)
   }
@@ -176,14 +177,8 @@ export default class CreateDataStream
     // Each user can create up to five data streams during the lifecycle of the agoraKit
     const streamId = this.getStreamId()
     console.log('current stream id', streamId)
-    const asciiStringArray = [...encodeURIComponent(msg)].map((char) =>
-      char.charCodeAt(0)
-    )
-    this.rtcEngine?.sendStreamMessage(
-      streamId,
-      new Uint8Array(asciiStringArray),
-      asciiStringArray.length
-    )
+    const buffer = Buffer.from(msg)
+    this.rtcEngine?.sendStreamMessage(streamId, buffer, buffer.length)
     console.log('streamId:', this.streamId, ' content:', msg)
   }
 

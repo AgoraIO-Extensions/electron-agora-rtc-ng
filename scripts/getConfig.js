@@ -1,19 +1,19 @@
-const minimist = require("minimist");
-const path = require("path");
-const logger = require("./logger");
+const minimist = require('minimist');
+const path = require('path');
+const logger = require('./logger');
 
 //@ts-ignore
 const { INIT_CWD } = minimist(process.argv.slice(2), {
-  string: ["INIT_CWD"],
+  string: ['INIT_CWD'],
   default: {},
 });
 logger.info(`pass INIT_CWD ${INIT_CWD}`);
 logger.info(`process.env.INIT_CWD  ${process.env.INIT_CWD}`);
 
 const getArgvFromPkgJson = () => {
-  const projectDir = path.join(INIT_CWD, "package.json");
+  const projectDir = path.join(INIT_CWD, 'package.json');
   const { agora_electron = {} } = require(projectDir);
-  const { version } = require(path.join(process.env.INIT_CWD, "package.json"));
+  const { version } = require(path.join(process.env.INIT_CWD, 'package.json'));
   const {
     prebuilt = true,
     platform = process.platform,
@@ -46,8 +46,8 @@ const getConfig = () => {
   } = process;
 
   const config = minimist(argv.slice(2), {
-    boolean: ["prebuilt", "debug", "silent", "no_symbol"],
-    string: ["arch", "platform"],
+    boolean: ['prebuilt', 'debug', 'silent', 'no_symbol'],
+    string: ['arch', 'platform'],
     default: { ...getArgvFromPkgJson() },
   });
 

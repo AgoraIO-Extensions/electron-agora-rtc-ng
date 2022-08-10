@@ -3,19 +3,16 @@ import createAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
-  ContentInspectDeviceType,
   ContentInspectResult,
   ContentInspectType,
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -51,6 +48,7 @@ interface State {
   currentResolution?: { width: number; height: number }
   contentInspectResult: string
 }
+
 const localUid = getRandomInt(1, 9999999)
 
 export default class ContentInspect
@@ -196,6 +194,7 @@ export default class ContentInspect
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
     })
   }
+
   onContentInspectResult(result: ContentInspectResult): void {
     console.log('onContentInspectResult', result)
 

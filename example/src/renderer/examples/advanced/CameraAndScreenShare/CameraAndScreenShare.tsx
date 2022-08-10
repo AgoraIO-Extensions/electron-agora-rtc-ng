@@ -3,12 +3,10 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
-  RtcEngineExImplInternal,
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
@@ -42,6 +40,7 @@ interface State {
   currentShareResolution?: { width: number; height: number }
   captureMouseCursor: boolean
 }
+
 interface Device {
   deviceId: string
   deviceName: string
@@ -144,7 +143,7 @@ export default class CameraAndScreenShare
       },
       {
         publishCameraTrack: true,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: false,
         publishCustomAudioTrack: false,
         publishCustomVideoTrack: false,
@@ -222,7 +221,7 @@ export default class CameraAndScreenShare
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: true,
         publishSecondaryScreenTrack: false,
         publishCustomAudioTrack: false,
@@ -309,7 +308,7 @@ export default class CameraAndScreenShare
     return (
       <div className={styles.rightBar}>
         <div>
-          <div>Please Select camera and screen </div>
+          <div>Please Select camera and screen</div>
           <div
             style={{
               display: 'flex',

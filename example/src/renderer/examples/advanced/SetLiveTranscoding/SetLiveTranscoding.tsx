@@ -7,12 +7,10 @@ import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LiveTranscoding,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   RtmpStreamPublishErrorType,
   RtmpStreamPublishState,
@@ -28,6 +26,7 @@ import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
 
 const localUid1 = getRandomInt(1, 9999999)
+
 interface User {
   isMyself: boolean
   uid: number
@@ -100,9 +99,6 @@ export default class SetLiveTranscoding
         break
       case RtmpStreamPublishState.RtmpStreamPublishStateRunning:
         stateStr = 'Running'
-        break
-      case RtmpStreamPublishState.RtmpStreamPublishStateRecovering:
-        stateStr = 'Recovering'
         break
       case RtmpStreamPublishState.RtmpStreamPublishStateRecovering:
         stateStr = 'Recovering'

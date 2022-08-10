@@ -5,11 +5,9 @@ import createAgoraRtcEngine, {
   ChannelProfileType,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -35,6 +33,7 @@ interface Device {
   deviceName: string
   deviceId: string
 }
+
 interface State {
   audioRecordDevices: Device[]
   audioEffectMode: number

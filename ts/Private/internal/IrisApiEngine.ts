@@ -1,5 +1,5 @@
 import { AgoraElectronBridge, Result } from '../../Types';
-import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from '../../Utils';
+import { AgoraEnv, logDebug, logError, parseJSON } from '../../Utils';
 import { AudioFrame, VideoFrame } from '../AgoraMediaBase';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IDirectCdnStreamingEventHandler } from '../IAgoraRtcEngine';
@@ -12,16 +12,14 @@ import {
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
-import {
-  processIMediaPlayerAudioFrameObserver,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
 import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
+
 const agora = require('../../../build/Release/agora_node_ext');
 
 const MetadataSplitString = 'MetadataObserver_';

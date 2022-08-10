@@ -6185,28 +6185,24 @@ export class IRtcEngineImpl implements IRtcEngine {
   startAudioMixing(
     filePath: string,
     loopback: boolean,
-    replace: boolean,
     cycle: number,
     startPos = 0
   ): number {
     const apiType = this.getApiTypeFromStartAudioMixing(
       filePath,
       loopback,
-      replace,
       cycle,
       startPos
     );
     const jsonParams = {
       filePath: filePath,
       loopback: loopback,
-      replace: replace,
       cycle: cycle,
       startPos: startPos,
       toJSON: () => {
         return {
           filePath: filePath,
           loopback: loopback,
-          replace: replace,
           cycle: cycle,
           startPos: startPos,
         };
@@ -6219,7 +6215,6 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStartAudioMixing(
     filePath: string,
     loopback: boolean,
-    replace: boolean,
     cycle: number,
     startPos = 0
   ): string {

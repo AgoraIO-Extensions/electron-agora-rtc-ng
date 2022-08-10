@@ -2,11 +2,9 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
-  IRtcEngine,
   IRtcEngineEx,
   MediaPlayerError,
   MediaPlayerState,
-  RtcEngineExImplInternal,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
 import { Button, Input } from 'antd'
@@ -16,6 +14,7 @@ import Window from '../../component/Window'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
+
 const { Search } = Input
 
 interface State {
@@ -75,12 +74,13 @@ export default class MediaPlayer
     ec: MediaPlayerError
   ): void {
     switch (state) {
-      case MediaPlayerState.PlayerStateOpenCompleted:
+      case MediaPlayerState.PlayerStateOpenCompleted: {
         console.log('onPlayerSourceStateChanged1:open finish')
         this.getMediaPlayer().play()
         const duration = this.getMediaPlayer().getDuration()
         this.setState({ duration })
         break
+      }
       default:
         break
     }

@@ -4,13 +4,11 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   ErrorCodeType,
   IMetadataObserver,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   Metadata,
   MetadataType,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
@@ -21,7 +19,9 @@ import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
 import sendMetaDataStyle from './SendMetaData.scss'
+
 const { Search } = Input
+
 interface User {
   isMyself: boolean
   uid: number
@@ -145,10 +145,8 @@ export default class SendMetaData
 
   onMetadataReceived?({ uid, size, buffer, timeStampMs }: Metadata): void {
     console.log('onMetadataReceived', uid, size, buffer, timeStampMs)
-    const string = String.fromCharCode.apply(null, buffer)
-    const formatStr = decodeURIComponent(string)
     this.setState({
-      msgs: [...this.state.msgs, `from:${uid} message:${formatStr}`],
+      msgs: [...this.state.msgs, `from:${uid} message:${buffer.toString()}`],
     })
   }
 
@@ -156,14 +154,12 @@ export default class SendMetaData
     if (!msg) {
       return
     }
-    const asciiStringArray = [...encodeURIComponent(msg)].map((char) =>
-      char.charCodeAt(0)
-    )
+    const buffer = Buffer.from(msg)
     this.rtcEngine?.sendMetaData(
       {
         uid: localUid,
-        size: asciiStringArray.length,
-        buffer: new Uint8Array(asciiStringArray),
+        size: buffer.length,
+        buffer: buffer,
       },
       VideoSourceType.VideoSourceCamera
     )

@@ -5,11 +5,9 @@ import createAgoraRtcEngine, {
   ChannelProfileType,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -24,6 +22,7 @@ import { configMapToOptions, getRandomInt, getResourcePath } from '../../util'
 
 const EFFECT_ID = 1
 const mp3Path = getResourcePath('audioEffect.mp3')
+
 interface User {
   isMyself: boolean
   uid: number
@@ -33,6 +32,7 @@ interface Device {
   deviceName: string
   deviceId: string
 }
+
 interface State {
   audioRecordDevices: Device[]
   audioProfile: number
@@ -207,7 +207,7 @@ export default class AudioMixing
           <Button
             htmlType='button'
             onClick={() => {
-              this.getRtcEngine().startAudioMixing(mp3Path, true, false, -1)
+              this.getRtcEngine().startAudioMixing(mp3Path, true, -1)
             }}
           >
             Start Audio Mixing
@@ -364,9 +364,9 @@ export default class AudioMixing
           />
           <SliderBar
             max={100}
-            title='Loopback Recording Volume'
+            title='Recording Signal Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustLoopbackRecordingVolume(value)
+              this.rtcEngine?.adjustRecordingSignalVolume(value)
             }}
           />
           <br></br>

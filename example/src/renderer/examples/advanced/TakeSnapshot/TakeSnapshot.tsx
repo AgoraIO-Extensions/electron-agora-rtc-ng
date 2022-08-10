@@ -5,13 +5,11 @@ import createAgoraRtcEngine, {
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -49,6 +47,7 @@ interface State {
   currentFps?: number
   currentResolution?: { width: number; height: number }
 }
+
 const localUid = getRandomInt(1, 9999999)
 
 export default class TakeSnapshot
@@ -161,12 +160,21 @@ export default class TakeSnapshot
 
   onSnapshotTaken(
     connection: RtcConnection,
+    uid: number,
     filePath: string,
     width: number,
     height: number,
     errCode: number
   ): void {
-    console.log('onSnapshotTaken', connection, filePath, width, height, errCode)
+    console.log(
+      'onSnapshotTaken',
+      connection,
+      uid,
+      filePath,
+      width,
+      height,
+      errCode
+    )
   }
 
   onPressJoinChannel = (channelId: string) => {
@@ -204,13 +212,8 @@ export default class TakeSnapshot
   }
 
   onPressTakeSnapshot = () => {
-    const { channelId } = this.state
     const filePath = path.resolve(os.homedir(), `./snapshot${getRandomInt()}`)
-    const res = this.getRtcEngine().takeSnapshot({
-      channel: channelId,
-      uid: 0,
-      filePath,
-    })
+    const res = this.getRtcEngine().takeSnapshot(0, filePath)
     console.log(`takeSnapshot ${filePath}: `, res)
   }
 

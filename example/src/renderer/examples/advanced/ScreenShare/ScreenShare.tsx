@@ -119,7 +119,7 @@ export default class ScreenShare extends Component<{}, State, any> {
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: true,
         publishCustomAudioTrack: false,
         publishCustomVideoTrack: false,
@@ -162,7 +162,7 @@ export default class ScreenShare extends Component<{}, State, any> {
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: false,
         publishSecondaryScreenTrack: true,
         publishCustomAudioTrack: false,

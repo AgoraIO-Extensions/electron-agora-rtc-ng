@@ -3,11 +3,9 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -31,6 +29,7 @@ interface Device {
   deviceId: string
   deviceName: string
 }
+
 interface State {
   audioRecordDevices: Device[]
   audioProfile: number
