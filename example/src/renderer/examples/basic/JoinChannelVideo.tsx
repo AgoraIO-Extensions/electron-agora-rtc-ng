@@ -200,8 +200,9 @@ export default class JoinChannelVideo
       },
       {
         publishCameraTrack: true,
+        publishMicrophoneTrack: true,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-        channelProfile: ChannelProfileType.ChannelProfileCommunication,
+        channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       }
     )
     console.log(`localUid1: ${localUid1} joinChannel2: ${res1}`)
