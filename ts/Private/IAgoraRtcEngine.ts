@@ -5948,6 +5948,11 @@ export abstract class IRtcEngine {
   abstract unregisterAudioEncodedFrameObserver(
     observer: IAudioEncodedFrameObserver
   ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setParameters(parameters: string): number;
 }
 
 /**

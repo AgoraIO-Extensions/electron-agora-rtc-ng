@@ -6531,4 +6531,22 @@ export class IRtcEngineImpl implements IRtcEngine {
   ): string {
     return 'RtcEngine_unregisterAudioEncodedFrameObserver';
   }
+
+  setParameters(parameters: string): number {
+    const apiType = this.getApiTypeFromSetParameters(parameters);
+    const jsonParams = {
+      parameters: parameters,
+      toJSON: () => {
+        return {
+          parameters: parameters,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetParameters(parameters: string): string {
+    return 'RtcEngine_setParameters';
+  }
 }
