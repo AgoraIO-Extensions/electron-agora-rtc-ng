@@ -19,9 +19,7 @@ import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
   IRtcEngineEventHandler,
-  IVideoDeviceManager,
 } from './Private/IAgoraRtcEngine';
-import { IAudioDeviceManager } from './Private/IAudioDeviceManager';
 import { IMediaPlayerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
 import { IRenderer } from './Renderer/IRenderer';
 import { RendererManager } from './Renderer/RendererManager';
@@ -54,10 +52,7 @@ export interface AgoraEnvType {
   rtcAudioSpectrumObservers: IAudioSpectrumObserver[];
   rtcAudioEncodedFrameObservers: IAudioEncodedFrameObserver[];
   cdnEventHandlers: IDirectCdnStreamingEventHandler[];
-  mediaRecorderObservers: {
-    key: string;
-    handler: IMediaRecorderObserver;
-  }[];
+  mediaRecorderObservers: Map<string, IMediaRecorderObserver>;
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
 }
@@ -106,6 +101,7 @@ export interface VideoFrameCacheConfig {
   channelId: string;
   videoSourceType: VideoSourceType;
 }
+
 export interface ShareVideoFrame {
   width: number;
   height: number;
@@ -118,6 +114,7 @@ export interface ShareVideoFrame {
   channelId?: string;
   videoSourceType: VideoSourceType;
 }
+
 export interface Result {
   callApiReturnCode: number;
   callApiResult: any;
@@ -141,18 +138,24 @@ export interface AgoraElectronBridge {
       bufferCount: number
     ) => void
   ): void;
+
   CallApi(
     funcName: string,
     params: any,
     buffer?: (Uint8Array | undefined)[],
     bufferCount?: number
   ): Result;
+
   InitializeEnv(): void;
+
   ReleaseEnv(): void;
 
   EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
+
   DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
+
   GetBuffer(ptr: number, length: number): Buffer;
+
   GetVideoFrame(streamInfo: ShareVideoFrame): {
     ret: number;
     isNewFrame: boolean;
@@ -162,6 +165,7 @@ export interface AgoraElectronBridge {
     rotation: number;
     timestamp: number;
   };
+
   sendMsg: (
     funcName: string,
     params: any,

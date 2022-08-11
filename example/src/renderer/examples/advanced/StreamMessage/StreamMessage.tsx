@@ -58,7 +58,7 @@ export default class StreamMessage
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -154,7 +154,7 @@ export default class StreamMessage
     missed: number,
     cached: number
   ): void {
-    console.log('onStreamMessageErrorEx')
+    console.log('onStreamMessageError')
   }
 
   getStreamId = () => {

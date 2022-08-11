@@ -1,7 +1,5 @@
 import { Button, Card, List } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
   DegradationPreference,
@@ -28,7 +26,6 @@ import styles from '../config/public.scss'
 import { configMapToOptions, getRandomInt } from '../util'
 
 const localUid1 = getRandomInt(1, 9999999)
-const localUid2 = getRandomInt(1, 9999999)
 
 interface Device {
   deviceId: string
@@ -101,7 +98,7 @@ export default class JoinChannelVideo
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
     }
 

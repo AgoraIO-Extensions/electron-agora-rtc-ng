@@ -111,7 +111,7 @@ export default class DirectCdnStreaming
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({
-        appId: config.appID,
+        appId: config.appId,
       })
       console.log('initialize:', res)
     }

@@ -51,6 +51,5 @@ export const rgbImageBufferToBase64 = (target) => {
     ctx.putImageData(imageData, 0, row)
   }
 
-  const dataURL = canvas.toDataURL('image/png')
-  return dataURL
+  return canvas.toDataURL('image/png')
 }

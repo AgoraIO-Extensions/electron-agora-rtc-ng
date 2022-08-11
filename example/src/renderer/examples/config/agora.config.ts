@@ -2,14 +2,17 @@ let localAppId = ''
 try {
   localAppId = require('./appID').default
   console.log('appID', localAppId)
-} catch (error) {}
+} catch (error) {
+  console.warn(error)
+}
 
 const config = {
   enableSDKLogging: true,
   enableSDKDebugLogging: false,
-  appID: localAppId,
+  appId: localAppId,
   token: '',
-  defaultChannelId: 'testdcg',
+  channelId: 'testdcg',
+  uid: 0,
   pluginPath: '',
   nativeSDKLogPath: './Agora_SDK.log',
   addonLogPath: './Agora_SDK_Addon.log',

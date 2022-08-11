@@ -40,7 +40,7 @@ const JoinChannelBar = ({
           }
         }}
         initialValues={{
-          channel: config.defaultChannelId,
+          channel: config.channelId,
         }}
       >
         <Form.Item

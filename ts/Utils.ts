@@ -1,13 +1,9 @@
 import { VideoSourceType } from './Private/AgoraBase';
 import {
-  IAudioFrameObserver,
-  IAudioSpectrumObserver,
+  IMediaRecorderObserver,
   RenderModeType,
 } from './Private/AgoraMediaBase';
-import { IRtcEngine } from './Private/IAgoraRtcEngine';
 import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
-import { IVideoDeviceManagerImpl } from './Private/impl/IAgoraRtcEngineImpl';
-import { AudioDeviceManagerImplInternal } from './Private/internal/AudioDeviceManagerImplInternal';
 import { RtcEngineExImplInternal } from './Private/internal/RtcEngineExImplInternal';
 import {
   AgoraEnvType,
@@ -189,7 +185,7 @@ export const AgoraEnv: AgoraEnvType = {
   mpkAudioFrameObservers: [],
   mpkVideoFrameObservers: [],
   mpkAudioSpectrumObservers: [],
-  mediaRecorderObservers: [],
+  mediaRecorderObservers: new Map<string, IMediaRecorderObserver>(),
   metadataObservers: [],
   cdnEventHandlers: [],
 };

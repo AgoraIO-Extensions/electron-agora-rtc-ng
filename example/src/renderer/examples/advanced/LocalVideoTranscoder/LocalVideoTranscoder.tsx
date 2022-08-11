@@ -103,7 +103,7 @@ export default class LocalVideoTranscoder
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({
-        appId: config.appID,
+        appId: config.appId,
       })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)

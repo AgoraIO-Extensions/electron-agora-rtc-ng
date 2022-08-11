@@ -24,7 +24,7 @@ const agora = require('../../../build/Release/agora_node_ext');
 
 const MetadataSplitString = 'MetadataObserver_';
 const MediaPlayerSplitString = 'MediaPlayerSourceObserver_';
-const MediaRecorderSplitString = 'MediaRecorder_';
+const MediaRecorderSplitString = 'MediaRecorderObserver_';
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -56,8 +56,8 @@ export const handlerRTCEvent = function (
     'bufferCount',
     bufferCount
   );
-  const isMetadata = event.startsWith('MetadataObserver_');
-  const isMediaRecorder = event.startsWith('MediaRecorderObserver_');
+  const isMetadata = event.startsWith(MetadataSplitString);
+  const isMediaRecorder = event.startsWith(MediaRecorderSplitString);
 
   const isRtcEngine = !isMetadata && !isMediaRecorder;
 
@@ -99,12 +99,14 @@ export const handlerRTCEvent = function (
 
   if (isMediaRecorder) {
     event = event.replace(MediaRecorderSplitString, '');
-    let key = parseData.connection.channelId + parseData.connection.localUid;
-    AgoraEnv.mediaRecorderObservers.forEach((value) => {
-      if (value.key === key) {
-        processIMediaRecorderObserver(value.handler, event, parseData);
-      }
-    });
+    const key = parseData.connection.channelId + parseData.connection.localUid;
+    if (AgoraEnv.mediaRecorderObservers.has(key)) {
+      processIMediaRecorderObserver(
+        AgoraEnv.mediaRecorderObservers.get(key)!,
+        event,
+        parseData
+      );
+    }
   }
 
   if (isMetadata) {

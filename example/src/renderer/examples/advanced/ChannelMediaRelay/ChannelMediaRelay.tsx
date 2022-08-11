@@ -63,7 +63,7 @@ export default class ChannelMediaRelay
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -76,7 +76,7 @@ export default class ChannelMediaRelay
     elapsed: number
   ): void {
     console.log(
-      `onJoinChannelSuccessEx channelId:${channelId} localUid:${localUid}`
+      `onJoinChannelSuccess channelId:${channelId} localUid:${localUid}`
     )
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser]

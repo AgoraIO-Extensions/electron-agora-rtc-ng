@@ -12,18 +12,21 @@ const layout = {
     span: 16,
   },
 }
+
 const tailLayout = {
   wrapperCol: {
     offset: 8,
     span: 16,
   },
 }
+
 const onFinish = (values: any) => {
   console.log('Success:', values)
 
-  config.appID = values.appID
-  config.defaultChannelId = values.defaultChannelId
+  config.appId = values.appId
+  config.channelId = values.channelId
   config.token = values.token
+  config.uid = values.uid
   config.pluginPath = values.pluginPath
 
   config.addonLogPath = values.addonLogPath
@@ -38,6 +41,7 @@ const onFinish = (values: any) => {
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo)
 }
+
 const AuthInfoScreen = () => {
   return (
     <div
@@ -58,7 +62,7 @@ const AuthInfoScreen = () => {
           >
             <Form.Item
               label='App ID'
-              name='appID'
+              name='appId'
               rules={[
                 {
                   required: true,
@@ -68,10 +72,9 @@ const AuthInfoScreen = () => {
             >
               <Input />
             </Form.Item>
-
             <Form.Item
               label='Channel ID'
-              name='defaultChannelId'
+              name='channelId'
               rules={[
                 {
                   required: true,
@@ -88,6 +91,18 @@ const AuthInfoScreen = () => {
                 {
                   required: false,
                   message: 'Please input your token!',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label='UID'
+              name='uid'
+              rules={[
+                {
+                  required: false,
+                  message: 'Please input your uid!',
                 },
               ]}
             >
@@ -134,16 +149,14 @@ const AuthInfoScreen = () => {
               name='enableSDKLogging'
               valuePropName='checked'
             >
-              <Checkbox defaultChecked={config.enableSDKLogging}></Checkbox>
+              <Checkbox defaultChecked={config.enableSDKLogging} />
             </Form.Item>
             <Form.Item
               label='Enable SDK Debug Logging'
               name='enableSDKDebugLogging'
               valuePropName='checked'
             >
-              <Checkbox
-                defaultChecked={config.enableSDKDebugLogging}
-              ></Checkbox>
+              <Checkbox defaultChecked={config.enableSDKDebugLogging} />
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type='primary' htmlType='submit'>
@@ -156,4 +169,5 @@ const AuthInfoScreen = () => {
     </div>
   )
 }
+
 export default AuthInfoScreen

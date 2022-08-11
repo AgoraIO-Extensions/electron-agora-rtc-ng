@@ -54,7 +54,7 @@ export default class MediaPlayer
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -151,7 +151,7 @@ export default class MediaPlayer
               onClick={() => {
                 const res = this.getRtcEngine().joinChannelWithOptions(
                   '',
-                  config.defaultChannelId,
+                  config.channelId,
                   getRandomInt(),
                   {
                     publishMediaPlayerId:
