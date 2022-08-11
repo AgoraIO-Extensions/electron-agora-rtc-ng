@@ -1,8 +1,6 @@
 import createAgoraRtcEngine, {
   ClientRoleType,
-  IRtcEngine,
   IRtcEngineEx,
-  RtcEngineExImplInternal,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
 import { Card, message, Switch } from 'antd'
@@ -238,7 +236,7 @@ export default class ScreenShare extends Component<{}, State, any> {
     if (!currentFps || !currentResolution) {
       return
     }
-    const res = this.rtcEngine.updateScreenCaptureParameters({
+    const res = this.getRtcEngine().updateScreenCaptureParameters({
       dimensions: currentResolution,
       frameRate: currentFps,
       captureMouseCursor: captureMouseCursor,

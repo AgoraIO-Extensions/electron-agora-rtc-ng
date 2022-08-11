@@ -1,27 +1,29 @@
 import AudioMixing from './AudioMixing/AudioMixing'
-import CameraAndScreenShare from './CameraAndScreenShare/CameraAndScreenShare'
+import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream.scss'
 import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay'
 import ContentInspect from './ContentInspect/ContentInspect'
-import CreateDataStream from './CreateDataStream/CreateDataStream'
+import StreamMessage from './StreamMessage/StreamMessage.scss'
 import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming'
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder'
 import MediaPlayer from './MediaPlayer/MediaPlayer'
-import MultipleChannel from './MultipleChannel/MultipleChannel'
+import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel'
 import RhythmPlayer from './RhythmPlayer/RhythmPlayer'
 import ScreenShare from './ScreenShare/ScreenShare'
 import SendMetaData from './SendMetaData/SendMetaData'
-import SetEncryption from './SetEncryption/SetEncryption'
-import SetLiveTranscoding from './SetLiveTranscoding/SetLiveTranscoding'
+import Encryption from './Encryption/Encryption'
+import RTMPStreaming from './RTMPStreaming/RTMPStreaming'
 import SpatialAudio from './SpatialAudio/SpatialAudio'
 import TakeSnapshot from './TakeSnapshot/TakeSnapshot'
 import VirtualBackground from './VirtualBackground/VirtualBackground'
 import VoiceChanger from './VoiceChanger/VoiceChanger'
+import AudioSpectrum from './AudioSpectrum/AudioSpectrum'
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
+  { path: '/AudioSpectrum', component: AudioSpectrum, title: 'AudioSpectrum' },
   {
     path: '/CameraAndScreenShare',
-    component: CameraAndScreenShare,
+    component: SendMultiVideoStream,
     title: 'CameraAndScreenShare',
   },
   {
@@ -36,7 +38,7 @@ const advanceRoute = [
   },
   {
     path: '/CreateDataStream',
-    component: CreateDataStream,
+    component: StreamMessage,
     title: 'CreateDataStream',
   },
   {
@@ -52,16 +54,16 @@ const advanceRoute = [
   { path: '/MediaPlayer', component: MediaPlayer, title: 'MediaPlayer' },
   {
     path: '/MultipleChannel',
-    component: MultipleChannel,
+    component: JoinMultipleChannel,
     title: 'MultipleChannel',
   },
   { path: '/RhythmPlayer', component: RhythmPlayer, title: 'RhythmPlayer' },
   { path: '/ScreenShare', component: ScreenShare, title: 'ScreenShare' },
   { path: '/SendMetaData', component: SendMetaData, title: 'SendMetaData' },
-  { path: '/SetEncryption', component: SetEncryption, title: 'SetEncryption' },
+  { path: '/SetEncryption', component: Encryption, title: 'SetEncryption' },
   {
     path: '/SetLiveTranscoding',
-    component: SetLiveTranscoding,
+    component: RTMPStreaming,
     title: 'SetLiveTranscoding',
   },
   { path: '/SpatialAudio', component: SpatialAudio, title: 'SpatialAudio' },

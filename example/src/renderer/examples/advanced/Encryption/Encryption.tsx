@@ -6,6 +6,7 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   OrientationMode,
   RtcConnection,
@@ -39,7 +40,10 @@ interface State {
   currentResolution?: { width: number; height: number }
 }
 
-export default class SetEncryption extends Component<{}, State, any> {
+export default class Encryption
+  extends Component<{}, State, any>
+  implements IRtcEngineEventHandler
+{
   rtcEngine?: IRtcEngineEx
 
   state: State = {
@@ -53,9 +57,9 @@ export default class SetEncryption extends Component<{}, State, any> {
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -133,19 +137,12 @@ export default class SetEncryption extends Component<{}, State, any> {
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
     this.getRtcEngine().enableVideo()
-    this.getRtcEngine().enableAudio()
-    this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
     const localUid = getRandomInt(1, 9999999)
     console.log(`localUid: ${localUid}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   setVideoConfig = () => {
@@ -219,7 +216,7 @@ export default class SetEncryption extends Component<{}, State, any> {
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

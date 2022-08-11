@@ -1,5 +1,6 @@
 import { Card, Divider, List, Switch } from 'antd'
 import createAgoraRtcEngine, {
+  ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
@@ -46,8 +47,8 @@ export default class JoinChannelAudio
 
   state: State = {
     audioRecordDevices: [],
-    audioProfile: AudioProfileList.SpeechStandard,
-    audioScenario: AudioScenarioList.Standard,
+    audioProfile: AudioProfileList.Default,
+    audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
   }
@@ -64,9 +65,9 @@ export default class JoinChannelAudio
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -143,7 +144,7 @@ export default class JoinChannelAudio
 
   setAudioProfile = () => {
     const { audioProfile, audioScenario } = this.state
-    this.rtcEngine?.setAudioProfile(audioProfile, audioScenario)
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
   }
   onPressSpatialAudio = (enabled) => {
     const res = this.getRtcEngine().enableSpatialAudio(enabled)
@@ -192,21 +193,21 @@ export default class JoinChannelAudio
             max={100}
             title='SDK Recording Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustRecordingSignalVolume(value)
+              this.getRtcEngine().adjustRecordingSignalVolume(value)
             }}
           />
           <SliderBar
             max={100}
             title='Device Playout Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustAudioMixingPlayoutVolume(value)
+              this.getRtcEngine().adjustAudioMixingPlayoutVolume(value)
             }}
           />
           <SliderBar
             max={100}
             title='SDK Playout Volume SDK'
             onChange={(value) => {
-              this.rtcEngine?.adjustPlaybackSignalVolume(value)
+              this.getRtcEngine().adjustPlaybackSignalVolume(value)
             }}
           />
           <Divider>Spatial Audio</Divider>
@@ -228,14 +229,19 @@ export default class JoinChannelAudio
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {
-            const rtcEngine = this.getRtcEngine()
-
-            rtcEngine.disableVideo()
-            rtcEngine.enableAudio()
-            rtcEngine.setClientRole(ClientRoleType.ClientRoleBroadcaster)
+            this.getRtcEngine().enableAudio()
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

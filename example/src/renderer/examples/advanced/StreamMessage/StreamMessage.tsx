@@ -14,7 +14,7 @@ import JoinChannelBar from '../../component/JoinChannelBar'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
-import createDataStreamStyle from './CreateDataStream.scss'
+import createDataStreamStyle from './StreamMessage.scss'
 
 const { Search } = Input
 
@@ -29,7 +29,7 @@ interface State {
   msgs: string[]
 }
 
-export default class CreateDataStream
+export default class StreamMessage
   extends Component<State>
   implements IRtcEngineEventHandler
 {
@@ -49,8 +49,8 @@ export default class CreateDataStream
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -146,7 +146,7 @@ export default class CreateDataStream
     console.log('received message: ', remoteUid, streamId, data)
   }
 
-  onStreamMessageErrorEx?(
+  onStreamMessageError?(
     connection: RtcConnection,
     remoteUid: number,
     streamId: number,
@@ -159,7 +159,7 @@ export default class CreateDataStream
 
   getStreamId = () => {
     if (!this.streamId) {
-      this.streamId = this.rtcEngine?.createDataStream({
+      this.streamId = this.getRtcEngine().createDataStream({
         syncWithAudio: false,
         ordered: true,
       })
@@ -178,7 +178,7 @@ export default class CreateDataStream
     const streamId = this.getStreamId()
     console.log('current stream id', streamId)
     const buffer = Buffer.from(msg)
-    this.rtcEngine?.sendStreamMessage(streamId, buffer, buffer.length)
+    this.getRtcEngine().sendStreamMessage(streamId, buffer, buffer.length)
     console.log('streamId:', this.streamId, ' content:', msg)
   }
 
@@ -220,15 +220,18 @@ export default class CreateDataStream
         <JoinChannelBar
           onPressJoin={(channelId) => {
             this.setState({ channelId })
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-
-            this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

@@ -1,4 +1,5 @@
 import createAgoraRtcEngine, {
+  ChannelProfileType,
   ClientRoleType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
@@ -45,7 +46,7 @@ export default class MediaPlayer
 
   componentWillUnmount() {
     this.getMediaPlayer().unregisterPlayerSourceObserver(this)
-    this.rtcEngine?.release()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -109,7 +110,7 @@ export default class MediaPlayer
   }
 
   renderRightBar = () => {
-    const { isPlaying, duration } = this.state
+    const { isPlaying } = this.state
     return (
       <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
         <Search
@@ -148,7 +149,7 @@ export default class MediaPlayer
             />
             <Button
               onClick={() => {
-                const res = this.rtcEngine.joinChannelWithOptions(
+                const res = this.getRtcEngine().joinChannelWithOptions(
                   '',
                   config.defaultChannelId,
                   getRandomInt(),
@@ -159,6 +160,8 @@ export default class MediaPlayer
                     autoSubscribeVideo: false,
                     publishMediaPlayerAudioTrack: true,
                     publishMediaPlayerVideoTrack: true,
+                    channelProfile:
+                      ChannelProfileType.ChannelProfileLiveBroadcasting,
                     clientRoleType: ClientRoleType.ClientRoleBroadcaster,
                   }
                 )
@@ -169,7 +172,7 @@ export default class MediaPlayer
             </Button>
             <Button
               onClick={() => {
-                this.rtcEngine.leaveChannel()
+                this.getRtcEngine().leaveChannel()
               }}
             >
               UnPublish

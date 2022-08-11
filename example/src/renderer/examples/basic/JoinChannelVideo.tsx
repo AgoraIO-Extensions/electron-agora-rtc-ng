@@ -91,9 +91,9 @@ export default class JoinChannelVideo
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -169,30 +169,9 @@ export default class JoinChannelVideo
   }
 
   onPressJoinChannel = (channelId: string) => {
-    const { firstCameraId, secondCameraId, currentFps, currentResolution } =
-      this.state
     this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
-    // const start2Res = this.rtcEngine?.startSecondaryCameraCapture({
-    //   deviceId: secondCameraId,
-    //   format: {
-    //     width: currentResolution.width,
-    //     height: currentResolution.height,
-    //     fps: currentFps,
-    //   },
-    // })
-    // console.log('startSecondaryCameraCapture', start2Res)
-
-    const res1 = this.rtcEngine?.joinChannelEx(
+    this.getRtcEngine().enableVideo()
+    const res1 = this.getRtcEngine().joinChannelEx(
       '',
       {
         channelId,
@@ -206,19 +185,6 @@ export default class JoinChannelVideo
       }
     )
     console.log(`localUid1: ${localUid1} joinChannel2: ${res1}`)
-    // const res2 = this.rtcEngine?.joinChannelEx(
-    //   '',
-    //   {
-    //     channelId,
-    //     localUid: localUid2,
-    //   },
-    //   {
-    //     publishSecondaryCameraTrack: true,
-    //     clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    //     channelProfile: ChannelProfileType.ChannelProfileCommunication,
-    //   }
-    // )
-    // console.log(`localUid1: ${localUid2} joinChannel2: ${res2}`)
   }
 
   setVideoConfig = () => {
@@ -265,8 +231,8 @@ export default class JoinChannelVideo
             onPress={(res) => {
               const { currentFps, currentResolution } = this.state
               const deviceId = res.dropId
-              this.rtcEngine?.stopPrimaryCameraCapture()
-              const start1Res = this.rtcEngine?.startPrimaryCameraCapture({
+              this.getRtcEngine().stopPrimaryCameraCapture()
+              const start1Res = this.getRtcEngine().startPrimaryCameraCapture({
                 deviceId,
                 format: {
                   width: currentResolution.width,
@@ -332,7 +298,7 @@ export default class JoinChannelVideo
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
             this.setState({ isPreview: false })
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

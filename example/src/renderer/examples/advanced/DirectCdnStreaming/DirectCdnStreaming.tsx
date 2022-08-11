@@ -1,8 +1,7 @@
 import { Card, Input, List } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
+  ClientRoleType,
   DegradationPreference,
   DirectCdnStreamingError,
   DirectCdnStreamingState,
@@ -101,9 +100,9 @@ export default class DirectCdnStreaming
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -181,17 +180,13 @@ export default class DirectCdnStreaming
 
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
-    this.rtcEngine?.joinChannel('', channelId, '', getRandomInt(1, 9999999))
+    this.getRtcEngine().enableVideo()
+    const localUid = getRandomInt(1, 9999999)
+    console.log(`localUid: ${localUid}`)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   setVideoConfig = () => {
@@ -280,7 +275,6 @@ export default class DirectCdnStreaming
     const {
       audioRecordDevices,
       cameraDevices,
-      isJoined,
       cdnResult,
       isStartCDN,
       publishUrl,
@@ -353,7 +347,7 @@ export default class DirectCdnStreaming
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

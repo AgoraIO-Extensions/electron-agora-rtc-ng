@@ -63,8 +63,8 @@ export default class SendMetaData
       MetadataType.VideoMetadata
     )
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -155,7 +155,7 @@ export default class SendMetaData
       return
     }
     const buffer = Buffer.from(msg)
-    this.rtcEngine?.sendMetaData(
+    this.getRtcEngine().sendMetaData(
       {
         uid: localUid,
         size: buffer.length,
@@ -203,15 +203,18 @@ export default class SendMetaData
         <JoinChannelBar
           onPressJoin={(channelId) => {
             this.setState({ channelId })
-            this.rtcEngine.enableVideo()
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-
-            this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
+            this.getRtcEngine().enableVideo()
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

@@ -1,8 +1,7 @@
 import { Button, Card, Divider, List, Switch } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
+  ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngineEventHandler,
@@ -56,8 +55,8 @@ export default class AudioMixing
 
   state: State = {
     audioRecordDevices: [],
-    audioProfile: AudioProfileList.SpeechStandard,
-    audioScenario: AudioScenarioList.Standard,
+    audioProfile: AudioProfileList.Default,
+    audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
     effectCount: -1,
@@ -79,8 +78,8 @@ export default class AudioMixing
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -158,7 +157,7 @@ export default class AudioMixing
 
   setAudioProfile = () => {
     const { audioProfile, audioScenario } = this.state
-    this.rtcEngine?.setAudioProfile(audioProfile, audioScenario)
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
   }
 
   renderItem = ({ isMyself, uid }: User) => {
@@ -224,21 +223,21 @@ export default class AudioMixing
             max={100}
             title='Mixing Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustAudioMixingVolume(value)
+              this.getRtcEngine().adjustAudioMixingVolume(value)
             }}
           />
           <SliderBar
             max={100}
             title='Mixing Playback Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustAudioMixingPlayoutVolume(value)
+              this.getRtcEngine().adjustAudioMixingPlayoutVolume(value)
             }}
           />
           <SliderBar
             max={100}
             title='Mixing Publish Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustAudioMixingPublishVolume(value)
+              this.getRtcEngine().adjustAudioMixingPublishVolume(value)
             }}
           />
 
@@ -284,7 +283,7 @@ export default class AudioMixing
               this.setState({ effectGain: value })
             }}
           />
-          <br></br>
+          <br />
           <div
             style={{
               display: 'flex',
@@ -302,7 +301,7 @@ export default class AudioMixing
               }}
             />
           </div>
-          <br></br>
+          <br />
           <Button
             htmlType='button'
             onClick={() => {
@@ -353,8 +352,7 @@ export default class AudioMixing
           >
             Stop
           </Button>
-          <br></br>
-          <br></br>
+          <br />
           <SliderBar
             max={100}
             title='Effect Volume'
@@ -366,11 +364,10 @@ export default class AudioMixing
             max={100}
             title='Recording Signal Volume'
             onChange={(value) => {
-              this.rtcEngine?.adjustRecordingSignalVolume(value)
+              this.getRtcEngine().adjustRecordingSignalVolume(value)
             }}
           />
-          <br></br>
-
+          <br />
           <div
             style={{
               display: 'flex',
@@ -392,17 +389,18 @@ export default class AudioMixing
         <JoinChannelBar
           onPressJoin={(channelId: string) => {
             this.getRtcEngine().enableAudio()
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-            this.rtcEngine?.setAudioProfile(
-              AudioProfileType.AudioProfileDefault,
-              AudioScenarioType.AudioScenarioChatroom
-            )
-
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

@@ -42,7 +42,7 @@ interface State {
   rtmpResult: string
 }
 
-export default class SetLiveTranscoding
+export default class RTMPStreaming
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
@@ -66,9 +66,9 @@ export default class SetLiveTranscoding
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -180,19 +180,12 @@ export default class SetLiveTranscoding
 
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
-    this.rtcEngine?.enableAudio()
-    this.rtcEngine?.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-    this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
+    this.getRtcEngine().enableVideo()
     console.log(`localUid: ${localUid1}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid1)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid1, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   onPressRTMP = () => {
@@ -279,7 +272,7 @@ export default class SetLiveTranscoding
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

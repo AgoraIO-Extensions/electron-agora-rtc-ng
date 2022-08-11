@@ -1,8 +1,10 @@
 import { Card, List } from 'antd'
 import createAgoraRtcEngine, {
+  ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcStats,
@@ -34,15 +36,18 @@ interface State {
   isJoined: boolean
 }
 
-export default class StringUid extends Component<State> {
+export default class StringUid
+  extends Component<State>
+  implements IRtcEngineEventHandler
+{
   rtcEngine?: IRtcEngineEx
 
   audioDeviceManager: IAudioDeviceManager
 
   state: State = {
     audioRecordDevices: [],
-    audioProfile: AudioProfileList.SpeechStandard,
-    audioScenario: AudioScenarioList.Standard,
+    audioProfile: AudioProfileList.Default,
+    audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
   }
@@ -58,9 +63,9 @@ export default class StringUid extends Component<State> {
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -137,7 +142,7 @@ export default class StringUid extends Component<State> {
 
   setAudioProfile = () => {
     const { audioProfile, audioScenario } = this.state
-    this.rtcEngine?.setAudioProfile(audioProfile, audioScenario)
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
   }
 
   renderItem = ({ isMyself, uid }) => {
@@ -181,16 +186,19 @@ export default class StringUid extends Component<State> {
         <JoinChannelBar
           onPressJoin={(channelId) => {
             const rtcEngine = this.getRtcEngine()
-            rtcEngine.disableVideo()
             rtcEngine.enableAudio()
-            rtcEngine.setClientRole(ClientRoleType.ClientRoleBroadcaster)
             const stringUid = `test-${Number(
               `${new Date().getTime()}`.slice(7)
             )}}`
             rtcEngine.joinChannelWithUserAccount(
               config.token,
               channelId,
-              stringUid
+              stringUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
             )
           }}
           onPressLeave={() => {

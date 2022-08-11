@@ -1,25 +1,25 @@
-import { Card, Input, List, Switch } from 'antd'
+import { Button, Card, Divider, List } from 'antd'
 import createAgoraRtcEngine, {
+  AudioSpectrumData,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
+  IAudioSpectrumObserver,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcStats,
+  UserAudioSpectrumInfo,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
 import { Component } from 'react'
 import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
-import SliderBar from '../../component/SliderBar'
 import { AudioProfileList, AudioScenarioList } from '../../config'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt, getResourcePath } from '../../util'
-
-const { Search } = Input
+import { configMapToOptions, getRandomInt } from '../../util'
 
 interface User {
   isMyself: boolean
@@ -27,8 +27,8 @@ interface User {
 }
 
 interface Device {
-  deviceId: string
   deviceName: string
+  deviceId: string
 }
 
 interface State {
@@ -37,16 +37,13 @@ interface State {
   audioScenario: number
   allUser: User[]
   isJoined: boolean
-  beatsPerMeasure: number
-  beatsPerMinute: number
-  file1: string
-  file2: string
-  enableRhythm: boolean
+  intervalInMS: number
+  audioSpectrumData: number[]
 }
 
-export default class RhythmPlayer
-  extends Component<State>
-  implements IRtcEngineEventHandler
+export default class AudioSpectrum
+  extends Component<{}, State, any>
+  implements IRtcEngineEventHandler, IAudioSpectrumObserver
 {
   rtcEngine?: IRtcEngineEx
 
@@ -58,16 +55,13 @@ export default class RhythmPlayer
     audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
-    beatsPerMeasure: 4,
-    beatsPerMinute: 60,
-    file1: getResourcePath('dang.mp3'),
-    file2: getResourcePath('ding.mp3'),
-    enableRhythm: false,
+    intervalInMS: 100,
+    audioSpectrumData: [],
   }
 
   componentDidMount() {
     this.getRtcEngine().registerEventHandler(this)
-
+    this.getRtcEngine().registerAudioSpectrumObserver(this)
     this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
 
     this.setState({
@@ -78,6 +72,7 @@ export default class RhythmPlayer
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().unregisterAudioSpectrumObserver(this)
     this.getRtcEngine().leaveChannel()
     this.getRtcEngine().release()
   }
@@ -89,6 +84,7 @@ export default class RhythmPlayer
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
+
       console.log('initialize:', res)
     }
 
@@ -154,26 +150,25 @@ export default class RhythmPlayer
     console.error(err, msg)
   }
 
+  onLocalAudioSpectrum(data: AudioSpectrumData): boolean {
+    console.log('onLocalAudioSpectrum', data)
+    return true
+  }
+
+  onRemoteAudioSpectrum(
+    spectrums: UserAudioSpectrumInfo[],
+    spectrumNumber: number
+  ): boolean {
+    console.log('onRemoteAudioSpectrum', spectrums, spectrumNumber)
+    return true
+  }
+
   setAudioProfile = () => {
     const { audioProfile, audioScenario } = this.state
     this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
   }
 
-  onPressRhythmPlayer = (enableRhythm) => {
-    this.setState({ enableRhythm })
-    if (enableRhythm) {
-      const { beatsPerMeasure, beatsPerMinute, file1, file2 } = this.state
-      const res = this.getRtcEngine().startRhythmPlayer(file1, file2, {
-        beatsPerMeasure,
-        beatsPerMinute,
-      })
-      console.log('startRhythmPlayer\nres:', res)
-    } else {
-      this.getRtcEngine().stopRhythmPlayer()
-    }
-  }
-
-  renderItem = ({ isMyself, uid }) => {
+  renderItem = ({ isMyself, uid }: User) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
@@ -182,17 +177,10 @@ export default class RhythmPlayer
   }
 
   renderRightBar = () => {
-    const {
-      audioRecordDevices: audioDevices,
-      file1,
-      file2,
-      enableRhythm,
-      beatsPerMeasure,
-      beatsPerMinute,
-    } = this.state
+    const { audioRecordDevices } = this.state
     return (
-      <div className={styles.rightBar}>
-        <div>
+      <div className={styles.rightBar} style={{ width: '60%' }}>
+        <div style={{ overflow: 'auto' }}>
           <DropDownButton
             options={configMapToOptions(AudioProfileList)}
             onPress={(res) =>
@@ -209,85 +197,42 @@ export default class RhythmPlayer
           />
           <DropDownButton
             title='Microphone'
-            options={audioDevices.map((obj) => {
+            options={audioRecordDevices.map((obj) => {
               const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              return {
+                dropId: deviceId,
+                dropText: deviceName,
+                ...obj,
+              }
             })}
             onPress={(res) => {
               this.audioDeviceManager.setRecordingDevice(res.dropId)
             }}
           />
-          <br />
-          <div
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
+
+          <Divider>Audio Spectrum</Divider>
+          <Button
+            htmlType='button'
+            onClick={() => {
+              this.getRtcEngine().enableAudioSpectrumMonitor(
+                this.state.intervalInMS
+              )
             }}
           >
-            {'RhythmPlayer:   '}
-            <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
-              defaultChecked={enableRhythm}
-              onChange={this.onPressRhythmPlayer}
-            />
-          </div>
-          <br />
-          {!enableRhythm && (
-            <>
-              <Search
-                placeholder={'please input path or url'}
-                defaultValue={file1}
-                allowClear
-                enterButton={'File1'}
-                size='small'
-                onChange={(value) => {
-                  this.setState({ file1: value })
-                }}
-              />
-              <br />
-              <Search
-                placeholder={'please input path or url'}
-                defaultValue={file2}
-                allowClear
-                enterButton={'File2'}
-                size='small'
-                onChange={(value) => {
-                  this.setState({ file2: value })
-                }}
-              />
-              <br />
-
-              <SliderBar
-                max={9}
-                min={1}
-                value={beatsPerMeasure}
-                step={1}
-                title='Beats Per Measure'
-                onChange={(value) => {
-                  this.setState({
-                    beatsPerMeasure: value,
-                  })
-                }}
-              />
-              <SliderBar
-                max={360}
-                min={60}
-                value={beatsPerMinute}
-                step={1}
-                title='Beats Per Minute'
-                onChange={(value) => {
-                  this.setState({
-                    beatsPerMinute: value,
-                  })
-                }}
-              />
-            </>
-          )}
+            enableAudioSpectrumMonitor
+          </Button>
+          <Button
+            htmlType='button'
+            onClick={() => {
+              this.getRtcEngine().disableAudioSpectrumMonitor()
+            }}
+          >
+            disableAudioSpectrumMonitor
+          </Button>
         </div>
         <JoinChannelBar
-          onPressJoin={(channelId) => {
+          onPressJoin={(channelId: string) => {
+            this.getRtcEngine().enableAudio()
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
             this.getRtcEngine().joinChannelWithOptions(
@@ -311,7 +256,6 @@ export default class RhythmPlayer
 
   render() {
     const { isJoined, allUser } = this.state
-
     return (
       <div className={styles.screen}>
         <div className={styles.content}>

@@ -20,7 +20,7 @@ import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { configMapToOptions, getRandomInt } from '../../util'
 import { rgbImageBufferToBase64 } from '../../util/base64'
-import screenStyle from './CameraAndScreenShare.scss'
+import screenStyle from './SendMultiVideoStream.scss'
 
 const localUid1 = getRandomInt(1, 9999999)
 const localUid2 = getRandomInt(1, 9999999)
@@ -46,7 +46,7 @@ interface Device {
   deviceName: string
 }
 
-export default class CameraAndScreenShare
+export default class SendMultiVideoStream
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
@@ -78,7 +78,7 @@ export default class CameraAndScreenShare
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
+    this.getRtcEngine().unregisterEventHandler(this)
     this.onPressStop()
     this.getRtcEngine().release()
   }
@@ -174,7 +174,7 @@ export default class CameraAndScreenShare
 
     const rtcEngine = this.getRtcEngine()
     if (isScreen) {
-      this.rtcEngine.startScreenCaptureByDisplayId(
+      this.getRtcEngine().startScreenCaptureByDisplayId(
         sourceId,
         {
           x: 0,
@@ -193,7 +193,7 @@ export default class CameraAndScreenShare
         }
       )
     } else {
-      this.rtcEngine.startScreenCaptureByWindowId(
+      this.getRtcEngine().startScreenCaptureByWindowId(
         sourceId,
         {
           x: 0,
@@ -280,7 +280,8 @@ export default class CameraAndScreenShare
     if (!currentShareResolution || !currentShareFps) {
       return
     }
-    const res = this.rtcEngine.updateScreenCaptureParameters({
+
+    this.getRtcEngine().updateScreenCaptureParameters({
       dimensions: currentShareResolution,
       frameRate: currentShareFps,
       captureMouseCursor,
