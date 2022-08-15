@@ -40,7 +40,8 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "yuv-buffer": "1.0.0",
-    "yuv-canvas": "1.2.6"
+    "yuv-canvas": "1.2.6",
+    "lodash.isequal": "^4.5.0"
   },
   "files": [
     "js",
@@ -76,7 +77,6 @@
     "gulp-zip": "^5.1.0",
     "husky": "4.2.5",
     "jsonfile": "^6.0.1",
-    "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "prettier": "^2.0.5",
     "release-it": "^15.0.0",
