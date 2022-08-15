@@ -220,7 +220,7 @@ export default class VirtualBackground
     } else {
       virtualBackgroundSource = {
         background_source_type: BackgroundSourceType.BackgroundImg,
-        source: getResourcePath('background.png'),
+        source: getResourcePath('png.png'),
         blur_degree: BackgroundBlurDegree.BlurDegreeHigh,
       }
     }

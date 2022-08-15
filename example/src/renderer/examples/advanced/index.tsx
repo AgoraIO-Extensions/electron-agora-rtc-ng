@@ -20,6 +20,8 @@ import AudioSpectrum from './AudioSpectrum/AudioSpectrum'
 import BeautyEffect from './BeautyEffect/BeautyEffect'
 import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame'
 import MediaRecorder from './MediaRecorder/MediaRecorder'
+import PlayEffect from './PlayEffect/PlayEffect'
+import PushVideoFrame from './PushVideoFrame/PushVideoFrame'
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
@@ -62,6 +64,12 @@ const advanceRoute = [
   },
   { path: '/MediaPlayer', component: MediaPlayer, title: 'MediaPlayer' },
   { path: '/MediaRecorder', component: MediaRecorder, title: 'MediaRecorder' },
+  { path: '/PlayEffect', component: PlayEffect, title: 'PlayEffect' },
+  {
+    path: '/PushVideoFrame',
+    component: PushVideoFrame,
+    title: 'PushVideoFrame',
+  },
   {
     path: '/JoinMultipleChannel',
     component: JoinMultipleChannel,
