@@ -207,7 +207,10 @@ export default class TakeSnapshot
   }
 
   onPressTakeSnapshot = () => {
-    const filePath = path.resolve(os.homedir(), `./snapshot${getRandomInt()}`)
+    const filePath = path.resolve(
+      os.homedir(),
+      `./snapshot${getRandomInt()}.jpg`
+    )
     const res = this.getRtcEngine().takeSnapshot(0, filePath)
     console.log(`takeSnapshot ${filePath}: `, res)
   }
