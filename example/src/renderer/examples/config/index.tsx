@@ -10,14 +10,14 @@ export const AudioProfileList = {
   SpeechStandard: AudioProfileType.AudioProfileSpeechStandard, //1
   MusicStandard: AudioProfileType.AudioProfileMusicStandard, //2
   MusicStandardStereo: AudioProfileType.AudioProfileMusicStandardStereo, //3
-  MusicHigh: AudioProfileType.AudioProfileMusicHighQuality, //4
-  MusicHighStereo: AudioProfileType.AudioProfileMusicHighQualityStereo, //5
+  MusicHighQuality: AudioProfileType.AudioProfileMusicHighQuality, //4
+  MusicHighQualityStereo: AudioProfileType.AudioProfileMusicHighQualityStereo, //5
   IOT: AudioProfileType.AudioProfileIot, //6
   NUM: AudioProfileType.AudioProfileNum,
 }
 export const AudioScenarioList = {
-  Standard: AudioScenarioType.AudioScenarioDefault, //0
-  HighQuality: AudioScenarioType.AudioScenarioGameStreaming, //3
+  Default: AudioScenarioType.AudioScenarioDefault, //0
+  GameStreaming: AudioScenarioType.AudioScenarioGameStreaming, //3
   Chatroom: AudioScenarioType.AudioScenarioChatroom, //5
   Num: AudioScenarioType.AudioScenarioNum, //8
 }
@@ -158,7 +158,7 @@ export const EqualizationReverbMap = {
     audioReverbType: 3,
     title: 'Wet Delay',
   },
-  Strength: {
+  'Strength': {
     min: 0,
     max: 100,
     defaultValue: 0,

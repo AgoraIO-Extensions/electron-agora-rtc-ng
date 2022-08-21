@@ -1,14 +1,11 @@
 import { Card, List, Switch } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
@@ -18,7 +15,6 @@ import createAgoraRtcEngine, {
   MediaSourceType,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   TranscodingVideoStream,
   UserOfflineReasonType,
@@ -95,10 +91,10 @@ export default class LocalVideoTranscoder
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
+    this.getRtcEngine().unregisterEventHandler(this)
     this.getMediaPlayer().unregisterPlayerSourceObserver(this)
     this.onPressLeaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -107,7 +103,7 @@ export default class LocalVideoTranscoder
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({
-        appId: config.appID,
+        appId: config.appId,
       })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
@@ -230,29 +226,22 @@ export default class LocalVideoTranscoder
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
     const { videoDeviceId } = this.state
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-    this.rtcEngine.startPrimaryCameraCapture({
+    this.getRtcEngine().enableVideo()
+    this.getRtcEngine().startPrimaryCameraCapture({
       deviceId: videoDeviceId,
     })
     this.enableScreenShare(true)
     const localTranscoderConfiguration = this.getLocalTranscoderConfiguration()
-    this.rtcEngine.startLocalVideoTranscoder(localTranscoderConfiguration)
+    this.getRtcEngine().startLocalVideoTranscoder(localTranscoderConfiguration)
     this.getMediaPlayer().open(
       'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       0
     )
-    this.rtcEngine.joinChannelWithOptions('', channelId, localUid1, {
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid1, {
       publishCameraTrack: false,
       publishScreenTrack: false,
       publishTrancodedVideoTrack: true,
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     })
   }
@@ -352,8 +341,8 @@ export default class LocalVideoTranscoder
   onPressLeaveChannel = () => {
     this.enableScreenShare(false)
     this.getMediaPlayer().stop()
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.stopLocalVideoTranscoder()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().stopLocalVideoTranscoder()
   }
 
   updateTranscoderConfiguration = () => {
@@ -406,7 +395,7 @@ export default class LocalVideoTranscoder
           />
           {isJoined && (
             <>
-              <br></br>
+              <br />
               <div
                 style={{
                   display: 'flex',
@@ -427,7 +416,7 @@ export default class LocalVideoTranscoder
                   }}
                 />
               </div>
-              <br></br>
+              <br />
               <div
                 style={{
                   display: 'flex',
@@ -448,7 +437,7 @@ export default class LocalVideoTranscoder
                   }}
                 />
               </div>
-              <br></br>
+              <br />
               <div
                 style={{
                   display: 'flex',

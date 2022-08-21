@@ -1,21 +1,17 @@
 import { Card, Divider, List, Switch } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
-  ContentInspectDeviceType,
+  ClientRoleType,
   ContentInspectResult,
   ContentInspectType,
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -51,7 +47,6 @@ interface State {
   currentResolution?: { width: number; height: number }
   contentInspectResult: string
 }
-const localUid = getRandomInt(1, 9999999)
 
 export default class ContentInspect
   extends Component<{}, State, any>
@@ -85,9 +80,9 @@ export default class ContentInspect
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -95,9 +90,9 @@ export default class ContentInspect
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({
-        appId: config.appID,
-      })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
+
       console.log('initialize:', res)
     }
 
@@ -165,18 +160,13 @@ export default class ContentInspect
 
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
+    this.getRtcEngine().enableVideo()
+    const localUid = getRandomInt(1, 9999999)
     console.log(`localUid: ${localUid}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   setVideoConfig = () => {
@@ -196,6 +186,7 @@ export default class ContentInspect
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
     })
   }
+
   onContentInspectResult(result: ContentInspectResult): void {
     console.log('onContentInspectResult', result)
 
@@ -217,30 +208,21 @@ export default class ContentInspect
   }
 
   onPressContentInspect = (enable) => {
-    const res = this.getRtcEngine().SetContentInspect({
-      enable,
-      DeviceWork: true,
-      CloudWork: false,
-      DeviceworkType: ContentInspectDeviceType.ContentInspectDeviceAgora,
-      extraInfo: '',
+    const res = this.getRtcEngine().enableContentInspect(enable, {
       modules: [
         {
           type: ContentInspectType.ContentInspectModeration,
-          frequency: 2,
+          interval: 2,
         },
       ],
       moduleCount: 1,
     })
-    console.log('enableSpatialAudio', enable, '\nres:', res)
+    console.log('enableContentInspect', enable, '\nres:', res)
   }
 
   renderRightBar = () => {
-    const {
-      audioRecordDevices,
-      cameraDevices,
-      isJoined,
-      contentInspectResult,
-    } = this.state
+    const { audioRecordDevices, cameraDevices, contentInspectResult } =
+      this.state
 
     return (
       <div className={styles.rightBar}>
@@ -310,7 +292,7 @@ export default class ContentInspect
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

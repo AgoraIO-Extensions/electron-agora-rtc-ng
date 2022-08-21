@@ -1,12 +1,11 @@
 import createAgoraRtcEngine, {
+  ChannelProfileType,
   ClientRoleType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
-  IRtcEngine,
   IRtcEngineEx,
   MediaPlayerError,
   MediaPlayerState,
-  RtcEngineExImplInternal,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
 import { Button, Input } from 'antd'
@@ -16,6 +15,7 @@ import Window from '../../component/Window'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
+
 const { Search } = Input
 
 interface State {
@@ -46,7 +46,7 @@ export default class MediaPlayer
 
   componentWillUnmount() {
     this.getMediaPlayer().unregisterPlayerSourceObserver(this)
-    this.rtcEngine?.release()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -54,7 +54,7 @@ export default class MediaPlayer
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -75,12 +75,13 @@ export default class MediaPlayer
     ec: MediaPlayerError
   ): void {
     switch (state) {
-      case MediaPlayerState.PlayerStateOpenCompleted:
+      case MediaPlayerState.PlayerStateOpenCompleted: {
         console.log('onPlayerSourceStateChanged1:open finish')
         this.getMediaPlayer().play()
         const duration = this.getMediaPlayer().getDuration()
         this.setState({ duration })
         break
+      }
       default:
         break
     }
@@ -109,7 +110,7 @@ export default class MediaPlayer
   }
 
   renderRightBar = () => {
-    const { isPlaying, duration } = this.state
+    const { isPlaying } = this.state
     return (
       <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
         <Search
@@ -148,9 +149,9 @@ export default class MediaPlayer
             />
             <Button
               onClick={() => {
-                const res = this.rtcEngine.joinChannelWithOptions(
+                const res = this.getRtcEngine().joinChannelWithOptions(
                   '',
-                  config.defaultChannelId,
+                  config.channelId,
                   getRandomInt(),
                   {
                     publishMediaPlayerId:
@@ -159,6 +160,8 @@ export default class MediaPlayer
                     autoSubscribeVideo: false,
                     publishMediaPlayerAudioTrack: true,
                     publishMediaPlayerVideoTrack: true,
+                    channelProfile:
+                      ChannelProfileType.ChannelProfileLiveBroadcasting,
                     clientRoleType: ClientRoleType.ClientRoleBroadcaster,
                   }
                 )
@@ -169,7 +172,7 @@ export default class MediaPlayer
             </Button>
             <Button
               onClick={() => {
-                this.rtcEngine.leaveChannel()
+                this.getRtcEngine().leaveChannel()
               }}
             >
               UnPublish

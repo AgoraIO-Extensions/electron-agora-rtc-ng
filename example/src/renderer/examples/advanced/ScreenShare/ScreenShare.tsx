@@ -1,8 +1,6 @@
 import createAgoraRtcEngine, {
   ClientRoleType,
-  IRtcEngine,
   IRtcEngineEx,
-  RtcEngineExImplInternal,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
 import { Card, message, Switch } from 'antd'
@@ -84,7 +82,7 @@ export default class ScreenShare extends Component<{}, State, any> {
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -119,7 +117,7 @@ export default class ScreenShare extends Component<{}, State, any> {
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: true,
         publishCustomAudioTrack: false,
         publishCustomVideoTrack: false,
@@ -162,7 +160,7 @@ export default class ScreenShare extends Component<{}, State, any> {
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: false,
         publishSecondaryScreenTrack: true,
         publishCustomAudioTrack: false,
@@ -238,7 +236,7 @@ export default class ScreenShare extends Component<{}, State, any> {
     if (!currentFps || !currentResolution) {
       return
     }
-    const res = this.rtcEngine.updateScreenCaptureParameters({
+    const res = this.getRtcEngine().updateScreenCaptureParameters({
       dimensions: currentResolution,
       frameRate: currentFps,
       captureMouseCursor: captureMouseCursor,

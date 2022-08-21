@@ -3,11 +3,9 @@ import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -16,8 +14,10 @@ import JoinChannelBar from '../../component/JoinChannelBar'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
-import createDataStreamStyle from './CreateDataStream.scss'
+import createDataStreamStyle from './StreamMessage.scss'
+
 const { Search } = Input
+
 interface User {
   isMyself: boolean
   uid: number
@@ -29,7 +29,7 @@ interface State {
   msgs: string[]
 }
 
-export default class CreateDataStream
+export default class StreamMessage
   extends Component<State>
   implements IRtcEngineEventHandler
 {
@@ -49,8 +49,8 @@ export default class CreateDataStream
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -58,7 +58,7 @@ export default class CreateDataStream
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -137,15 +137,16 @@ export default class CreateDataStream
     length: number,
     sentTs: number
   ): void {
-    const string = String.fromCharCode.apply(null, data)
-    const formatStr = decodeURIComponent(string)
     this.setState({
-      msgs: [...this.state.msgs, `from:${remoteUid} message:${formatStr}`],
+      msgs: [
+        ...this.state.msgs,
+        `from:${remoteUid} message:${data.toString()}`,
+      ],
     })
     console.log('received message: ', remoteUid, streamId, data)
   }
 
-  onStreamMessageErrorEx?(
+  onStreamMessageError?(
     connection: RtcConnection,
     remoteUid: number,
     streamId: number,
@@ -153,12 +154,12 @@ export default class CreateDataStream
     missed: number,
     cached: number
   ): void {
-    console.log('onStreamMessageErrorEx')
+    console.log('onStreamMessageError')
   }
 
   getStreamId = () => {
     if (!this.streamId) {
-      this.streamId = this.rtcEngine?.createDataStream({
+      this.streamId = this.getRtcEngine().createDataStream({
         syncWithAudio: false,
         ordered: true,
       })
@@ -176,14 +177,8 @@ export default class CreateDataStream
     // Each user can create up to five data streams during the lifecycle of the agoraKit
     const streamId = this.getStreamId()
     console.log('current stream id', streamId)
-    const asciiStringArray = [...encodeURIComponent(msg)].map((char) =>
-      char.charCodeAt(0)
-    )
-    this.rtcEngine?.sendStreamMessage(
-      streamId,
-      new Uint8Array(asciiStringArray),
-      asciiStringArray.length
-    )
+    const buffer = Buffer.from(msg)
+    this.getRtcEngine().sendStreamMessage(streamId, buffer, buffer.length)
     console.log('streamId:', this.streamId, ' content:', msg)
   }
 
@@ -225,15 +220,18 @@ export default class CreateDataStream
         <JoinChannelBar
           onPressJoin={(channelId) => {
             this.setState({ channelId })
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-
-            this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

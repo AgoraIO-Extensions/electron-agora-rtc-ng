@@ -1,15 +1,11 @@
 import { Button, Card, Input, List } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
@@ -40,7 +36,7 @@ interface State {
   isJoined2: boolean
 }
 
-export default class MultipleChannel
+export default class JoinMultipleChannel
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
@@ -60,9 +56,9 @@ export default class MultipleChannel
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
+    this.getRtcEngine().unregisterEventHandler(this)
     this.onPressLeaveAll()
-    this.rtcEngine?.release()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -70,7 +66,7 @@ export default class MultipleChannel
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -164,25 +160,17 @@ export default class MultipleChannel
   onPressJoinChannel1 = (channelId) => {
     console.log('onPressJoinChannel1', channelId)
     this.setState({ channel1: channelId })
-    this.getRtcEngine().setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-    this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
-    const res = this.rtcEngine?.joinChannelEx(
+    const res = this.getRtcEngine().joinChannelEx(
       '',
       { localUid: localUid1, channelId },
       {
         autoSubscribeAudio: false,
         autoSubscribeVideo: true,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishCameraTrack: true,
         publishScreenTrack: false,
         enableAudioRecordingOrPlayout: false,
+        channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
     )
@@ -192,25 +180,17 @@ export default class MultipleChannel
   onPressJoinChannel2 = (channelId) => {
     console.log('onPressJoinChannel2', channelId)
     this.setState({ channel2: channelId })
-    this.getRtcEngine().setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-    this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
-    const res = this.rtcEngine?.joinChannelEx(
+    const res = this.getRtcEngine().joinChannelEx(
       '',
       { localUid: localUid2, channelId },
       {
         autoSubscribeAudio: false,
         autoSubscribeVideo: true,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishCameraTrack: true,
         publishScreenTrack: false,
         enableAudioRecordingOrPlayout: false,
+        channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
     )
@@ -219,11 +199,11 @@ export default class MultipleChannel
 
   onPressLeaveAll = () => {
     const { channel1, channel2 } = this.state
-    this.rtcEngine.leaveChannelEx({
+    this.getRtcEngine().leaveChannelEx({
       localUid: localUid1,
       channelId: channel1,
     })
-    this.rtcEngine.leaveChannelEx({
+    this.getRtcEngine().leaveChannelEx({
       localUid: localUid2,
       channelId: channel2,
     })

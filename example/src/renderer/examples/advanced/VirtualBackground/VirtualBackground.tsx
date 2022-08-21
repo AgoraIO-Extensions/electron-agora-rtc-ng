@@ -5,17 +5,16 @@ import createAgoraRtcEngine, {
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
+  ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   MediaSourceType,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoCodecType,
@@ -53,6 +52,7 @@ interface State {
   enableVirtual: boolean
   isColorMode: boolean
 }
+
 const localUid = getRandomInt(1, 9999999)
 
 export default class VirtualBackground
@@ -97,9 +97,9 @@ export default class VirtualBackground
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -108,7 +108,7 @@ export default class VirtualBackground
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({
-        appId: config.appID,
+        appId: config.appId,
       })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
@@ -178,18 +178,12 @@ export default class VirtualBackground
 
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
+    this.getRtcEngine().enableVideo()
     console.log(`localUid: ${localUid}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   setVideoConfig = () => {
@@ -226,13 +220,14 @@ export default class VirtualBackground
     } else {
       virtualBackgroundSource = {
         background_source_type: BackgroundSourceType.BackgroundImg,
-        source: getResourcePath('background.png'),
+        source: getResourcePath('png.png'),
         blur_degree: BackgroundBlurDegree.BlurDegreeHigh,
       }
     }
     this.getRtcEngine().enableVirtualBackground(
       enableVirtual,
-      virtualBackgroundSource
+      virtualBackgroundSource,
+      {}
     )
 
     this.setState({ enableVirtual })
@@ -338,7 +333,7 @@ export default class VirtualBackground
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

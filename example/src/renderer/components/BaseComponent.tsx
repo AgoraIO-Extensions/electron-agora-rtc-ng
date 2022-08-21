@@ -1,0 +1,249 @@
+import React, { Component, ReactNode } from 'react'
+import {
+  ErrorCodeType,
+  IRtcEngine,
+  IRtcEngineEventHandler,
+  IRtcEngineEx,
+  RtcConnection,
+  RtcStats,
+  UserOfflineReasonType,
+  VideoSourceType,
+} from 'electron-agora-rtc-ng'
+import STYLES from '../examples/config/public.scss'
+import { Card, Divider, List } from 'antd'
+import JoinChannelBar from '../examples/component/JoinChannelBar'
+import Window from '../examples/component/Window'
+
+export interface BaseComponentState {
+  appId: string
+  enableVideo: boolean
+  channelId?: string
+  token?: string
+  uid?: number
+  joinChannelSuccess?: boolean
+  remoteUsers?: number[]
+  startPreview?: boolean
+}
+
+export interface BaseAudioComponentState extends BaseComponentState {
+  channelId: string
+  token: string
+  uid: number
+  joinChannelSuccess: boolean
+  remoteUsers: number[]
+}
+
+export interface BaseVideoComponentState extends BaseAudioComponentState {
+  startPreview: boolean
+}
+
+export abstract class BaseComponent<
+    P = {},
+    S extends BaseComponentState = BaseComponentState
+  >
+  extends Component<P, S>
+  implements IRtcEngineEventHandler
+{
+  protected engine?: IRtcEngine
+
+  protected constructor(props: P) {
+    super(props)
+    this.state = this.createState()
+  }
+
+  componentDidMount() {
+    this.initRtcEngine()
+  }
+
+  componentWillUnmount() {
+    this.releaseRtcEngine()
+  }
+
+  protected abstract createState(): S
+
+  protected abstract initRtcEngine(): void
+
+  protected joinChannel() {}
+
+  protected leaveChannel() {}
+
+  protected abstract releaseRtcEngine(): void
+
+  onError(err: ErrorCodeType, msg: string) {
+    this.error('onError', 'err', err, 'msg', msg)
+  }
+
+  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
+    this.info(
+      'onJoinChannelSuccess',
+      'connection',
+      connection,
+      'elapsed',
+      elapsed
+    )
+    this.setState({ joinChannelSuccess: true })
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats)
+    this.setState(this.createState())
+  }
+
+  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
+    this.info(
+      'onUserJoined',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'elapsed',
+      elapsed
+    )
+    const { remoteUsers } = this.state
+    if (remoteUsers === undefined) return
+    this.setState({
+      remoteUsers: [...remoteUsers!, remoteUid],
+    })
+  }
+
+  onUserOffline(
+    connection: RtcConnection,
+    remoteUid: number,
+    reason: UserOfflineReasonType
+  ) {
+    this.info(
+      'onUserOffline',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'reason',
+      reason
+    )
+    const { remoteUsers } = this.state
+    if (remoteUsers === undefined) return
+    this.setState({
+      remoteUsers: remoteUsers!.filter((value) => value !== remoteUid),
+    })
+  }
+
+  render() {
+    const right = this.renderRight()
+    return (
+      <div className={STYLES.screen}>
+        <div className={STYLES.content}>{this.renderUsers()}</div>
+        <div className={STYLES.rightBar}>
+          <div>
+            {right ? (
+              <>
+                <Divider>The Configuration of {this.constructor.name}</Divider>
+                <Divider />
+                <div>{right}</div>
+              </>
+            ) : undefined}
+          </div>
+          {this.renderBottom()}
+        </div>
+      </div>
+    )
+  }
+
+  protected renderBottom(): ReactNode {
+    const { channelId, joinChannelSuccess } = this.state
+    return (
+      <>
+        <JoinChannelBar
+          onPressJoin={this.joinChannel.bind(this)}
+          onPressLeave={this.leaveChannel.bind(this)}
+        />
+      </>
+    )
+  }
+
+  protected renderUsers(): ReactNode {
+    const { enableVideo, startPreview, joinChannelSuccess, remoteUsers, uid } =
+      this.state
+    return (
+      <>
+        {startPreview || joinChannelSuccess ? (
+          <List
+            style={{ width: '100%' }}
+            grid={
+              enableVideo
+                ? {
+                    gutter: 16,
+                    xs: 1,
+                    sm: 1,
+                    md: 1,
+                    lg: 1,
+                    xl: 1,
+                    xxl: 2,
+                  }
+                : {
+                    gutter: 16,
+                    column: 4,
+                  }
+            }
+            dataSource={[uid, ...remoteUsers]}
+            renderItem={this.renderVideo.bind(this)}
+          />
+        ) : undefined}
+      </>
+    )
+  }
+
+  private renderVideo(uid: number): ReactNode {
+    const { channelId, enableVideo } = this.state
+    return (
+      <List.Item>
+        <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
+          {enableVideo ? (
+            <Window
+              uid={uid}
+              rtcEngine={this.engine as IRtcEngineEx}
+              videoSourceType={
+                uid === 0
+                  ? VideoSourceType.VideoSourceCamera
+                  : VideoSourceType.VideoSourceRemote
+              }
+              channelId={channelId}
+            />
+          ) : undefined}
+        </Card>
+      </List.Item>
+    )
+  }
+
+  protected renderRight(): ReactNode {
+    return undefined
+  }
+
+  private _logSink(
+    level: 'debug' | 'log' | 'info' | 'warn' | 'error',
+    message?: any,
+    ...optionalParams: any[]
+  ): string {
+    console[level](message, optionalParams)
+    return `${optionalParams.map((v) => JSON.stringify(v))}`
+  }
+
+  protected debug(message?: any, ...optionalParams: any[]): void {
+    alert(this._logSink('debug', message, optionalParams))
+  }
+
+  protected log(message?: any, ...optionalParams: any[]): void {
+    this._logSink('log', message, optionalParams)
+  }
+
+  protected info(message?: any, ...optionalParams: any[]): void {
+    this._logSink('info', message, optionalParams)
+  }
+
+  protected warn(message?: any, ...optionalParams: any[]): void {
+    this._logSink('warn', message, optionalParams)
+  }
+
+  protected error(message?: any, ...optionalParams: any[]): void {
+    this._logSink('error', message, optionalParams)
+  }
+}

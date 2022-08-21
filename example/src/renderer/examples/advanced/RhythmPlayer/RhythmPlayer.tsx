@@ -1,13 +1,12 @@
 import { Card, Input, List, Switch } from 'antd'
 import createAgoraRtcEngine, {
+  ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -31,6 +30,7 @@ interface Device {
   deviceId: string
   deviceName: string
 }
+
 interface State {
   audioRecordDevices: Device[]
   audioProfile: number
@@ -54,8 +54,8 @@ export default class RhythmPlayer
 
   state: State = {
     audioRecordDevices: [],
-    audioProfile: AudioProfileList.SpeechStandard,
-    audioScenario: AudioScenarioList.Standard,
+    audioProfile: AudioProfileList.Default,
+    audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
     beatsPerMeasure: 4,
@@ -77,9 +77,9 @@ export default class RhythmPlayer
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -87,7 +87,7 @@ export default class RhythmPlayer
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -156,7 +156,7 @@ export default class RhythmPlayer
 
   setAudioProfile = () => {
     const { audioProfile, audioScenario } = this.state
-    this.rtcEngine?.setAudioProfile(audioProfile, audioScenario)
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
   }
 
   onPressRhythmPlayer = (enableRhythm) => {
@@ -217,7 +217,7 @@ export default class RhythmPlayer
               this.audioDeviceManager.setRecordingDevice(res.dropId)
             }}
           />
-          <br></br>
+          <br />
           <div
             style={{
               display: 'flex',
@@ -233,7 +233,7 @@ export default class RhythmPlayer
               onChange={this.onPressRhythmPlayer}
             />
           </div>
-          <br></br>
+          <br />
           {!enableRhythm && (
             <>
               <Search
@@ -288,14 +288,18 @@ export default class RhythmPlayer
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {
-            const rtcEngine = this.getRtcEngine()
-
-            rtcEngine.disableVideo()
-            rtcEngine.enableAudio()
-            rtcEngine.setClientRole(ClientRoleType.ClientRoleBroadcaster)
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

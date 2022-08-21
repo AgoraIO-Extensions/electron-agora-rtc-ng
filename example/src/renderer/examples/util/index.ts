@@ -1,4 +1,5 @@
 import path from 'path'
+
 export const objToArray = (obj) =>
   Object.keys(obj).map((key) => ({ key, value: obj[key] }))
 
@@ -7,6 +8,16 @@ export const configMapToOptions = (obj) =>
     dropId: value,
     dropText: key,
   }))
+
+export const configEnumToOptions = (enumValue) => {
+  const items = Object.values(enumValue)
+  const keys = items.filter((v) => typeof v === 'string') as string[]
+  const values = items.filter((v) => typeof v === 'number') as number[]
+  return keys.map((value, index) => ({
+    dropId: values[index],
+    dropText: value,
+  }))
+}
 
 export const isDebug = () => {
   return process.env.NODE_ENV === 'development'
@@ -34,4 +45,3 @@ export const getRandomInt = (min = 1, max = 99999) => {
   max = Math.floor(max)
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
-export default {}

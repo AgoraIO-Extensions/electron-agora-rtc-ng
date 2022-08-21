@@ -1,15 +1,12 @@
 import { Card, List } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
+  ClientRoleType,
   ErrorCodeType,
   IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
@@ -35,6 +32,7 @@ interface Device {
   deviceName: string
   deviceId: string
 }
+
 interface State {
   audioRecordDevices: Device[]
   audioEffectMode: number
@@ -81,9 +79,9 @@ export default class VoiceChanger
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().unregisterEventHandler(this)
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -91,7 +89,7 @@ export default class VoiceChanger
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -112,7 +110,7 @@ export default class VoiceChanger
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
@@ -133,7 +131,7 @@ export default class VoiceChanger
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
@@ -196,7 +194,7 @@ export default class VoiceChanger
             title='Voice Beautifier'
             options={configMapToOptions(VoiceBeautifierMap)}
             onPress={(res) => {
-              this.rtcEngine?.setVoiceBeautifierPreset(res.dropId)
+              this.getRtcEngine().setVoiceBeautifierPreset(res.dropId)
             }}
           />
           <DropDownButton
@@ -205,7 +203,7 @@ export default class VoiceChanger
             onPress={(res) => {
               const mode = res.dropId
               this.setState({ audioEffectMode: mode })
-              this.rtcEngine?.setAudioEffectPreset(mode)
+              this.getRtcEngine().setAudioEffectPreset(mode)
             }}
           />
           {AudioEffectMap.PITCH_CORRECTION === audioEffectMode && (
@@ -219,7 +217,7 @@ export default class VoiceChanger
                     { pitchCorrectionParam1: value },
                     this.setAudioEffectParameters
                   )
-                  this.rtcEngine?.adjustRecordingSignalVolume(value)
+                  this.getRtcEngine().adjustRecordingSignalVolume(value)
                 }}
               />
               <SliderBar
@@ -299,17 +297,18 @@ export default class VoiceChanger
         </div>
         <JoinChannelBar
           onPressJoin={(channelId: string) => {
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-            this.rtcEngine?.setAudioProfile(
-              AudioProfileType.AudioProfileDefault,
-              AudioScenarioType.AudioScenarioChatroom
-            )
-
             const localUid = getRandomInt(1, 9999999)
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

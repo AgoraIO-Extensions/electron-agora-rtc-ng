@@ -27,17 +27,21 @@
     "release": "release-it",
     "test": "jest",
     "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\""
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "example": "yarn --cwd example",
+    "bootstrap": "yarn example && yarn"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_3.8.201_DCG_Windows_Video_20220704_1236.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_3.8.201_DCG_Mac_Video_20220704_1235.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0_DCG_Windows_Video_20220815_1241.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0_DCG_Mac_Video_20220815_1204.zip",
     "no_symbol": true,
-    "prebuilt": true
+    "prebuilt": false
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "yuv-buffer": "1.0.0",
-    "yuv-canvas": "1.2.6"
+    "yuv-canvas": "1.2.6",
+    "lodash.isequal": "^4.5.0"
   },
   "files": [
     "js",
@@ -73,7 +77,6 @@
     "gulp-zip": "^5.1.0",
     "husky": "4.2.5",
     "jsonfile": "^6.0.1",
-    "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "prettier": "^2.0.5",
     "release-it": "^15.0.0",
@@ -112,14 +115,38 @@
     }
   },
   "eslintConfig": {
-    "root": true,
+    "env": {
+      "node": true,
+      "browser": true,
+      "shared-node-browser": true
+    },
     "parser": "@typescript-eslint/parser",
     "extends": [
+      "prettier",
+      "eslint:recommended"
+    ],
+    "plugins": [
       "prettier"
     ],
     "rules": {
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "off"
+      "@typescript-eslint/no-unused-vars": "off",
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    },
+    "globals": {
+      "define": "readonly",
+      "obj_attrib": "readonly",
+      "info": "readonly",
+      "NodeJS": "readonly"
     }
   },
   "eslintIgnore": [

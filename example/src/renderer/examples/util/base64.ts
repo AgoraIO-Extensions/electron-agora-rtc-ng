@@ -41,7 +41,7 @@ export const rgbImageBufferToBase64 = (target) => {
 
   const rowBytes = width * 4
   for (let row = 0; row < height; row++) {
-    const srow = height - 1 - row
+    const srow = row
     const imageData = ctx.createImageData(width, 1)
     const start = srow * width * 4
     for (let i = 0; i < rowBytes; i++) {
@@ -51,6 +51,5 @@ export const rgbImageBufferToBase64 = (target) => {
     ctx.putImageData(imageData, 0, row)
   }
 
-  const dataURL = canvas.toDataURL('image/png')
-  return dataURL
+  return canvas.toDataURL('image/png')
 }

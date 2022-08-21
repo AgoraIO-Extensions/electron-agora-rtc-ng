@@ -3,12 +3,10 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
-  RtcEngineExImplInternal,
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
@@ -22,7 +20,7 @@ import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { configMapToOptions, getRandomInt } from '../../util'
 import { rgbImageBufferToBase64 } from '../../util/base64'
-import screenStyle from './CameraAndScreenShare.scss'
+import screenStyle from './SendMultiVideoStream.scss'
 
 const localUid1 = getRandomInt(1, 9999999)
 const localUid2 = getRandomInt(1, 9999999)
@@ -42,12 +40,13 @@ interface State {
   currentShareResolution?: { width: number; height: number }
   captureMouseCursor: boolean
 }
+
 interface Device {
   deviceId: string
   deviceName: string
 }
 
-export default class CameraAndScreenShare
+export default class SendMultiVideoStream
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
@@ -79,7 +78,7 @@ export default class CameraAndScreenShare
   }
 
   componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
+    this.getRtcEngine().unregisterEventHandler(this)
     this.onPressStop()
     this.getRtcEngine().release()
   }
@@ -115,7 +114,7 @@ export default class CameraAndScreenShare
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -144,7 +143,7 @@ export default class CameraAndScreenShare
       },
       {
         publishCameraTrack: true,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: false,
         publishCustomAudioTrack: false,
         publishCustomVideoTrack: false,
@@ -175,7 +174,7 @@ export default class CameraAndScreenShare
 
     const rtcEngine = this.getRtcEngine()
     if (isScreen) {
-      this.rtcEngine.startScreenCaptureByDisplayId(
+      this.getRtcEngine().startScreenCaptureByDisplayId(
         sourceId,
         {
           x: 0,
@@ -194,7 +193,7 @@ export default class CameraAndScreenShare
         }
       )
     } else {
-      this.rtcEngine.startScreenCaptureByWindowId(
+      this.getRtcEngine().startScreenCaptureByWindowId(
         sourceId,
         {
           x: 0,
@@ -222,7 +221,7 @@ export default class CameraAndScreenShare
       },
       {
         publishCameraTrack: false,
-        publishAudioTrack: false,
+        publishMicrophoneTrack: false,
         publishScreenTrack: true,
         publishSecondaryScreenTrack: false,
         publishCustomAudioTrack: false,
@@ -281,7 +280,8 @@ export default class CameraAndScreenShare
     if (!currentShareResolution || !currentShareFps) {
       return
     }
-    const res = this.rtcEngine.updateScreenCaptureParameters({
+
+    this.getRtcEngine().updateScreenCaptureParameters({
       dimensions: currentShareResolution,
       frameRate: currentShareFps,
       captureMouseCursor,
@@ -309,7 +309,7 @@ export default class CameraAndScreenShare
     return (
       <div className={styles.rightBar}>
         <div>
-          <div>Please Select camera and screen </div>
+          <div>Please Select camera and screen</div>
           <div
             style={{
               display: 'flex',

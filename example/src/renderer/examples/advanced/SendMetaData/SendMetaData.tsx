@@ -4,13 +4,11 @@ import createAgoraRtcEngine, {
   ClientRoleType,
   ErrorCodeType,
   IMetadataObserver,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   Metadata,
   MetadataType,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
@@ -21,7 +19,9 @@ import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
 import sendMetaDataStyle from './SendMetaData.scss'
+
 const { Search } = Input
+
 interface User {
   isMyself: boolean
   uid: number
@@ -63,8 +63,8 @@ export default class SendMetaData
       MetadataType.VideoMetadata
     )
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -72,7 +72,7 @@ export default class SendMetaData
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -145,10 +145,8 @@ export default class SendMetaData
 
   onMetadataReceived?({ uid, size, buffer, timeStampMs }: Metadata): void {
     console.log('onMetadataReceived', uid, size, buffer, timeStampMs)
-    const string = String.fromCharCode.apply(null, buffer)
-    const formatStr = decodeURIComponent(string)
     this.setState({
-      msgs: [...this.state.msgs, `from:${uid} message:${formatStr}`],
+      msgs: [...this.state.msgs, `from:${uid} message:${buffer.toString()}`],
     })
   }
 
@@ -156,14 +154,12 @@ export default class SendMetaData
     if (!msg) {
       return
     }
-    const asciiStringArray = [...encodeURIComponent(msg)].map((char) =>
-      char.charCodeAt(0)
-    )
-    this.rtcEngine?.sendMetaData(
+    const buffer = Buffer.from(msg)
+    this.getRtcEngine().sendMetaData(
       {
         uid: localUid,
-        size: asciiStringArray.length,
-        buffer: new Uint8Array(asciiStringArray),
+        size: buffer.length,
+        buffer: buffer,
       },
       VideoSourceType.VideoSourceCamera
     )
@@ -207,15 +203,18 @@ export default class SendMetaData
         <JoinChannelBar
           onPressJoin={(channelId) => {
             this.setState({ channelId })
-            this.rtcEngine.enableVideo()
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-
-            this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
+            this.getRtcEngine().enableVideo()
             console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
+            this.getRtcEngine().joinChannelWithOptions(
+              '',
+              channelId,
+              localUid,
+              {
+                channelProfile:
+                  ChannelProfileType.ChannelProfileLiveBroadcasting,
+                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+              }
+            )
           }}
           onPressLeave={() => {
             this.getRtcEngine().leaveChannel()

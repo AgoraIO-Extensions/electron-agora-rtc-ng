@@ -1,47 +1,13 @@
-import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
-import { VideoSourceType } from "../AgoraBase";
-import { RenderModeType } from "../AgoraMediaBase";
-import { IMediaPlayerSourceObserver } from "../IAgoraMediaPlayerSource";
-import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
-import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
-import { callIrisApi } from "./IrisApiEngine";
-
-const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
-
-export const handlerMPKEvent = function (
-  event: string,
-  data: string,
-  buffer: Uint8Array[],
-  bufferLength: number,
-  bufferCount: number
-) {
-  const obj = parseJSON(data);
-  logDebug(
-    "event",
-    event,
-    "data",
-    obj,
-    "buffer",
-    buffer,
-    "bufferLength",
-    bufferLength,
-    "bufferCount",
-    bufferCount
-  );
-
-  let splitStr = event.split(MediaPlayerSplitString);
-  logDebug("agora  ", splitStr);
-  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
-    if (!value) {
-      return;
-    }
-    try {
-      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
-    } catch (error) {
-      logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
-    }
-  });
-};
+import { AgoraEnv, logWarn } from '../../Utils';
+import { VideoSourceType } from '../AgoraBase';
+import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
+import {
+  IMediaPlayerAudioFrameObserver,
+  IMediaPlayerVideoFrameObserver,
+} from '../IAgoraMediaPlayer';
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
+import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
+import { callIrisApi } from './IrisApiEngine';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _observers: IMediaPlayerSourceObserver[] = [];
@@ -57,18 +23,19 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventManager.push({ mpk: this, handler: observer });
+    AgoraEnv.mpkEventHandlers.push({ mpk: this, handler: observer });
     return 0;
   }
 
   unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
+    AgoraEnv.mpkEventHandlers = AgoraEnv.mpkEventHandlers.filter(
       (value) => value.handler !== observer
     );
     return 0;
   }
+
   override setView(view: HTMLElement): number {
-    logWarn("Also can use other api setupLocalVideo");
+    logWarn('Also can use other api setupLocalVideo');
     AgoraEnv.AgoraRendererManager?.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
       uid: this._mediaPlayerId,
@@ -76,9 +43,10 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     });
     return 0;
   }
+
   override setRenderMode(renderMode: RenderModeType): number {
     logWarn(
-      "Also can use other api setRenderOption or setRenderOptionByConfig"
+      'Also can use other api setRenderOption or setRenderOptionByConfig'
     );
     AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
       videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
@@ -95,7 +63,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   setPlayerOptionInInt(key: string, value: number): number {
-    const apiType = "MediaPlayer_setPlayerOption";
+    const apiType = 'MediaPlayer_setPlayerOption';
     const jsonParams = {
       key,
       value,
@@ -111,7 +79,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   setPlayerOptionInString(key: string, value: string): number {
-    const apiType = "MediaPlayer_setPlayerOption2";
+    const apiType = 'MediaPlayer_setPlayerOption2';
     const jsonParams = {
       key,
       value,
@@ -124,5 +92,77 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     };
     const jsonResults = callIrisApi(apiType, jsonParams);
     return jsonResults.result;
+  }
+
+  override registerMediaPlayerAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver,
+    intervalInMS: number
+  ): number {
+    const res = AgoraEnv.mpkAudioSpectrumObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.mpkAudioSpectrumObservers.push({ mpk: this, handler: observer });
+    }
+    return super.registerMediaPlayerAudioSpectrumObserver(
+      observer,
+      intervalInMS
+    );
+  }
+
+  override unregisterMediaPlayerAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver
+  ): number {
+    AgoraEnv.mpkAudioSpectrumObservers =
+      AgoraEnv.mpkAudioSpectrumObservers.filter((value) => value !== observer);
+    return super.unregisterMediaPlayerAudioSpectrumObserver(observer);
+  }
+
+  override registerAudioFrameObserver(
+    observer: IMediaPlayerAudioFrameObserver
+  ): number {
+    const res = AgoraEnv.mpkAudioFrameObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.mpkAudioFrameObservers.push({
+        mpk: this,
+        handler: observer,
+      });
+    }
+    return super.registerAudioFrameObserver(observer);
+  }
+
+  override unregisterAudioFrameObserver(
+    observer: IMediaPlayerAudioFrameObserver
+  ): number {
+    AgoraEnv.mpkAudioFrameObservers = AgoraEnv.mpkAudioFrameObservers.filter(
+      (value) => value !== observer
+    );
+    return super.unregisterAudioFrameObserver(observer);
+  }
+
+  override registerVideoFrameObserver(
+    observer: IMediaPlayerVideoFrameObserver
+  ): number {
+    const res = AgoraEnv.mpkVideoFrameObservers.filter(
+      (value) => value === observer
+    );
+    if (res && res.length == 0) {
+      AgoraEnv.mpkVideoFrameObservers.push({
+        mpk: this,
+        handler: observer,
+      });
+    }
+    return super.registerVideoFrameObserver(observer);
+  }
+
+  override unregisterVideoFrameObserver(
+    observer: IMediaPlayerVideoFrameObserver
+  ): number {
+    AgoraEnv.mpkVideoFrameObservers = AgoraEnv.mpkVideoFrameObservers.filter(
+      (value) => value !== observer
+    );
+    return super.unregisterVideoFrameObserver(observer);
   }
 }

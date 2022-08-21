@@ -1,23 +1,23 @@
-import { VideoSourceType } from "./Private/AgoraBase";
-import { RenderModeType } from "./Private/AgoraMediaBase";
-import { IRtcEngine } from "./Private/IAgoraRtcEngine";
-import { IRtcEngineEx } from "./Private/IAgoraRtcEngineEx";
-import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
-import { AudioDeviceManagerImplInternal } from "./Private/internal/AudioDeviceManagerImplInternal";
-import { RtcEngineExImplInternal } from "./Private/internal/RtcEngineExImplInternal";
+import { VideoSourceType } from './Private/AgoraBase';
+import {
+  IMediaRecorderObserver,
+  RenderModeType,
+} from './Private/AgoraMediaBase';
+import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
+import { RtcEngineExImplInternal } from './Private/internal/RtcEngineExImplInternal';
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
   RendererVideoConfig,
-} from "./Types";
+} from './Types';
 
-export const TAG = "[Agora]: ";
-export const DEBUG_TAG = "[Agora Debug]: ";
+export const TAG = '[Agora]: ';
+export const DEBUG_TAG = '[Agora Debug]: ';
 
 export const deprecate = (originApi?: string, replaceApi?: string) =>
   logError(
     `${TAG} This method ${originApi} will be deprecated soon. `,
-    replaceApi ? `Please use ${replaceApi} instead` : ""
+    replaceApi ? `Please use ${replaceApi} instead` : ''
   );
 
 export const logWarn = (msg: string, ...optParams: any[]) => {
@@ -48,14 +48,14 @@ export const logDebug = (msg: string, ...optParams: any[]) => {
 };
 
 export const parseJSON = (jsonString: string) => {
-  if (jsonString === "") {
+  if (jsonString === '') {
     return jsonString;
   }
   let obj;
   try {
     obj = JSON.parse(jsonString);
   } catch (error) {
-    logError("parseJSON", error);
+    logError('parseJSON', error);
   }
   return obj || jsonString;
 };
@@ -76,7 +76,7 @@ export const changeEventNameForOnXX = (eventName: string) =>
 
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
-  originChannelId = "",
+  originChannelId = '',
   originUid = 0
 ): {
   uid: number;
@@ -95,7 +95,7 @@ export const formatConfigByVideoSourceType = (
     case VideoSourceType.VideoSourceScreen:
     case VideoSourceType.VideoSourceScreenSecondary:
     case VideoSourceType.VideoSourceTranscoded:
-      channelId = "";
+      channelId = '';
       uid = 0;
       break;
     case VideoSourceType.VideoSourceRemote:
@@ -104,7 +104,7 @@ export const formatConfigByVideoSourceType = (
       }
       break;
     case VideoSourceType.VideoSourceMediaPlayer:
-      channelId = "";
+      channelId = '';
       if (!uid) {
         throw new Error(`must set uid(mediaPlayerId):${uid}}}`);
       }
@@ -154,14 +154,14 @@ export function classMix(...mixins: any[]): any {
 
 function copyProperties<T>(target: T, source: any) {
   for (let key of Reflect.ownKeys(source)) {
-    if (key !== "constructor" && key !== "prototype" && key !== "name") {
+    if (key !== 'constructor' && key !== 'prototype' && key !== 'name') {
       let desc = Object.getOwnPropertyDescriptor(source, key)!;
       Object.defineProperty(target, key, desc);
     }
   }
 }
 
-/*
+/**
  * Creates the IRtcEngine object.
  * Currently, the Agora RTC SDK v4.0.0 supports creating only one IRtcEngine object for an app.
  *
@@ -175,12 +175,19 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   isInitializeEngine: false,
-  engineEventHandlers: [],
-  mediaPlayerEventManager: [],
+  rtcEventHandlers: [],
+  rtcVideoFrameObservers: [],
+  rtcVideoEncodedFrameObservers: [],
+  rtcAudioFrameObservers: [],
+  rtcAudioSpectrumObservers: [],
+  rtcAudioEncodedFrameObservers: [],
+  mpkEventHandlers: [],
+  mpkAudioFrameObservers: [],
+  mpkVideoFrameObservers: [],
+  mpkAudioSpectrumObservers: [],
+  mediaRecorderObservers: new Map<string, IMediaRecorderObserver>(),
   metadataObservers: [],
   cdnEventHandlers: [],
-  AgoraAudioDeviceManager: new AudioDeviceManagerImplInternal(),
-  AgoraVideoDeviceManager: new IVideoDeviceManagerImpl(),
 };
 
 //@ts-ignore

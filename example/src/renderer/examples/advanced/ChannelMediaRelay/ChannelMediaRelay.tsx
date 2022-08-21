@@ -1,15 +1,11 @@
 import { Card, Input, List } from 'antd'
 import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
-  IRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
@@ -20,6 +16,7 @@ import Window from '../../component/Window'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
 import { getRandomInt } from '../../util'
+
 const { Search } = Input
 
 interface User {
@@ -57,8 +54,8 @@ export default class ChannelMediaRelay
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
+    this.getRtcEngine().leaveChannel()
+    this.getRtcEngine().release()
   }
 
   getRtcEngine() {
@@ -66,7 +63,7 @@ export default class ChannelMediaRelay
       this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
+      const res = this.rtcEngine.initialize({ appId: config.appId })
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
@@ -79,7 +76,7 @@ export default class ChannelMediaRelay
     elapsed: number
   ): void {
     console.log(
-      `onJoinChannelSuccessEx channelId:${channelId} localUid:${localUid}`
+      `onJoinChannelSuccess channelId:${channelId} localUid:${localUid}`
     )
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser]
@@ -147,21 +144,12 @@ export default class ChannelMediaRelay
   onPressJoinChannel = (channelId: string) => {
     this.setState({ channelId })
     this.getRtcEngine().enableVideo()
-    this.getRtcEngine().enableAudio()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-    this.rtcEngine?.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-
-    this.rtcEngine?.enableVideo()
-
     const localUid = getRandomInt(1, 9999999)
     console.log(`localUid: ${localUid}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid)
+    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    })
   }
 
   onPressChannelRelay = (relayChannelName: string) => {
@@ -195,7 +183,6 @@ export default class ChannelMediaRelay
 
   renderRightBar = () => {
     const { isJoined, isRelaying, relayChannelName } = this.state
-
     return (
       <div className={styles.rightBar}>
         <div>
@@ -213,7 +200,7 @@ export default class ChannelMediaRelay
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+            this.getRtcEngine().leaveChannel()
           }}
         />
       </div>

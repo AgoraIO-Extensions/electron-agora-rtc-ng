@@ -1,29 +1,37 @@
 import AudioMixing from './AudioMixing/AudioMixing'
-import CameraAndScreenShare from './CameraAndScreenShare/CameraAndScreenShare'
+import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream'
 import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay'
 import ContentInspect from './ContentInspect/ContentInspect'
-import CreateDataStream from './CreateDataStream/CreateDataStream'
+import StreamMessage from './StreamMessage/StreamMessage'
 import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming'
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder'
 import MediaPlayer from './MediaPlayer/MediaPlayer'
-import MultipleChannel from './MultipleChannel/MultipleChannel'
+import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel'
 import RhythmPlayer from './RhythmPlayer/RhythmPlayer'
 import ScreenShare from './ScreenShare/ScreenShare'
 import SendMetaData from './SendMetaData/SendMetaData'
-import SetEncryption from './SetEncryption/SetEncryption'
-import SetLiveTranscoding from './SetLiveTranscoding/SetLiveTranscoding'
+import Encryption from './Encryption/Encryption'
+import RTMPStreaming from './RTMPStreaming/RTMPStreaming'
 import SpatialAudio from './SpatialAudio/SpatialAudio'
 import TakeSnapshot from './TakeSnapshot/TakeSnapshot'
 import VirtualBackground from './VirtualBackground/VirtualBackground'
 import VoiceChanger from './VoiceChanger/VoiceChanger'
+import AudioSpectrum from './AudioSpectrum/AudioSpectrum'
+import BeautyEffect from './BeautyEffect/BeautyEffect'
+import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame'
+import MediaRecorder from './MediaRecorder/MediaRecorder'
+import PlayEffect from './PlayEffect/PlayEffect'
+import PushVideoFrame from './PushVideoFrame/PushVideoFrame'
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
-  // {
-  //   path: '/CameraAndScreenShare',
-  //   component: CameraAndScreenShare,
-  //   title: 'CameraAndScreenShare',
-  // },
+  { path: '/AudioSpectrum', component: AudioSpectrum, title: 'AudioSpectrum' },
+  { path: '/BeautyEffect', component: BeautyEffect, title: 'BeautyEffect' },
+  {
+    path: '/SendMultiVideoStream',
+    component: SendMultiVideoStream,
+    title: 'SendMultiVideoStream',
+  },
   {
     path: '/ChannelMediaRelay',
     component: ChannelMediaRelay,
@@ -35,9 +43,9 @@ const advanceRoute = [
     title: 'ContentInspect',
   },
   {
-    path: '/CreateDataStream',
-    component: CreateDataStream,
-    title: 'CreateDataStream',
+    path: '/StreamMessage',
+    component: StreamMessage,
+    title: 'StreamMessage',
   },
   {
     path: '/DirectCdnStreaming',
@@ -45,24 +53,36 @@ const advanceRoute = [
     title: 'DirectCdnStreaming',
   },
   {
+    path: '/EncodedVideoFrame',
+    component: EncodedVideoFrame,
+    title: 'EncodedVideoFrame',
+  },
+  {
     path: '/LocalVideoTranscoder',
     component: LocalVideoTranscoder,
     title: 'LocalVideoTranscoder',
   },
   { path: '/MediaPlayer', component: MediaPlayer, title: 'MediaPlayer' },
+  { path: '/MediaRecorder', component: MediaRecorder, title: 'MediaRecorder' },
+  { path: '/PlayEffect', component: PlayEffect, title: 'PlayEffect' },
   {
-    path: '/MultipleChannel',
-    component: MultipleChannel,
-    title: 'MultipleChannel',
+    path: '/PushVideoFrame',
+    component: PushVideoFrame,
+    title: 'PushVideoFrame',
+  },
+  {
+    path: '/JoinMultipleChannel',
+    component: JoinMultipleChannel,
+    title: 'JoinMultipleChannel',
   },
   { path: '/RhythmPlayer', component: RhythmPlayer, title: 'RhythmPlayer' },
-  // { path: '/ScreenShare', component: ScreenShare, title: 'ScreenShare' },
+  { path: '/ScreenShare', component: ScreenShare, title: 'ScreenShare' },
   { path: '/SendMetaData', component: SendMetaData, title: 'SendMetaData' },
-  { path: '/SetEncryption', component: SetEncryption, title: 'SetEncryption' },
+  { path: '/SetEncryption', component: Encryption, title: 'SetEncryption' },
   {
-    path: '/SetLiveTranscoding',
-    component: SetLiveTranscoding,
-    title: 'SetLiveTranscoding',
+    path: '/RTMPStreaming',
+    component: RTMPStreaming,
+    title: 'RTMPStreaming',
   },
   { path: '/SpatialAudio', component: SpatialAudio, title: 'SpatialAudio' },
   { path: '/TakeSnapshot', component: TakeSnapshot, title: 'TakeSnapshot' },
