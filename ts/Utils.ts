@@ -3,8 +3,6 @@ import {
   IMediaRecorderObserver,
   RenderModeType,
 } from './Private/AgoraMediaBase';
-import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
-import { RtcEngineExImplInternal } from './Private/internal/RtcEngineExImplInternal';
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
@@ -160,16 +158,6 @@ function copyProperties<T>(target: T, source: any) {
     }
   }
 }
-
-/**
- * Creates the IRtcEngine object.
- * Currently, the Agora RTC SDK v4.0.0 supports creating only one IRtcEngine object for an app.
- *
- * @returns
- * IRtcEngine object.
- */
-export const createAgoraRtcEngine = (): IRtcEngineEx =>
-  new RtcEngineExImplInternal();
 
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
