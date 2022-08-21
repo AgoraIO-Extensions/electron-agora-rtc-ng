@@ -1,4 +1,4 @@
-import { Card, Divider, List, Switch } from 'antd'
+import { Card, Divider, List, Switch } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -17,46 +17,46 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface Device {
-  deviceId: string
-  deviceName: string
+  deviceId: string;
+  deviceName: string;
 }
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  audioRecordDevices: Device[]
-  cameraDevices: Device[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
-  contentInspectResult: string
+  isJoined: boolean;
+  channelId: string;
+  allUser: User[];
+  audioRecordDevices: Device[];
+  cameraDevices: Device[];
+  currentFps?: number;
+  currentResolution?: { width: number; height: number };
+  contentInspectResult: string;
 }
 
 export default class ContentInspect
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  videoDeviceManager: IVideoDeviceManager
+  videoDeviceManager: IVideoDeviceManager;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     channelId: '',
@@ -65,51 +65,51 @@ export default class ContentInspect
     audioRecordDevices: [],
     cameraDevices: [],
     contentInspectResult: '',
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.getRtcEngine().registerEventHandler(this);
+    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
       cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
 
-      console.log('initialize:', res)
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -123,14 +123,14 @@ export default class ContentInspect
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -138,41 +138,41 @@ export default class ContentInspect
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    const localUid = getRandomInt(1, 9999999)
-    console.log(`localUid: ${localUid}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    const localUid = getRandomInt(1, 9999999);
+    console.log(`localUid: ${localUid}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
+    const { currentFps, currentResolution } = this.state;
     if (!currentResolution || !currentFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().setVideoEncoderConfiguration({
@@ -184,27 +184,27 @@ export default class ContentInspect
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
+    });
+  };
 
   onContentInspectResult(result: ContentInspectResult): void {
-    console.log('onContentInspectResult', result)
+    console.log('onContentInspectResult', result);
 
-    let contentInspectResult = ''
+    let contentInspectResult = '';
     switch (result) {
       case ContentInspectResult.ContentInspectNeutral:
-        contentInspectResult = 'Neutral'
-        break
+        contentInspectResult = 'Neutral';
+        break;
       case ContentInspectResult.ContentInspectSexy:
-        contentInspectResult = 'Sexy'
-        break
+        contentInspectResult = 'Sexy';
+        break;
       case ContentInspectResult.ContentInspectPorn:
-        contentInspectResult = 'Porn'
-        break
+        contentInspectResult = 'Porn';
+        break;
       default:
-        break
+        break;
     }
-    this.setState({ contentInspectResult })
+    this.setState({ contentInspectResult });
   }
 
   onPressContentInspect = (enable) => {
@@ -216,59 +216,59 @@ export default class ContentInspect
         },
       ],
       moduleCount: 1,
-    })
-    console.log('enableContentInspect', enable, '\nres:', res)
-  }
+    });
+    console.log('enableContentInspect', enable, '\nres:', res);
+  };
 
   renderRightBar = () => {
     const { audioRecordDevices, cameraDevices, contentInspectResult } =
-      this.state
+      this.state;
 
     return (
       <div className={styles.rightBar}>
         <div>
           <DropDownButton
             options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId)
+              this.videoDeviceManager.setDevice(res.dropId);
             }}
-            title='Camera'
+            title="Camera"
           />
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
           <DropDownButton
-            title='Role'
+            title="Role"
             options={configMapToOptions(RoleTypeMap)}
             onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId)
+              this.getRtcEngine().setClientRole(res.dropId);
             }}
           />
           <DropDownButton
-            title='Resolution'
+            title="Resolution"
             options={configMapToOptions(ResolutionMap)}
             onPress={(res) => {
               this.setState(
                 { currentResolution: res.dropId },
                 this.setVideoConfig
-              )
+              );
             }}
           />
           <DropDownButton
-            title='FPS'
+            title="FPS"
             options={configMapToOptions(FpsMap)}
             onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
+              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
             }}
           />
           <Divider>Content Inspect</Divider>
@@ -281,8 +281,8 @@ export default class ContentInspect
           >
             {'Content Inspect:'}
             <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
+              checkedChildren="Enable"
+              unCheckedChildren="Disable"
               defaultChecked={false}
               onChange={this.onPressContentInspect}
             />
@@ -292,18 +292,18 @@ export default class ContentInspect
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     const videoSourceType = isMyself
       ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
+      : VideoSourceType.VideoSourceRemote;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -315,11 +315,11 @@ export default class ContentInspect
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -341,6 +341,6 @@ export default class ContentInspect
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

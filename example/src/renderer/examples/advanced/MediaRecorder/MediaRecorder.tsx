@@ -1,5 +1,5 @@
-import React from 'react'
-import os from 'os'
+import React from 'react';
+import os from 'os';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -11,25 +11,25 @@ import {
   RecorderErrorCode,
   RecorderInfo,
   RecorderState,
-} from 'electron-agora-rtc-ng'
+} from 'electron-agora-rtc-ng';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
-} from '../../../components/BaseComponent'
-import Config from '../../../config/agora.config'
-import { Button, Divider, Input } from 'antd'
-import DropDownButton from '../../component/DropDownButton'
-import { configEnumToOptions } from '../../../utils'
-import SliderBar from '../../component/SliderBar'
+} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
+import { Button, Divider, Input } from 'antd';
+import DropDownButton from '../../component/DropDownButton';
+import { configEnumToOptions } from '../../../utils';
+import SliderBar from '../../component/SliderBar';
 
 interface State extends BaseVideoComponentState {
-  storagePath: string
-  containerFormat: MediaRecorderContainerFormat
-  streamType: MediaRecorderStreamType
-  maxDurationMs: number
-  recorderInfoUpdateInterval: number
-  startRecoding: boolean
+  storagePath: string;
+  containerFormat: MediaRecorderContainerFormat;
+  streamType: MediaRecorderStreamType;
+  maxDurationMs: number;
+  recorderInfoUpdateInterval: number;
+  startRecoding: boolean;
 }
 
 export default class MediaRecorder
@@ -52,47 +52,47 @@ export default class MediaRecorder
       maxDurationMs: 120000,
       recorderInfoUpdateInterval: 1000,
       startRecoding: false,
-    }
+    };
   }
 
   /**
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state
+    const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`)
+      console.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine()
-    this.engine.registerEventHandler(this)
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-    })
+    });
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    this.engine.enableVideo()
+    this.engine.enableVideo();
 
     // Start preview before joinChannel
-    this.engine.startPreview()
-    this.setState({ startPreview: true })
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state
+    const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid')
-      return
+      console.error('channelId is invalid');
+      return;
     }
     if (uid < 0) {
-      console.error('uid is invalid')
-      return
+      console.error('uid is invalid');
+      return;
     }
 
     // start joining channel
@@ -105,7 +105,7 @@ export default class MediaRecorder
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
+    });
   }
 
   /**
@@ -120,10 +120,10 @@ export default class MediaRecorder
       streamType,
       maxDurationMs,
       recorderInfoUpdateInterval,
-    } = this.state
+    } = this.state;
     this.engine
       ?.getMediaRecorder()
-      .setMediaRecorderObserver({ channelId, localUid: uid }, this)
+      .setMediaRecorderObserver({ channelId, localUid: uid }, this);
     this.engine?.getMediaRecorder().startRecording(
       { channelId, localUid: uid },
       {
@@ -133,46 +133,46 @@ export default class MediaRecorder
         maxDurationMs,
         recorderInfoUpdateInterval,
       }
-    )
-  }
+    );
+  };
 
   /**
    * Step 3-2: stopRecording
    */
   stopRecording = () => {
-    const { channelId, uid } = this.state
-    this.engine?.getMediaRecorder().stopRecording({ channelId, localUid: uid })
-  }
+    const { channelId, uid } = this.state;
+    this.engine?.getMediaRecorder().stopRecording({ channelId, localUid: uid });
+  };
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    this.engine?.leaveChannel()
+    this.engine?.leaveChannel();
   }
 
   /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    this.engine?.unregisterEventHandler(this)
-    this.engine?.release()
+    this.engine?.unregisterEventHandler(this);
+    this.engine?.release();
   }
 
   onRecorderInfoUpdated(info: RecorderInfo) {
-    this.info('onRecorderInfoUpdated', 'info', info)
+    this.info('onRecorderInfoUpdated', 'info', info);
   }
 
   onRecorderStateChanged(state: RecorderState, error: RecorderErrorCode) {
-    this.info('onRecorderStateChanged', 'state', state, 'error', error)
+    this.info('onRecorderStateChanged', 'state', state, 'error', error);
     switch (state) {
       case RecorderState.RecorderStateStart:
-        this.setState({ startRecoding: true })
-        break
+        this.setState({ startRecoding: true });
+        break;
       case RecorderState.RecorderStateError:
       case RecorderState.RecorderStateStop:
-        this.setState({ startRecoding: false })
-        break
+        this.setState({ startRecoding: false });
+        break;
     }
   }
 
@@ -185,17 +185,17 @@ export default class MediaRecorder
       recorderInfoUpdateInterval,
       joinChannelSuccess,
       startRecoding,
-    } = this.state
+    } = this.state;
     return (
       <>
         <Input
           onChange={({ target: { value: text } }) => {
-            this.setState({ storagePath: text })
+            this.setState({ storagePath: text });
           }}
           placeholder={'storagePath'}
           defaultValue={storagePath}
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <DropDownButton
@@ -212,8 +212,8 @@ export default class MediaRecorder
         <Divider />
         <Input
           onChange={({ target: { value: text } }) => {
-            if (isNaN(+text)) return
-            this.setState({ maxDurationMs: +text })
+            if (isNaN(+text)) return;
+            this.setState({ maxDurationMs: +text });
           }}
           placeholder={`maxDurationMs (defaults: ${maxDurationMs})`}
           defaultValue={
@@ -222,7 +222,7 @@ export default class MediaRecorder
               : maxDurationMs.toString()
           }
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <SliderBar
@@ -234,7 +234,7 @@ export default class MediaRecorder
           onChange={(value) => {
             this.setState({
               recorderInfoUpdateInterval: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -249,6 +249,6 @@ export default class MediaRecorder
           {startRecoding ? 'stop' : 'start'} Recording
         </Button>
       </>
-    )
+    );
   }
 }

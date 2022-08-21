@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -11,18 +11,18 @@ import {
   RtcConnection,
   VideoCodecType,
   VideoFrameType,
-} from 'electron-agora-rtc-ng'
-import { Buffer } from 'buffer'
+} from 'electron-agora-rtc-ng';
+import { Buffer } from 'buffer';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
-} from '../../../components/BaseComponent'
-import Config from '../../../config/agora.config'
-import { Button, Divider, Input } from 'antd'
+} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
+import { Button, Divider, Input } from 'antd';
 
 interface State extends BaseVideoComponentState {
-  imageBuffer: string
+  imageBuffer: string;
 }
 
 export default class EncodedVideoFrame
@@ -30,7 +30,7 @@ export default class EncodedVideoFrame
   implements IRtcEngineEventHandler, IVideoEncodedFrameObserver
 {
   // @ts-ignore
-  protected engine?: IRtcEngineEx
+  protected engine?: IRtcEngineEx;
 
   protected createState(): State {
     return {
@@ -43,46 +43,46 @@ export default class EncodedVideoFrame
       remoteUsers: [],
       startPreview: false,
       imageBuffer: '',
-    }
+    };
   }
 
   /**
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state
+    const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`)
+      console.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine() as IRtcEngineEx
-    this.engine.registerEventHandler(this)
+    this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-    })
+    });
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    this.engine.enableVideo()
+    this.engine.enableVideo();
 
-    this.registerVideoEncodedFrameObserver()
-    this.setExternalVideoSource()
+    this.registerVideoEncodedFrameObserver();
+    this.setExternalVideoSource();
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state
+    const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid')
-      return
+      console.error('channelId is invalid');
+      return;
     }
     if (uid < 0) {
-      console.error('uid is invalid')
-      return
+      console.error('uid is invalid');
+      return;
     }
 
     // start joining channel
@@ -97,15 +97,15 @@ export default class EncodedVideoFrame
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       publishCameraTrack: false,
       publishEncodedVideoTrack: true,
-    })
+    });
   }
 
   /**
    * Step 3-1: registerVideoEncodedFrameObserver
    */
   registerVideoEncodedFrameObserver = () => {
-    this.engine?.getMediaEngine().registerVideoEncodedFrameObserver(this)
-  }
+    this.engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
+  };
 
   /**
    * Step 3-2: setExternalVideoSource
@@ -120,56 +120,56 @@ export default class EncodedVideoFrame
         {
           codecType: VideoCodecType.VideoCodecGeneric,
         }
-      )
-  }
+      );
+  };
 
   /**
    * Step 3-3: pushEncodedVideoImage
    */
   pushEncodedVideoImage = () => {
-    const { imageBuffer } = this.state
+    const { imageBuffer } = this.state;
     if (!imageBuffer) {
-      console.error('imageBuffer is invalid')
-      return
+      console.error('imageBuffer is invalid');
+      return;
     }
 
-    const buffer = Buffer.from(imageBuffer)
+    const buffer = Buffer.from(imageBuffer);
     this.engine?.getMediaEngine().pushEncodedVideoImage(buffer, buffer.length, {
       framesPerSecond: 60,
       codecType: VideoCodecType.VideoCodecGeneric,
       frameType: VideoFrameType.VideoFrameTypeKeyFrame,
-    })
-  }
+    });
+  };
 
   /**
    * Step 3-4: unregisterVideoEncodedFrameObserver
    */
   unregisterVideoEncodedFrameObserver = () => {
-    this.engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this)
-  }
+    this.engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
+  };
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    this.engine?.leaveChannel()
+    this.engine?.leaveChannel();
   }
 
   /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    this.unregisterVideoEncodedFrameObserver()
-    this.engine?.unregisterEventHandler(this)
-    this.engine?.release()
+    this.unregisterVideoEncodedFrameObserver();
+    this.engine?.unregisterEventHandler(this);
+    this.engine?.release();
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-    super.onUserJoined(connection, remoteUid, elapsed)
+    super.onUserJoined(connection, remoteUid, elapsed);
     // ⚠️ subscribe encoded frame only
     this.engine?.setRemoteVideoSubscriptionOptions(remoteUid, {
       encodedFrameOnly: true,
-    })
+    });
   }
 
   onEncodedVideoFrameReceived(
@@ -188,23 +188,23 @@ export default class EncodedVideoFrame
       length,
       'videoEncodedFrameInfo',
       videoEncodedFrameInfo
-    )
-    this.debug(`Receive from uid:${uid}`, `${imageBuffer.toString()}`)
-    return true
+    );
+    this.debug(`Receive from uid:${uid}`, `${imageBuffer.toString()}`);
+    return true;
   }
 
   protected renderRight(): React.ReactNode {
-    const { imageBuffer, joinChannelSuccess } = this.state
+    const { imageBuffer, joinChannelSuccess } = this.state;
     return (
       <>
         <Input
           onChange={({ target: { value: text } }) => {
-            this.setState({ imageBuffer: text })
+            this.setState({ imageBuffer: text });
           }}
           placeholder={'imageBuffer'}
           defaultValue={imageBuffer}
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <Button
@@ -215,6 +215,6 @@ export default class EncodedVideoFrame
           push Encoded Video Image
         </Button>
       </>
-    )
+    );
   }
 }

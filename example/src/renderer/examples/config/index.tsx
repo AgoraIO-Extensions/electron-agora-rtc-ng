@@ -3,7 +3,7 @@ import {
   AudioScenarioType,
   ClientRoleType,
   FrameRate,
-} from 'electron-agora-rtc-ng'
+} from 'electron-agora-rtc-ng';
 
 export const AudioProfileList = {
   Default: AudioProfileType.AudioProfileDefault, //0
@@ -14,18 +14,18 @@ export const AudioProfileList = {
   MusicHighQualityStereo: AudioProfileType.AudioProfileMusicHighQualityStereo, //5
   IOT: AudioProfileType.AudioProfileIot, //6
   NUM: AudioProfileType.AudioProfileNum,
-}
+};
 export const AudioScenarioList = {
   Default: AudioScenarioType.AudioScenarioDefault, //0
   GameStreaming: AudioScenarioType.AudioScenarioGameStreaming, //3
   Chatroom: AudioScenarioType.AudioScenarioChatroom, //5
   Num: AudioScenarioType.AudioScenarioNum, //8
-}
+};
 
 export const RoleTypeMap = {
   Broadcaster: ClientRoleType.ClientRoleBroadcaster, //1
   Audience: ClientRoleType.ClientRoleAudience, //2
-}
+};
 export const ResolutionMap = {
   '120x120': { width: 120, height: 120 },
   '160x120': { width: 160, height: 120 },
@@ -44,12 +44,12 @@ export const ResolutionMap = {
   '960x720': { width: 960, height: 720 },
   '1280x720': { width: 1280, height: 720 },
   '1920x1080': { width: 1920, height: 1080 },
-}
+};
 export const FpsMap = {
   '7fps': FrameRate.FrameRateFps7,
   '15fps': FrameRate.FrameRateFps15,
   '30fps': FrameRate.FrameRateFps30,
-}
+};
 
 export const EncryptionMap = {
   AES_128_XTS: 1,
@@ -60,7 +60,7 @@ export const EncryptionMap = {
   AES_256_GCM: 6,
   AES_128_GCM2: 7,
   AES_256_GCM2: 8,
-}
+};
 
 export const VoiceBeautifierMap = {
   VOICE_BEAUTIFIER_OFF: 0,
@@ -88,7 +88,7 @@ export const VoiceBeautifierMap = {
   TIMBRE_TRANSFORMATION_RESOUNDING: 16975616,
 
   TIMBRE_TRANSFORMATION_RINGING: 16975872,
-}
+};
 
 export const AudioEffectMap = {
   AUDIO_EFFECT_OFF: 0,
@@ -128,7 +128,7 @@ export const AudioEffectMap = {
   STYLE_TRANSFORMATION_POPULAR: 33751552,
 
   PITCH_CORRECTION: 33816832,
-}
+};
 export const EqualizationReverbMap = {
   'Dry Level': {
     min: -20,
@@ -165,5 +165,5 @@ export const EqualizationReverbMap = {
     audioReverbType: 4,
     title: 'Strength',
   },
-}
-export default {}
+};
+export default {};

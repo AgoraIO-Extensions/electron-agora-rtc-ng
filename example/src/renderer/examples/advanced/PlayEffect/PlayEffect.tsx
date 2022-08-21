@@ -1,31 +1,31 @@
-import React from 'react'
+import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
   IRtcEngineEventHandler,
-} from 'electron-agora-rtc-ng'
+} from 'electron-agora-rtc-ng';
 
 import {
   BaseAudioComponentState,
   BaseComponent,
-} from '../../../components/BaseComponent'
-import Config from '../../../config/agora.config'
-import { getResourcePath } from '../../../utils'
-import { Button, Divider, Input, Switch } from 'antd'
-import SliderBar from '../../component/SliderBar'
+} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
+import { getResourcePath } from '../../../utils';
+import { Button, Divider, Input, Switch } from 'antd';
+import SliderBar from '../../component/SliderBar';
 
 interface State extends BaseAudioComponentState {
-  soundId: number
-  filePath: string
-  loopCount: number
-  pitch: number
-  pan: number
-  gain: number
-  publish: boolean
-  startPos: number
-  playEffect: boolean
-  pauseEffect: boolean
+  soundId: number;
+  filePath: string;
+  loopCount: number;
+  pitch: number;
+  pan: number;
+  gain: number;
+  publish: boolean;
+  startPos: number;
+  playEffect: boolean;
+  pauseEffect: boolean;
 }
 
 export default class PlayEffect
@@ -51,42 +51,42 @@ export default class PlayEffect
       startPos: 0,
       playEffect: false,
       pauseEffect: false,
-    }
+    };
   }
 
   /**
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state
+    const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`)
+      console.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine()
-    this.engine.registerEventHandler(this)
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-    })
+    });
 
     // Only need to enable audio on this case
-    this.engine.enableAudio()
+    this.engine.enableAudio();
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state
+    const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid')
-      return
+      console.error('channelId is invalid');
+      return;
     }
     if (uid < 0) {
-      console.error('uid is invalid')
-      return
+      console.error('uid is invalid');
+      return;
     }
 
     // start joining channel
@@ -98,7 +98,7 @@ export default class PlayEffect
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
+    });
   }
 
   /**
@@ -114,14 +114,14 @@ export default class PlayEffect
       gain,
       publish,
       startPos,
-    } = this.state
+    } = this.state;
     if (!filePath) {
-      console.error('filePath is invalid')
-      return
+      console.error('filePath is invalid');
+      return;
     }
     if (startPos < 0) {
-      console.error('startPos is invalid')
-      return
+      console.error('startPos is invalid');
+      return;
     }
 
     this.engine?.playEffect(
@@ -133,54 +133,54 @@ export default class PlayEffect
       gain,
       publish,
       startPos
-    )
-    this.setState({ playEffect: true, pauseEffect: false })
-  }
+    );
+    this.setState({ playEffect: true, pauseEffect: false });
+  };
 
   /**
    * Step 3-2 (Optional): pauseEffect
    */
   pauseEffect = () => {
-    const { soundId } = this.state
-    this.engine?.pauseEffect(soundId)
-    this.setState({ pauseEffect: true })
-  }
+    const { soundId } = this.state;
+    this.engine?.pauseEffect(soundId);
+    this.setState({ pauseEffect: true });
+  };
 
   /**
    * Step 3-3 (Optional): resumeEffect
    */
   resumeEffect = () => {
-    const { soundId } = this.state
-    this.engine?.resumeEffect(soundId)
-    this.setState({ pauseEffect: false })
-  }
+    const { soundId } = this.state;
+    this.engine?.resumeEffect(soundId);
+    this.setState({ pauseEffect: false });
+  };
 
   /**
    * Step 3-4: stopEffect
    */
   stopEffect = () => {
-    const { soundId } = this.state
-    this.engine?.stopEffect(soundId)
-    this.setState({ playEffect: false })
-  }
+    const { soundId } = this.state;
+    this.engine?.stopEffect(soundId);
+    this.setState({ playEffect: false });
+  };
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    this.engine?.leaveChannel()
+    this.engine?.leaveChannel();
   }
 
   /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    this.engine?.release()
+    this.engine?.release();
   }
 
   onAudioEffectFinished(soundId: number) {
-    this.info('onAudioEffectFinished', 'soundId', soundId)
-    this.setState({ playEffect: false })
+    this.info('onAudioEffectFinished', 'soundId', soundId);
+    this.setState({ playEffect: false });
   }
 
   protected renderRight(): React.ReactNode {
@@ -195,26 +195,26 @@ export default class PlayEffect
       startPos,
       playEffect,
       pauseEffect,
-    } = this.state
+    } = this.state;
     return (
       <>
         <Input
           onChange={({ target: { value: text } }) => {
-            if (isNaN(+text)) return
-            this.setState({ soundId: +text })
+            if (isNaN(+text)) return;
+            this.setState({ soundId: +text });
           }}
           placeholder={`soundId (defaults: ${soundId})`}
           defaultValue={
             soundId === this.createState().soundId ? '' : soundId.toString()
           }
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <Input
           onChange={({ target: { value: text } }) => {
-            if (isNaN(+text)) return
-            this.setState({ loopCount: +text })
+            if (isNaN(+text)) return;
+            this.setState({ loopCount: +text });
           }}
           placeholder={`loopCount (defaults: ${loopCount})`}
           defaultValue={
@@ -223,7 +223,7 @@ export default class PlayEffect
               : loopCount.toString()
           }
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <SliderBar
@@ -234,7 +234,7 @@ export default class PlayEffect
           onChange={(value) => {
             this.setState({
               pitch: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -246,7 +246,7 @@ export default class PlayEffect
           onChange={(value) => {
             this.setState({
               pan: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -258,30 +258,30 @@ export default class PlayEffect
           onChange={(value) => {
             this.setState({
               gain: value,
-            })
+            });
           }}
         />
         <Divider />
         <Switch
-          checkedChildren='publish'
-          unCheckedChildren='publish'
+          checkedChildren="publish"
+          unCheckedChildren="publish"
           defaultChecked={publish}
           onChange={(value) => {
-            this.setState({ publish: value })
+            this.setState({ publish: value });
           }}
         />
         <Divider />
         <Input
           onChange={({ target: { value: text } }) => {
-            if (isNaN(+text)) return
-            this.setState({ startPos: +text })
+            if (isNaN(+text)) return;
+            this.setState({ startPos: +text });
           }}
           placeholder={`startPos (defaults: ${startPos})`}
           defaultValue={
             startPos === this.createState().startPos ? '' : startPos.toString()
           }
           allowClear
-          size='small'
+          size="small"
         />
         <Divider />
         <Button
@@ -301,6 +301,6 @@ export default class PlayEffect
           {pauseEffect ? 'resume' : 'pause'} Effect
         </Button>
       </>
-    )
+    );
   }
 }

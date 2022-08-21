@@ -7,68 +7,68 @@ import createAgoraRtcEngine, {
   MediaPlayerError,
   MediaPlayerState,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Button, Input } from 'antd'
-import { Component } from 'react'
-import SliderBar from '../../component/SliderBar'
-import Window from '../../component/Window'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Button, Input } from 'antd';
+import { Component } from 'react';
+import SliderBar from '../../component/SliderBar';
+import Window from '../../component/Window';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
 
-const { Search } = Input
+const { Search } = Input;
 
 interface State {
-  isPlaying: boolean
-  mpkState?: MediaPlayerState
-  duration: number
+  isPlaying: boolean;
+  mpkState?: MediaPlayerState;
+  duration: number;
 }
 
 export default class MediaPlayer
   extends Component<State>
   implements IMediaPlayerSourceObserver
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  mpk?: IMediaPlayer
+  mpk?: IMediaPlayer;
 
-  streamId?: number
+  streamId?: number;
 
   state: State = {
     isPlaying: false,
     mpkState: undefined,
     duration: 100000,
-  }
+  };
 
   componentDidMount() {
-    this.getMediaPlayer().registerPlayerSourceObserver(this)
+    this.getMediaPlayer().registerPlayerSourceObserver(this);
   }
 
   componentWillUnmount() {
-    this.getMediaPlayer().unregisterPlayerSourceObserver(this)
-    this.getRtcEngine().release()
+    this.getMediaPlayer().unregisterPlayerSourceObserver(this);
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   getMediaPlayer = () => {
     if (!this.mpk) {
-      const mpk = this.getRtcEngine().createMediaPlayer()
-      this.mpk = mpk
-      return mpk
+      const mpk = this.getRtcEngine().createMediaPlayer();
+      this.mpk = mpk;
+      return mpk;
     }
-    return this.mpk
-  }
+    return this.mpk;
+  };
 
   onPlayerSourceStateChanged(
     state: MediaPlayerState,
@@ -76,49 +76,49 @@ export default class MediaPlayer
   ): void {
     switch (state) {
       case MediaPlayerState.PlayerStateOpenCompleted: {
-        console.log('onPlayerSourceStateChanged1:open finish')
-        this.getMediaPlayer().play()
-        const duration = this.getMediaPlayer().getDuration()
-        this.setState({ duration })
-        break
+        console.log('onPlayerSourceStateChanged1:open finish');
+        this.getMediaPlayer().play();
+        const duration = this.getMediaPlayer().getDuration();
+        this.setState({ duration });
+        break;
       }
       default:
-        break
+        break;
     }
-    console.log('onPlayerSourceStateChanged', state, ec)
-    this.setState({ mpkState: state })
+    console.log('onPlayerSourceStateChanged', state, ec);
+    this.setState({ mpkState: state });
   }
 
   onPositionChanged?(position: number): void {
-    console.log('onPositionChanged', position)
+    console.log('onPositionChanged', position);
   }
 
   onPressMpk = (url) => {
     if (!url) {
-      return
+      return;
     }
-    const { isPlaying } = this.state
-    const mpk = this.getMediaPlayer()
+    const { isPlaying } = this.state;
+    const mpk = this.getMediaPlayer();
 
     if (isPlaying) {
-      mpk.stop()
+      mpk.stop();
     } else {
-      mpk.open(url, 0)
+      mpk.open(url, 0);
     }
 
-    this.setState({ isPlaying: !isPlaying })
-  }
+    this.setState({ isPlaying: !isPlaying });
+  };
 
   renderRightBar = () => {
-    const { isPlaying } = this.state
+    const { isPlaying } = this.state;
     return (
       <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
         <Search
           placeholder={'please input url for media'}
-          defaultValue='https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov'
+          defaultValue="https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov"
           allowClear
           enterButton={!isPlaying ? 'Play' : 'Stop'}
-          size='small'
+          size="small"
           onSearch={this.onPressMpk}
         />
         <br />
@@ -126,14 +126,14 @@ export default class MediaPlayer
           <>
             <Button
               onClick={() => {
-                this.getMediaPlayer().pause()
+                this.getMediaPlayer().pause();
               }}
             >
               Pause
             </Button>
             <Button
               onClick={() => {
-                this.getMediaPlayer().resume()
+                this.getMediaPlayer().resume();
               }}
             >
               Resume
@@ -142,9 +142,9 @@ export default class MediaPlayer
               max={100}
               min={0}
               step={1}
-              title='Process'
+              title="Process"
               onChange={(value) => {
-                this.getMediaPlayer().seek((value / 100) * this.state.duration)
+                this.getMediaPlayer().seek((value / 100) * this.state.duration);
               }}
             />
             <Button
@@ -164,15 +164,15 @@ export default class MediaPlayer
                       ChannelProfileType.ChannelProfileLiveBroadcasting,
                     clientRoleType: ClientRoleType.ClientRoleBroadcaster,
                   }
-                )
-                console.log('joinChannel2', res)
+                );
+                console.log('joinChannel2', res);
               }}
             >
               Publish
             </Button>
             <Button
               onClick={() => {
-                this.getRtcEngine().leaveChannel()
+                this.getRtcEngine().leaveChannel();
               }}
             >
               UnPublish
@@ -180,11 +180,11 @@ export default class MediaPlayer
           </>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isPlaying } = this.state
+    const { isPlaying } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -199,6 +199,6 @@ export default class MediaPlayer
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

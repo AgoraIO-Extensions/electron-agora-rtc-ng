@@ -1,4 +1,4 @@
-import { Card, Input, List } from 'antd'
+import { Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -8,62 +8,62 @@ import createAgoraRtcEngine, {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
-import createDataStreamStyle from './StreamMessage.scss'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
+import createDataStreamStyle from './StreamMessage.scss';
 
-const { Search } = Input
+const { Search } = Input;
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  allUser: User[]
-  isJoined: boolean
-  msgs: string[]
+  allUser: User[];
+  isJoined: boolean;
+  msgs: string[];
 }
 
 export default class StreamMessage
   extends Component<State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  streamId?: number
+  streamId?: number;
 
   state: State = {
     allUser: [],
     isJoined: false,
     msgs: [],
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
@@ -71,15 +71,15 @@ export default class StreamMessage
     elapsed: number
   ): void {
     try {
-      const { allUser: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser]
-      newAllUser.push({ isMyself: true, uid: localUid })
+      const { allUser: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser];
+      newAllUser.push({ isMyself: true, uid: localUid });
       this.setState({
         isJoined: true,
         allUser: newAllUser,
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -94,14 +94,14 @@ export default class StreamMessage
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -109,24 +109,24 @@ export default class StreamMessage
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onStreamMessage?(
@@ -142,8 +142,8 @@ export default class StreamMessage
         ...this.state.msgs,
         `from:${remoteUid} message:${data.toString()}`,
       ],
-    })
-    console.log('received message: ', remoteUid, streamId, data)
+    });
+    console.log('received message: ', remoteUid, streamId, data);
   }
 
   onStreamMessageError?(
@@ -154,7 +154,7 @@ export default class StreamMessage
     missed: number,
     cached: number
   ): void {
-    console.log('onStreamMessageError')
+    console.log('onStreamMessageError');
   }
 
   getStreamId = () => {
@@ -162,36 +162,36 @@ export default class StreamMessage
       this.streamId = this.getRtcEngine().createDataStream({
         syncWithAudio: false,
         ordered: true,
-      })
-      console.log(this.streamId)
+      });
+      console.log(this.streamId);
     }
 
-    return this.streamId!
-  }
+    return this.streamId!;
+  };
 
   pressSendMsg = (msg: string) => {
     if (!msg) {
-      return
+      return;
     }
     // create the data stream
     // Each user can create up to five data streams during the lifecycle of the agoraKit
-    const streamId = this.getStreamId()
-    console.log('current stream id', streamId)
-    const buffer = Buffer.from(msg)
-    this.getRtcEngine().sendStreamMessage(streamId, buffer, buffer.length)
-    console.log('streamId:', this.streamId, ' content:', msg)
-  }
+    const streamId = this.getStreamId();
+    console.log('current stream id', streamId);
+    const buffer = Buffer.from(msg);
+    this.getRtcEngine().sendStreamMessage(streamId, buffer, buffer.length);
+    console.log('streamId:', this.streamId, ' content:', msg);
+  };
 
   renderItem = ({ isMyself, uid }) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
-    const { isJoined, msgs } = this.state
+    const { isJoined, msgs } = this.state;
 
     return (
       <div className={styles.rightBarBig}>
@@ -209,9 +209,9 @@ export default class StreamMessage
           <div>
             <p>Send Message:</p>
             <Search
-              placeholder='input msg text'
-              enterButton='Send'
-              size='middle'
+              placeholder="input msg text"
+              enterButton="Send"
+              size="middle"
               onSearch={this.pressSendMsg}
               disabled={!isJoined}
             />
@@ -219,9 +219,9 @@ export default class StreamMessage
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {
-            this.setState({ channelId })
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
+            this.setState({ channelId });
+            const localUid = getRandomInt(1, 9999999);
+            console.log(`localUid: ${localUid}`);
             this.getRtcEngine().joinChannelWithOptions(
               '',
               channelId,
@@ -231,18 +231,18 @@ export default class StreamMessage
                   ChannelProfileType.ChannelProfileLiveBroadcasting,
                 clientRoleType: ClientRoleType.ClientRoleBroadcaster,
               }
-            )
+            );
           }}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -257,6 +257,6 @@ export default class StreamMessage
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

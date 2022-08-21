@@ -1,4 +1,4 @@
-import { Card, List } from 'antd'
+import { Card, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -9,53 +9,53 @@ import createAgoraRtcEngine, {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import SliderBar from '../../component/SliderBar'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import SliderBar from '../../component/SliderBar';
 import {
   AudioEffectMap,
   EqualizationReverbMap,
   VoiceBeautifierMap,
-} from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface Device {
-  deviceName: string
-  deviceId: string
+  deviceName: string;
+  deviceId: string;
 }
 
 interface State {
-  audioRecordDevices: Device[]
-  audioEffectMode: number
+  audioRecordDevices: Device[];
+  audioEffectMode: number;
   equalizationReverbConfig: {
-    min: number
-    max: number
-    defaultValue: number
-    audioReverbType: number
-    title: string
-  }
-  allUser: User[]
-  isJoined: boolean
-  pitchCorrectionParam1: number
-  pitchCorrectionParam2: number
+    min: number;
+    max: number;
+    defaultValue: number;
+    audioReverbType: number;
+    title: string;
+  };
+  allUser: User[];
+  isJoined: boolean;
+  pitchCorrectionParam1: number;
+  pitchCorrectionParam2: number;
 }
 
 export default class VoiceChanger
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     audioRecordDevices: [],
@@ -65,49 +65,49 @@ export default class VoiceChanger
     isJoined: false,
     pitchCorrectionParam1: 1,
     pitchCorrectionParam2: 1,
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
 
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -121,14 +121,14 @@ export default class VoiceChanger
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -136,74 +136,74 @@ export default class VoiceChanger
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   setAudioEffectParameters = () => {
-    const { pitchCorrectionParam2, pitchCorrectionParam1 } = this.state
+    const { pitchCorrectionParam2, pitchCorrectionParam1 } = this.state;
     this.getRtcEngine().setAudioEffectParameters(
       AudioEffectMap.PITCH_CORRECTION,
       pitchCorrectionParam1,
       pitchCorrectionParam2
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
     const { audioRecordDevices, audioEffectMode, equalizationReverbConfig } =
-      this.state
+      this.state;
 
     return (
       <div className={styles.rightBar}>
         <div>
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
           <DropDownButton
-            title='Voice Beautifier'
+            title="Voice Beautifier"
             options={configMapToOptions(VoiceBeautifierMap)}
             onPress={(res) => {
-              this.getRtcEngine().setVoiceBeautifierPreset(res.dropId)
+              this.getRtcEngine().setVoiceBeautifierPreset(res.dropId);
             }}
           />
           <DropDownButton
-            title='Audio Effect'
+            title="Audio Effect"
             options={configMapToOptions(AudioEffectMap)}
             onPress={(res) => {
-              const mode = res.dropId
-              this.setState({ audioEffectMode: mode })
-              this.getRtcEngine().setAudioEffectPreset(mode)
+              const mode = res.dropId;
+              this.setState({ audioEffectMode: mode });
+              this.getRtcEngine().setAudioEffectPreset(mode);
             }}
           />
           {AudioEffectMap.PITCH_CORRECTION === audioEffectMode && (
@@ -211,33 +211,33 @@ export default class VoiceChanger
               <SliderBar
                 max={3}
                 min={1}
-                title='PitchCorrection Param 1'
+                title="PitchCorrection Param 1"
                 onChange={(value) => {
                   this.setState(
                     { pitchCorrectionParam1: value },
                     this.setAudioEffectParameters
-                  )
-                  this.getRtcEngine().adjustRecordingSignalVolume(value)
+                  );
+                  this.getRtcEngine().adjustRecordingSignalVolume(value);
                 }}
               />
               <SliderBar
                 max={12}
                 min={1}
-                title='PitchCorrection Param 2'
+                title="PitchCorrection Param 2"
                 onChange={(value) => {
                   this.setState(
                     { pitchCorrectionParam2: value },
                     this.setAudioEffectParameters
-                  )
+                  );
                 }}
               />
             </>
           )}
           <DropDownButton
-            title='Equalization Reverb'
+            title="Equalization Reverb"
             options={configMapToOptions(EqualizationReverbMap)}
             onPress={(res) => {
-              this.setState({ equalizationReverbConfig: res.dropId })
+              this.setState({ equalizationReverbConfig: res.dropId });
             }}
           />
           <SliderBar
@@ -250,7 +250,7 @@ export default class VoiceChanger
               this.getRtcEngine().setLocalVoiceReverb(
                 equalizationReverbConfig.audioReverbType,
                 value
-              )
+              );
             }}
           />
 
@@ -258,16 +258,16 @@ export default class VoiceChanger
             max={2.0}
             min={0.5}
             step={0.01}
-            title='Voice Pitch'
+            title="Voice Pitch"
             onChange={(value) => {
-              this.getRtcEngine().setLocalVoicePitch(value)
+              this.getRtcEngine().setLocalVoicePitch(value);
             }}
           />
           <SliderBar
             max={15}
             min={-15}
             step={1}
-            title='Equalization Band 31Hz'
+            title="Equalization Band 31Hz"
             onChange={(value) => {
               // enum AUDIO_EQUALIZATION_BAND_FREQUENCY {
               //   /** 0: 31 Hz */
@@ -291,14 +291,14 @@ export default class VoiceChanger
               //   /** 9: 16 kHz */
               //   AUDIO_EQUALIZATION_BAND_16K = 9,
               // };
-              this.getRtcEngine().setLocalVoiceEqualization(0, value)
+              this.getRtcEngine().setLocalVoiceEqualization(0, value);
             }}
           />
         </div>
         <JoinChannelBar
           onPressJoin={(channelId: string) => {
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
+            const localUid = getRandomInt(1, 9999999);
+            console.log(`localUid: ${localUid}`);
             this.getRtcEngine().joinChannelWithOptions(
               '',
               channelId,
@@ -308,18 +308,18 @@ export default class VoiceChanger
                   ChannelProfileType.ChannelProfileLiveBroadcasting,
                 clientRoleType: ClientRoleType.ClientRoleBroadcaster,
               }
-            )
+            );
           }}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -334,6 +334,6 @@ export default class VoiceChanger
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Button, Divider } from 'antd'
+import React from 'react';
+import { Button, Divider } from 'antd';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -9,21 +9,21 @@ import {
   IRtcEngineEx,
   VideoBufferType,
   VideoPixelFormat,
-} from 'electron-agora-rtc-ng'
+} from 'electron-agora-rtc-ng';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
-} from '../../../components/BaseComponent'
-import Config from '../../../config/agora.config'
-import DropDownButton from '../../component/DropDownButton'
-import { rgbImageBufferToBase64 } from '../../../utils/base64'
-import { ScreenCaptureSourceInfo } from '../../../../../../ts/Private/IAgoraRtcEngine'
-import screenStyle from '../ScreenShare/ScreenShare.scss'
+} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
+import DropDownButton from '../../component/DropDownButton';
+import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { ScreenCaptureSourceInfo } from '../../../../../../ts/Private/IAgoraRtcEngine';
+import screenStyle from '../ScreenShare/ScreenShare.scss';
 
 interface State extends BaseVideoComponentState {
-  sources: ScreenCaptureSourceInfo[]
-  targetSource?: ScreenCaptureSourceInfo
+  sources: ScreenCaptureSourceInfo[];
+  targetSource?: ScreenCaptureSourceInfo;
 }
 
 export default class PushVideoFrame
@@ -31,7 +31,7 @@ export default class PushVideoFrame
   implements IRtcEngineEventHandler
 {
   // @ts-ignore
-  protected engine?: IRtcEngineEx
+  protected engine?: IRtcEngineEx;
 
   protected createState(): State {
     return {
@@ -45,52 +45,52 @@ export default class PushVideoFrame
       startPreview: false,
       sources: [],
       targetSource: undefined,
-    }
+    };
   }
 
   /**
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state
+    const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`)
+      console.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine() as IRtcEngineEx
-    this.engine.registerEventHandler(this)
+    this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-    })
+    });
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    this.engine.enableVideo()
+    this.engine.enableVideo();
 
-    this.setExternalVideoSource()
+    this.setExternalVideoSource();
     this.setState({
       sources: this.engine?.getScreenCaptureSources(
         { width: 1920, height: 1080 },
         { width: 64, height: 64 },
         true
       ),
-    })
+    });
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state
+    const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid')
-      return
+      console.error('channelId is invalid');
+      return;
     }
     if (uid < 0) {
-      console.error('uid is invalid')
-      return
+      console.error('uid is invalid');
+      return;
     }
 
     // start joining channel
@@ -105,7 +105,7 @@ export default class PushVideoFrame
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       publishCameraTrack: false,
       publishEncodedVideoTrack: true,
-    })
+    });
   }
 
   /**
@@ -114,17 +114,17 @@ export default class PushVideoFrame
   setExternalVideoSource = () => {
     this.engine
       ?.getMediaEngine()
-      .setExternalVideoSource(true, false, ExternalVideoSourceType.VideoFrame)
-  }
+      .setExternalVideoSource(true, false, ExternalVideoSourceType.VideoFrame);
+  };
 
   /**
    * Step 3-2: pushVideoFrame
    */
   pushVideoFrame = () => {
-    const { targetSource } = this.state
+    const { targetSource } = this.state;
     if (!targetSource) {
-      console.error('targetSource is invalid')
-      return
+      console.error('targetSource is invalid');
+      return;
     }
 
     this.engine?.getMediaEngine().pushVideoFrame({
@@ -133,37 +133,37 @@ export default class PushVideoFrame
       buffer: targetSource.thumbImage.buffer,
       stride: targetSource.thumbImage.width,
       height: targetSource.thumbImage.height,
-    })
-  }
+    });
+  };
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    this.engine?.leaveChannel()
+    this.engine?.leaveChannel();
   }
 
   /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    this.engine?.unregisterEventHandler(this)
-    this.engine?.release()
+    this.engine?.unregisterEventHandler(this);
+    this.engine?.release();
   }
 
   protected renderRight(): React.ReactNode {
-    const { sources, joinChannelSuccess } = this.state
+    const { sources, joinChannelSuccess } = this.state;
     return (
       <>
         <DropDownButton
-          title='Sources'
+          title="Sources"
           options={sources.map((value) => {
             return {
               dropId: value,
               dropText: value.sourceName,
-            }
+            };
           })}
-          PopContentTitle='Preview'
+          PopContentTitle="Preview"
           PopContent={(item: ScreenCaptureSourceInfo) => {
             return (
               <img
@@ -171,10 +171,10 @@ export default class PushVideoFrame
                 className={screenStyle.previewShotBig}
                 alt={'Preview'}
               />
-            )
+            );
           }}
           onPress={({ dropId }) => {
-            this.setState({ targetSource: dropId })
+            this.setState({ targetSource: dropId });
           }}
         />
         <Divider />
@@ -186,6 +186,6 @@ export default class PushVideoFrame
           push Video Frame
         </Button>
       </>
-    )
+    );
   }
 }

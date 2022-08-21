@@ -1,4 +1,4 @@
-import { Button, Card, Input, List } from 'antd'
+import { Button, Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -9,38 +9,38 @@ import createAgoraRtcEngine, {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import Window from '../../component/Window'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import Window from '../../component/Window';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
 
-const { Search } = Input
+const { Search } = Input;
 
-const localUid1 = getRandomInt()
-const localUid2 = getRandomInt()
+const localUid1 = getRandomInt();
+const localUid2 = getRandomInt();
 
 interface User {
-  isMyself: boolean
-  uid: number
-  channelId?: string
+  isMyself: boolean;
+  uid: number;
+  channelId?: string;
 }
 
 interface State {
-  allUser1: User[]
-  allUser2: User[]
-  channel1: string
-  channel2: string
-  isJoined1: boolean
-  isJoined2: boolean
+  allUser1: User[];
+  allUser2: User[];
+  channel1: string;
+  channel2: string;
+  isJoined1: boolean;
+  isJoined2: boolean;
 }
 
 export default class JoinMultipleChannel
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
   state: State = {
     allUser1: [],
@@ -49,39 +49,39 @@ export default class JoinMultipleChannel
     channel2: '',
     isJoined1: false,
     isJoined2: false,
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.onPressLeaveAll()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.onPressLeaveAll();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    console.log('onJoinChannelSuccess', channelId, localUid)
+    console.log('onJoinChannelSuccess', channelId, localUid);
     if (localUid === localUid1) {
-      this.setState({ isJoined1: true })
+      this.setState({ isJoined1: true });
     } else if (localUid === localUid2) {
-      this.setState({ isJoined2: true })
+      this.setState({ isJoined2: true });
     }
   }
 
@@ -90,30 +90,30 @@ export default class JoinMultipleChannel
     remoteUid: number,
     elapsed: number
   ): void {
-    console.log('onUserJoined', 'channelId', channelId, 'remoteUid', remoteUid)
+    console.log('onUserJoined', 'channelId', channelId, 'remoteUid', remoteUid);
 
     if (localUid === localUid1) {
-      const { allUser1: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser]
+      const { allUser1: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser];
       newAllUser.push({
         isMyself: false,
         uid: remoteUid,
         channelId,
-      })
+      });
       this.setState({
         allUser1: newAllUser,
-      })
+      });
     } else if (localUid === localUid2) {
-      const { allUser2: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser]
+      const { allUser2: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser];
       newAllUser.push({
         isMyself: false,
         uid: remoteUid,
         channelId,
-      })
+      });
       this.setState({
         allUser2: newAllUser,
-      })
+      });
     }
   }
 
@@ -122,20 +122,20 @@ export default class JoinMultipleChannel
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, localUid, remoteUid)
-    const { channel1, channel2 } = this.state
+    console.log('onUserOffline', channelId, localUid, remoteUid);
+    const { channel1, channel2 } = this.state;
     if (channelId === channel1) {
-      const { allUser1: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+      const { allUser1: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
       this.setState({
         allUser1: newAllUser,
-      })
+      });
     } else if (channelId === channel2) {
-      const { allUser2: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+      const { allUser2: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
       this.setState({
         allUser2: newAllUser,
-      })
+      });
     }
   }
 
@@ -143,22 +143,22 @@ export default class JoinMultipleChannel
     { channelId, localUid }: RtcConnection,
     stats: RtcStats
   ): void {
-    console.log('onLeaveChannel', channelId, localUid)
-    const { channel1, channel2 } = this.state
+    console.log('onLeaveChannel', channelId, localUid);
+    const { channel1, channel2 } = this.state;
     if (channelId === channel1) {
-      this.setState({ isJoined1: false, allUser1: [] })
+      this.setState({ isJoined1: false, allUser1: [] });
     } else if (channelId === channel2) {
-      this.setState({ isJoined2: false, allUser2: [] })
+      this.setState({ isJoined2: false, allUser2: [] });
     }
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onPressJoinChannel1 = (channelId) => {
-    console.log('onPressJoinChannel1', channelId)
-    this.setState({ channel1: channelId })
+    console.log('onPressJoinChannel1', channelId);
+    this.setState({ channel1: channelId });
     const res = this.getRtcEngine().joinChannelEx(
       '',
       { localUid: localUid1, channelId },
@@ -170,13 +170,13 @@ export default class JoinMultipleChannel
         channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
-    )
-    console.log('onPressJoinChannel1', res)
-  }
+    );
+    console.log('onPressJoinChannel1', res);
+  };
 
   onPressJoinChannel2 = (channelId) => {
-    console.log('onPressJoinChannel2', channelId)
-    this.setState({ channel2: channelId })
+    console.log('onPressJoinChannel2', channelId);
+    this.setState({ channel2: channelId });
     const res = this.getRtcEngine().joinChannelEx(
       '',
       { localUid: localUid2, channelId },
@@ -188,42 +188,42 @@ export default class JoinMultipleChannel
         channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
-    )
-    console.log('onPressJoinChannel2', res)
-  }
+    );
+    console.log('onPressJoinChannel2', res);
+  };
 
   onPressLeaveAll = () => {
-    const { channel1, channel2 } = this.state
+    const { channel1, channel2 } = this.state;
     this.getRtcEngine().leaveChannelEx({
       localUid: localUid1,
       channelId: channel1,
-    })
+    });
     this.getRtcEngine().leaveChannelEx({
       localUid: localUid2,
       channelId: channel2,
-    })
-  }
+    });
+  };
 
   renderRightBar = () => {
-    const { isJoined1, isJoined2 } = this.state
+    const { isJoined1, isJoined2 } = this.state;
     return (
       <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
         <Search
           placeholder={'please input new channelId1'}
-          defaultValue='Channel1'
+          defaultValue="Channel1"
           allowClear
           enterButton={'Join Channel 1'}
-          size='small'
+          size="small"
           disabled={isJoined1}
           onSearch={this.onPressJoinChannel1}
         />
         <br />
         <Search
           placeholder={'please input new channelId2'}
-          defaultValue='Channel2'
+          defaultValue="Channel2"
           allowClear
           enterButton={'Join Channel 2'}
-          size='small'
+          size="small"
           disabled={isJoined2}
           onSearch={this.onPressJoinChannel2}
         />
@@ -235,8 +235,8 @@ export default class JoinMultipleChannel
           Leave All
         </Button>
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid, channelId }: User) => {
     return (
@@ -250,12 +250,12 @@ export default class JoinMultipleChannel
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { allUser1, allUser2 } = this.state
-    const hasUser = allUser1.length > 0 || allUser2.length > 0
+    const { allUser1, allUser2 } = this.state;
+    const hasUser = allUser1.length > 0 || allUser2.length > 0;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -277,6 +277,6 @@ export default class JoinMultipleChannel
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

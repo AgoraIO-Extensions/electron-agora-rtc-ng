@@ -1,4 +1,4 @@
-import { Card, Input, List } from 'antd'
+import { Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -13,77 +13,77 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { EncryptionMap, FpsMap, ResolutionMap } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import { EncryptionMap, FpsMap, ResolutionMap } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  currentFps?: number
-  encryptionMode?: number
-  encryptionKey?: string
-  currentResolution?: { width: number; height: number }
+  isJoined: boolean;
+  channelId: string;
+  allUser: User[];
+  currentFps?: number;
+  encryptionMode?: number;
+  encryptionKey?: string;
+  currentResolution?: { width: number; height: number };
 }
 
 export default class Encryption
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
   state: State = {
     channelId: '',
     allUser: [],
     isJoined: false,
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -97,14 +97,14 @@ export default class Encryption
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -112,41 +112,41 @@ export default class Encryption
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    const localUid = getRandomInt(1, 9999999)
-    console.log(`localUid: ${localUid}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    const localUid = getRandomInt(1, 9999999);
+    console.log(`localUid: ${localUid}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
+    const { currentFps, currentResolution } = this.state;
     if (!currentResolution || !currentFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().setVideoEncoderConfiguration({
@@ -158,74 +158,78 @@ export default class Encryption
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
+    });
+  };
 
   setEncryption = () => {
-    const { encryptionKey, encryptionMode } = this.state
-    console.log('encryptionKey, encryptionMode ', encryptionKey, encryptionMode)
+    const { encryptionKey, encryptionMode } = this.state;
+    console.log(
+      'encryptionKey, encryptionMode ',
+      encryptionKey,
+      encryptionMode
+    );
     const res = this.getRtcEngine().enableEncryption(true, {
       encryptionKey: encryptionKey! || '',
       encryptionMode: encryptionMode!,
       encryptionKdfSalt: [],
-    })
-    console.log('enableEncryption', res)
-  }
+    });
+    console.log('enableEncryption', res);
+  };
 
   renderRightBar = () => {
     return (
       <div className={styles.rightBar}>
         <div>
           <DropDownButton
-            title='Resolution'
+            title="Resolution"
             options={configMapToOptions(ResolutionMap)}
             onPress={(res) => {
               this.setState(
                 { currentResolution: res.dropId },
                 this.setVideoConfig
-              )
+              );
             }}
           />
           <DropDownButton
-            title='FPS'
+            title="FPS"
             options={configMapToOptions(FpsMap)}
             onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
+              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
             }}
           />
           <DropDownButton
-            title='Encryption Mode'
+            title="Encryption Mode"
             options={configMapToOptions(EncryptionMap)}
             onPress={(res) => {
-              this.setState({ encryptionMode: res.dropId }, this.setEncryption)
+              this.setState({ encryptionMode: res.dropId }, this.setEncryption);
             }}
           />
           <p>Encryption Secret</p>
           <Input
-            placeholder='Input Encryption Secret'
+            placeholder="Input Encryption Secret"
             onChange={(res: any) => {
               this.setState(
                 { encryptionKey: res.nativeEvent.target.value as string },
                 this.setEncryption
-              )
+              );
             }}
           />
         </div>
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     const videoSourceType = isMyself
       ? VideoSourceType.VideoSourceCamera
-      : VideoSourceType.VideoSourceRemote
+      : VideoSourceType.VideoSourceRemote;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -237,11 +241,11 @@ export default class Encryption
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -263,6 +267,6 @@ export default class Encryption
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

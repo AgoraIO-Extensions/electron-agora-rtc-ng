@@ -1,4 +1,4 @@
-import { Button, Card, Divider, List } from 'antd'
+import { Button, Card, Divider, List } from 'antd';
 import createAgoraRtcEngine, {
   AudioSpectrumData,
   ChannelProfileType,
@@ -12,42 +12,42 @@ import createAgoraRtcEngine, {
   RtcStats,
   UserAudioSpectrumInfo,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import { AudioProfileList, AudioScenarioList } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import { AudioProfileList, AudioScenarioList } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface Device {
-  deviceName: string
-  deviceId: string
+  deviceName: string;
+  deviceId: string;
 }
 
 interface State {
-  audioRecordDevices: Device[]
-  audioProfile: number
-  audioScenario: number
-  allUser: User[]
-  isJoined: boolean
-  intervalInMS: number
-  audioSpectrumData: number[]
+  audioRecordDevices: Device[];
+  audioProfile: number;
+  audioScenario: number;
+  allUser: User[];
+  isJoined: boolean;
+  intervalInMS: number;
+  audioSpectrumData: number[];
 }
 
 export default class AudioSpectrum
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler, IAudioSpectrumObserver
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     audioRecordDevices: [],
@@ -57,51 +57,51 @@ export default class AudioSpectrum
     isJoined: false,
     intervalInMS: 100,
     audioSpectrumData: [],
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-    this.getRtcEngine().registerAudioSpectrumObserver(this)
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.getRtcEngine().registerEventHandler(this);
+    this.getRtcEngine().registerAudioSpectrumObserver(this);
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().unregisterAudioSpectrumObserver(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().unregisterAudioSpectrumObserver(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
 
-      console.log('initialize:', res)
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -115,14 +115,14 @@ export default class AudioSpectrum
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -130,54 +130,54 @@ export default class AudioSpectrum
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onLocalAudioSpectrum(data: AudioSpectrumData): boolean {
-    console.log('onLocalAudioSpectrum', data)
-    return true
+    console.log('onLocalAudioSpectrum', data);
+    return true;
   }
 
   onRemoteAudioSpectrum(
     spectrums: UserAudioSpectrumInfo[],
     spectrumNumber: number
   ): boolean {
-    console.log('onRemoteAudioSpectrum', spectrums, spectrumNumber)
-    return true
+    console.log('onRemoteAudioSpectrum', spectrums, spectrumNumber);
+    return true;
   }
 
   setAudioProfile = () => {
-    const { audioProfile, audioScenario } = this.state
-    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
-  }
+    const { audioProfile, audioScenario } = this.state;
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario);
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
-    const { audioRecordDevices } = this.state
+    const { audioRecordDevices } = this.state;
     return (
       <div className={styles.rightBar} style={{ width: '60%' }}>
         <div style={{ overflow: 'auto' }}>
@@ -186,45 +186,45 @@ export default class AudioSpectrum
             onPress={(res) =>
               this.setState({ audioProfile: res.dropId }, this.setAudioProfile)
             }
-            title='Audio Profile'
+            title="Audio Profile"
           />
           <DropDownButton
             options={configMapToOptions(AudioScenarioList)}
             onPress={(res) =>
               this.setState({ audioScenario: res.dropId }, this.setAudioProfile)
             }
-            title='Audio Scenario'
+            title="Audio Scenario"
           />
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
+              const { deviceId, deviceName } = obj;
               return {
                 dropId: deviceId,
                 dropText: deviceName,
                 ...obj,
-              }
+              };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
 
           <Divider>Audio Spectrum</Divider>
           <Button
-            htmlType='button'
+            htmlType="button"
             onClick={() => {
               this.getRtcEngine().enableAudioSpectrumMonitor(
                 this.state.intervalInMS
-              )
+              );
             }}
           >
             enableAudioSpectrumMonitor
           </Button>
           <Button
-            htmlType='button'
+            htmlType="button"
             onClick={() => {
-              this.getRtcEngine().disableAudioSpectrumMonitor()
+              this.getRtcEngine().disableAudioSpectrumMonitor();
             }}
           >
             disableAudioSpectrumMonitor
@@ -232,9 +232,9 @@ export default class AudioSpectrum
         </div>
         <JoinChannelBar
           onPressJoin={(channelId: string) => {
-            this.getRtcEngine().enableAudio()
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
+            this.getRtcEngine().enableAudio();
+            const localUid = getRandomInt(1, 9999999);
+            console.log(`localUid: ${localUid}`);
             this.getRtcEngine().joinChannelWithOptions(
               '',
               channelId,
@@ -244,18 +244,18 @@ export default class AudioSpectrum
                   ChannelProfileType.ChannelProfileLiveBroadcasting,
                 clientRoleType: ClientRoleType.ClientRoleBroadcaster,
               }
-            )
+            );
           }}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -270,6 +270,6 @@ export default class AudioSpectrum
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

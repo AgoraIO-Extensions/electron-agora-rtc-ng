@@ -1,4 +1,4 @@
-import { Card, Input, List } from 'antd'
+import { Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -9,36 +9,36 @@ import createAgoraRtcEngine, {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
 
-const { Search } = Input
+const { Search } = Input;
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  isRelaying: boolean
-  channelId: string
-  allUser: User[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
-  relayChannelName: string
+  isJoined: boolean;
+  isRelaying: boolean;
+  channelId: string;
+  allUser: User[];
+  currentFps?: number;
+  currentResolution?: { width: number; height: number };
+  relayChannelName: string;
 }
 
 export default class ChannelMediaRelay
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
   state: State = {
     channelId: '',
@@ -46,29 +46,29 @@ export default class ChannelMediaRelay
     isJoined: false,
     isRelaying: false,
     relayChannelName: 'testRelay',
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
@@ -77,14 +77,14 @@ export default class ChannelMediaRelay
   ): void {
     console.log(
       `onJoinChannelSuccess channelId:${channelId} localUid:${localUid}`
-    )
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    );
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -98,14 +98,14 @@ export default class ChannelMediaRelay
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -113,54 +113,54 @@ export default class ChannelMediaRelay
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onChannelMediaRelayEvent(code: number): void {
-    console.log('onChannelMediaRelayEvent', code)
+    console.log('onChannelMediaRelayEvent', code);
   }
 
   onChannelMediaRelayStateChanged(state: number, code: number): void {
-    console.log(`onChannelMediaRelayStateChanged state:${state}, code${code}`)
+    console.log(`onChannelMediaRelayStateChanged state:${state}, code${code}`);
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    const localUid = getRandomInt(1, 9999999)
-    console.log(`localUid: ${localUid}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    const localUid = getRandomInt(1, 9999999);
+    console.log(`localUid: ${localUid}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   onPressChannelRelay = (relayChannelName: string) => {
-    const { isRelaying } = this.state
+    const { isRelaying } = this.state;
     if (isRelaying) {
-      this.getRtcEngine().stopChannelMediaRelay()
+      this.getRtcEngine().stopChannelMediaRelay();
     } else {
       if (!relayChannelName) {
-        return
+        return;
       }
-      const { channelId } = this.state
+      const { channelId } = this.state;
 
       this.getRtcEngine().startChannelMediaRelay({
         srcInfo: {
@@ -176,22 +176,22 @@ export default class ChannelMediaRelay
           },
         ],
         destCount: 1,
-      })
+      });
     }
-    this.setState({ isRelaying: !isRelaying })
-  }
+    this.setState({ isRelaying: !isRelaying });
+  };
 
   renderRightBar = () => {
-    const { isJoined, isRelaying, relayChannelName } = this.state
+    const { isJoined, isRelaying, relayChannelName } = this.state;
     return (
       <div className={styles.rightBar}>
         <div>
           <p>Relay Channel:</p>
           <Search
-            placeholder='ChannelName'
+            placeholder="ChannelName"
             allowClear
             enterButton={!isRelaying ? 'Start Relay' : 'Stop Relay'}
-            size='small'
+            size="small"
             defaultValue={relayChannelName}
             disabled={!isJoined}
             onSearch={this.onPressChannelRelay}
@@ -200,15 +200,15 @@ export default class ChannelMediaRelay
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -220,11 +220,11 @@ export default class ChannelMediaRelay
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -246,6 +246,6 @@ export default class ChannelMediaRelay
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

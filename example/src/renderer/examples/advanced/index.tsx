@@ -1,27 +1,27 @@
-import AudioMixing from './AudioMixing/AudioMixing'
-import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream'
-import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay'
-import ContentInspect from './ContentInspect/ContentInspect'
-import StreamMessage from './StreamMessage/StreamMessage'
-import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming'
-import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder'
-import MediaPlayer from './MediaPlayer/MediaPlayer'
-import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel'
-import RhythmPlayer from './RhythmPlayer/RhythmPlayer'
-import ScreenShare from './ScreenShare/ScreenShare'
-import SendMetaData from './SendMetaData/SendMetaData'
-import Encryption from './Encryption/Encryption'
-import RTMPStreaming from './RTMPStreaming/RTMPStreaming'
-import SpatialAudio from './SpatialAudio/SpatialAudio'
-import TakeSnapshot from './TakeSnapshot/TakeSnapshot'
-import VirtualBackground from './VirtualBackground/VirtualBackground'
-import VoiceChanger from './VoiceChanger/VoiceChanger'
-import AudioSpectrum from './AudioSpectrum/AudioSpectrum'
-import BeautyEffect from './BeautyEffect/BeautyEffect'
-import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame'
-import MediaRecorder from './MediaRecorder/MediaRecorder'
-import PlayEffect from './PlayEffect/PlayEffect'
-import PushVideoFrame from './PushVideoFrame/PushVideoFrame'
+import AudioMixing from './AudioMixing/AudioMixing';
+import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
+import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay';
+import ContentInspect from './ContentInspect/ContentInspect';
+import StreamMessage from './StreamMessage/StreamMessage';
+import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming';
+import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder';
+import MediaPlayer from './MediaPlayer/MediaPlayer';
+import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
+import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
+import ScreenShare from './ScreenShare/ScreenShare';
+import SendMetaData from './SendMetaData/SendMetaData';
+import Encryption from './Encryption/Encryption';
+import RTMPStreaming from './RTMPStreaming/RTMPStreaming';
+import SpatialAudio from './SpatialAudio/SpatialAudio';
+import TakeSnapshot from './TakeSnapshot/TakeSnapshot';
+import VirtualBackground from './VirtualBackground/VirtualBackground';
+import VoiceChanger from './VoiceChanger/VoiceChanger';
+import AudioSpectrum from './AudioSpectrum/AudioSpectrum';
+import BeautyEffect from './BeautyEffect/BeautyEffect';
+import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame';
+import MediaRecorder from './MediaRecorder/MediaRecorder';
+import PlayEffect from './PlayEffect/PlayEffect';
+import PushVideoFrame from './PushVideoFrame/PushVideoFrame';
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
@@ -92,6 +92,6 @@ const advanceRoute = [
     title: 'VirtualBackground',
   },
   { path: '/VoiceChanger', component: VoiceChanger, title: 'VoiceChanger' },
-]
+];
 
-export default advanceRoute
+export default advanceRoute;

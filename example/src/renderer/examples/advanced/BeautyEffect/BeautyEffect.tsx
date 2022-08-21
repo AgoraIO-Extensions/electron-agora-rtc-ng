@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -8,25 +8,25 @@ import createAgoraRtcEngine, {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Button, Divider } from 'antd'
+} from 'electron-agora-rtc-ng';
+import { Button, Divider } from 'antd';
 
-import Config from '../../../config/agora.config'
+import Config from '../../../config/agora.config';
 import {
   BaseComponent,
   BaseVideoComponentState,
-} from '../../../components/BaseComponent'
-import DropDownButton from '../../component/DropDownButton'
-import { configEnumToOptions } from '../../../utils'
-import SliderBar from '../../component/SliderBar'
+} from '../../../components/BaseComponent';
+import DropDownButton from '../../component/DropDownButton';
+import { configEnumToOptions } from '../../../utils';
+import SliderBar from '../../component/SliderBar';
 
 interface State extends BaseVideoComponentState {
-  lighteningContrastLevel: LighteningContrastLevel
-  lighteningLevel: number
-  smoothnessLevel: number
-  rednessLevel: number
-  sharpnessLevel: number
-  enableBeautyEffect: boolean
+  lighteningContrastLevel: LighteningContrastLevel;
+  lighteningLevel: number;
+  smoothnessLevel: number;
+  rednessLevel: number;
+  sharpnessLevel: number;
+  enableBeautyEffect: boolean;
 }
 
 export default class BeautyEffect
@@ -49,53 +49,53 @@ export default class BeautyEffect
       rednessLevel: 0,
       sharpnessLevel: 0,
       enableBeautyEffect: false,
-    }
+    };
   }
 
   /**
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state
+    const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`)
+      console.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine()
-    this.engine.registerEventHandler(this)
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-    })
+    });
 
     this.engine?.enableExtension(
       'agora_video_filters_clear_vision',
       'clear_vision',
       true
-    )
+    );
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    this.engine.enableVideo()
+    this.engine.enableVideo();
 
     // This case works if startPreview without joinChannel
-    this.engine.startPreview()
-    this.setState({ startPreview: true })
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state
+    const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid')
-      return
+      console.error('channelId is invalid');
+      return;
     }
     if (uid < 0) {
-      console.error('uid is invalid')
-      return
+      console.error('uid is invalid');
+      return;
     }
 
     // start joining channel
@@ -107,7 +107,7 @@ export default class BeautyEffect
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
+    });
   }
 
   /**
@@ -120,7 +120,7 @@ export default class BeautyEffect
       smoothnessLevel,
       rednessLevel,
       sharpnessLevel,
-    } = this.state
+    } = this.state;
 
     this.engine?.setBeautyEffectOptions(true, {
       lighteningContrastLevel,
@@ -128,34 +128,34 @@ export default class BeautyEffect
       smoothnessLevel,
       rednessLevel,
       sharpnessLevel,
-    })
-    this.setState({ enableBeautyEffect: true })
-  }
+    });
+    this.setState({ enableBeautyEffect: true });
+  };
 
   /**
    * Step 3-2: disableBeautyEffect
    */
   disableBeautyEffect = () => {
-    this.engine?.setBeautyEffectOptions(false, {})
-    this.setState({ enableBeautyEffect: false })
-  }
+    this.engine?.setBeautyEffectOptions(false, {});
+    this.setState({ enableBeautyEffect: false });
+  };
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    this.engine?.leaveChannel()
+    this.engine?.leaveChannel();
   }
 
   /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    this.engine?.release()
+    this.engine?.release();
   }
 
   onError(err: ErrorCodeType, msg: string) {
-    console.error('onError', 'err', err, 'msg', msg)
+    console.error('onError', 'err', err, 'msg', msg);
   }
 
   onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
@@ -165,13 +165,13 @@ export default class BeautyEffect
       connection,
       'elapsed',
       elapsed
-    )
-    this.setState({ joinChannelSuccess: true })
+    );
+    this.setState({ joinChannelSuccess: true });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
-    console.info('onLeaveChannel', 'connection', connection, 'stats', stats)
-    this.setState(this.createState())
+    console.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    this.setState(this.createState());
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
@@ -183,12 +183,12 @@ export default class BeautyEffect
       remoteUid,
       'elapsed',
       elapsed
-    )
-    const { remoteUsers } = this.state
-    if (remoteUsers === undefined) return
+    );
+    const { remoteUsers } = this.state;
+    if (remoteUsers === undefined) return;
     this.setState({
       remoteUsers: [...remoteUsers!, remoteUid],
-    })
+    });
   }
 
   onUserOffline(
@@ -204,16 +204,16 @@ export default class BeautyEffect
       remoteUid,
       'reason',
       reason
-    )
-    const { remoteUsers } = this.state
-    if (remoteUsers === undefined) return
+    );
+    const { remoteUsers } = this.state;
+    if (remoteUsers === undefined) return;
     this.setState({
       remoteUsers: remoteUsers!.filter((value) => value !== remoteUid),
-    })
+    });
   }
 
   protected renderRight(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, enableBeautyEffect } = this.state
+    const { startPreview, joinChannelSuccess, enableBeautyEffect } = this.state;
     return (
       <>
         <DropDownButton
@@ -232,7 +232,7 @@ export default class BeautyEffect
           onChange={(value) => {
             this.setState({
               lighteningLevel: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -244,7 +244,7 @@ export default class BeautyEffect
           onChange={(value) => {
             this.setState({
               smoothnessLevel: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -256,7 +256,7 @@ export default class BeautyEffect
           onChange={(value) => {
             this.setState({
               rednessLevel: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -268,7 +268,7 @@ export default class BeautyEffect
           onChange={(value) => {
             this.setState({
               sharpnessLevel: value,
-            })
+            });
           }}
         />
         <Divider />
@@ -283,6 +283,6 @@ export default class BeautyEffect
           {enableBeautyEffect ? 'disable' : 'enable'} Beauty Effect
         </Button>
       </>
-    )
+    );
   }
 }

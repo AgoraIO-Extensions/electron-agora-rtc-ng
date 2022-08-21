@@ -1,4 +1,4 @@
-import { Card, Input, List } from 'antd'
+import { Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -20,51 +20,51 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
-import './DirectCdnStreaming.scss'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
+import './DirectCdnStreaming.scss';
 
-const { Search } = Input
+const { Search } = Input;
 
 interface Device {
-  deviceId: string
-  deviceName: string
+  deviceId: string;
+  deviceName: string;
 }
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  audioRecordDevices: Device[]
-  cameraDevices: Device[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
-  cdnResult: string
-  isStartCDN: boolean
-  publishUrl: string
+  isJoined: boolean;
+  channelId: string;
+  allUser: User[];
+  audioRecordDevices: Device[];
+  cameraDevices: Device[];
+  currentFps?: number;
+  currentResolution?: { width: number; height: number };
+  cdnResult: string;
+  isStartCDN: boolean;
+  publishUrl: string;
 }
 
 export default class DirectCdnStreaming
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler, IDirectCdnStreamingEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  videoDeviceManager: IVideoDeviceManager
+  videoDeviceManager: IVideoDeviceManager;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     channelId: '',
@@ -76,60 +76,60 @@ export default class DirectCdnStreaming
     isStartCDN: false,
     publishUrl:
       'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
-  }
+  };
 
   componentDidMount() {
-    const rtcEngine = this.getRtcEngine()
+    const rtcEngine = this.getRtcEngine();
     let res = rtcEngine.enableExtension(
       'agora_segmentation',
       'PortraitSegmentation',
       true,
       MediaSourceType.PrimaryCameraSource
-    )
-    console.log('enableExtension', res)
+    );
+    console.log('enableExtension', res);
 
-    this.getRtcEngine().registerEventHandler(this)
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.getRtcEngine().registerEventHandler(this);
+    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
       cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
+      window.rtcEngine = this.rtcEngine;
       const res = this.rtcEngine.initialize({
         appId: config.appId,
-      })
-      console.log('initialize:', res)
+      });
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -143,14 +143,14 @@ export default class DirectCdnStreaming
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -158,41 +158,41 @@ export default class DirectCdnStreaming
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    const localUid = getRandomInt(1, 9999999)
-    console.log(`localUid: ${localUid}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    const localUid = getRandomInt(1, 9999999);
+    console.log(`localUid: ${localUid}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
+    const { currentFps, currentResolution } = this.state;
     if (!currentResolution || !currentFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().setVideoEncoderConfiguration({
@@ -204,47 +204,47 @@ export default class DirectCdnStreaming
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
+    });
+  };
 
   onDirectCdnStreamingStateChanged = (
     state: DirectCdnStreamingState,
     error: DirectCdnStreamingError,
     message: string
   ) => {
-    console.log('onDirectCdnStreamingStateChanged', state, error, message)
+    console.log('onDirectCdnStreamingStateChanged', state, error, message);
 
-    let cdnResult = ''
+    let cdnResult = '';
     switch (state) {
       case DirectCdnStreamingState.DirectCdnStreamingStateIdle:
-        cdnResult = 'Idle'
-        break
+        cdnResult = 'Idle';
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateRunning:
-        cdnResult = 'Running'
-        break
+        cdnResult = 'Running';
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateStopped:
-        cdnResult = 'Stopped'
-        break
+        cdnResult = 'Stopped';
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateFailed:
-        cdnResult = 'Failed'
-        break
+        cdnResult = 'Failed';
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateRecovering:
-        cdnResult = 'Recovering'
-        break
+        cdnResult = 'Recovering';
+        break;
       default:
-        break
+        break;
     }
-    this.setState({ cdnResult })
-  }
+    this.setState({ cdnResult });
+  };
 
   onDirectCdnStreamingStats = (stats: DirectCdnStreamingStats) => {
-    console.log('onDirectCdnStreamingStats', stats)
-  }
+    console.log('onDirectCdnStreamingStats', stats);
+  };
 
   onPressStartOrStop = (publishUrl) => {
-    const { currentFps, currentResolution, isStartCDN } = this.state
-    const rtcEngine = this.getRtcEngine()
-    let res
+    const { currentFps, currentResolution, isStartCDN } = this.state;
+    const rtcEngine = this.getRtcEngine();
+    let res;
     if (!isStartCDN) {
       rtcEngine.setDirectCdnStreamingVideoConfiguration({
         codecType: VideoCodecType.VideoCodecAv1,
@@ -255,21 +255,21 @@ export default class DirectCdnStreaming
         orientationMode: OrientationMode.OrientationModeAdaptive,
         degradationPreference: DegradationPreference.MaintainBalanced,
         mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-      })
+      });
       res = rtcEngine.startDirectCdnStreaming(this, publishUrl, {
         publishCameraTrack: true,
         publishMicrophoneTrack: false,
         publishCustomAudioTrack: false,
         publishCustomVideoTrack: false,
         publishMediaPlayerAudioTrack: false,
-      })
-      console.log('startDirectCdnStreaming', '\nres:', res)
+      });
+      console.log('startDirectCdnStreaming', '\nres:', res);
     } else {
-      res = rtcEngine.stopDirectCdnStreaming()
-      console.log('stopDirectCdnStreaming', '\nres:', res)
+      res = rtcEngine.stopDirectCdnStreaming();
+      console.log('stopDirectCdnStreaming', '\nres:', res);
     }
-    this.setState({ isStartCDN: !isStartCDN, publishUrl })
-  }
+    this.setState({ isStartCDN: !isStartCDN, publishUrl });
+  };
 
   renderRightBar = () => {
     const {
@@ -278,62 +278,62 @@ export default class DirectCdnStreaming
       cdnResult,
       isStartCDN,
       publishUrl,
-    } = this.state
+    } = this.state;
 
     return (
       <div className={styles.rightBar}>
         <div>
           <DropDownButton
             options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId)
+              this.videoDeviceManager.setDevice(res.dropId);
             }}
-            title='Camera'
+            title="Camera"
           />
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
           <DropDownButton
-            title='Role'
+            title="Role"
             options={configMapToOptions(RoleTypeMap)}
             onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId)
+              this.getRtcEngine().setClientRole(res.dropId);
             }}
           />
           <DropDownButton
-            title='Resolution'
+            title="Resolution"
             options={configMapToOptions(ResolutionMap)}
             onPress={(res) => {
               this.setState(
                 { currentResolution: res.dropId },
                 this.setVideoConfig
-              )
+              );
             }}
           />
           <DropDownButton
-            title='FPS'
+            title="FPS"
             options={configMapToOptions(FpsMap)}
             onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
+              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
             }}
           />
           <br />
           <Search
-            placeholder='publishUrl'
+            placeholder="publishUrl"
             allowClear
             defaultValue={publishUrl}
             enterButton={!isStartCDN ? 'Start CDN' : 'Stop CDN'}
-            size='small'
+            size="small"
             onSearch={this.onPressStartOrStop}
           />
 
@@ -347,18 +347,18 @@ export default class DirectCdnStreaming
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     const videoSourceType = isMyself
       ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
+      : VideoSourceType.VideoSourceRemote;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -370,11 +370,11 @@ export default class DirectCdnStreaming
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -396,6 +396,6 @@ export default class DirectCdnStreaming
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

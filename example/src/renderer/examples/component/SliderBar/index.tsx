@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { Slider, InputNumber, Row, Col } from 'antd'
+import { Slider, InputNumber, Row, Col } from 'antd';
 
 interface SliderBarProps {
-  title?: string
-  min?: number
-  max?: number
-  value?: number
-  step?: number
-  onChange?: (value: number) => void
+  title?: string;
+  min?: number;
+  max?: number;
+  value?: number;
+  step?: number;
+  onChange?: (value: number) => void;
 }
 
 const SliderBar = ({
@@ -19,14 +19,14 @@ const SliderBar = ({
   step = 1,
   onChange = () => {},
 }: SliderBarProps) => {
-  const [inputValue, setInputValue] = useState(value)
+  const [inputValue, setInputValue] = useState(value);
 
   const wrapOnChange = (value) => {
-    console.log(title, value)
+    console.log(title, value);
 
-    setInputValue(value)
-    onChange(value)
-  }
+    setInputValue(value);
+    onChange(value);
+  };
 
   return (
     <>
@@ -55,6 +55,6 @@ const SliderBar = ({
         </Col>
       </Row>
     </>
-  )
-}
-export default SliderBar
+  );
+};
+export default SliderBar;

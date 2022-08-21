@@ -1,63 +1,63 @@
-import { useState, useImperativeHandle } from 'react'
-import { Divider, Modal, Checkbox } from 'antd'
+import { useState, useImperativeHandle } from 'react';
+import { Divider, Modal, Checkbox } from 'antd';
 
-const CheckboxGroup = Checkbox.Group
-let resultResolve
-let finishCallBack
+const CheckboxGroup = Checkbox.Group;
+let resultResolve;
+let finishCallBack;
 const ChooseFilterWindowModal = ({ cRef }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [windows, setWindows] = useState([])
-  const [checkedList, setCheckedList] = useState([])
-  const [indeterminate, setIndeterminate] = useState(true)
-  const [checkAll, setCheckAll] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [windows, setWindows] = useState([]);
+  const [checkedList, setCheckedList] = useState([]);
+  const [indeterminate, setIndeterminate] = useState(true);
+  const [checkAll, setCheckAll] = useState(false);
 
   const dismissModal = (result: boolean) => {
     if (resultResolve) {
-      resultResolve(result)
+      resultResolve(result);
     }
 
-    setIsModalVisible(false)
-  }
+    setIsModalVisible(false);
+  };
 
   const showModal = (_windows, _finishCallBack) => {
-    setWindows(_windows.map((id) => `${id}`) || [])
+    setWindows(_windows.map((id) => `${id}`) || []);
 
-    setIsModalVisible(true)
+    setIsModalVisible(true);
     return new Promise<boolean>((resolve) => {
-      finishCallBack = _finishCallBack
-      resultResolve = resolve
-    })
-  }
+      finishCallBack = _finishCallBack;
+      resultResolve = resolve;
+    });
+  };
 
   useImperativeHandle(cRef, () => ({
     // changeVal 就是暴露给父组件的方法
     showModal,
-  }))
+  }));
 
   const handleOk = () => {
-    finishCallBack(checkedList)
-    dismissModal(true)
-  }
+    finishCallBack(checkedList);
+    dismissModal(true);
+  };
 
   const handleCancel = () => {
-    dismissModal(false)
-  }
+    dismissModal(false);
+  };
   const onChange = (list) => {
-    setCheckedList(list)
-    setIndeterminate(!!list.length && list.length < windows.length)
-    setCheckAll(list.length === windows.length)
-  }
+    setCheckedList(list);
+    setIndeterminate(!!list.length && list.length < windows.length);
+    setCheckAll(list.length === windows.length);
+  };
 
   const onCheckAllChange = (e) => {
-    setCheckedList(e.target.checked ? windows : [])
-    setIndeterminate(false)
-    setCheckAll(e.target.checked)
-  }
+    setCheckedList(e.target.checked ? windows : []);
+    setIndeterminate(false);
+    setCheckAll(e.target.checked);
+  };
 
   return (
     <>
       <Modal
-        title='Choose Exclude Window'
+        title="Choose Exclude Window"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -77,7 +77,7 @@ const ChooseFilterWindowModal = ({ cRef }) => {
         />
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default ChooseFilterWindowModal
+export default ChooseFilterWindowModal;

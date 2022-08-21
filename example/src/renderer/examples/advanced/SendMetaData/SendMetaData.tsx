@@ -1,4 +1,4 @@
-import { Card, Input, List } from 'antd'
+import { Card, Input, List } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -12,72 +12,72 @@ import createAgoraRtcEngine, {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
-import sendMetaDataStyle from './SendMetaData.scss'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
+import sendMetaDataStyle from './SendMetaData.scss';
 
-const { Search } = Input
+const { Search } = Input;
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  allUser: User[]
-  isJoined: boolean
-  msgs: string[]
+  allUser: User[];
+  isJoined: boolean;
+  msgs: string[];
 }
 
-const localUid = getRandomInt(1, 9999999)
+const localUid = getRandomInt(1, 9999999);
 
 export default class SendMetaData
   extends Component<State>
   implements IRtcEngineEventHandler, IMetadataObserver
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  streamId?: number
+  streamId?: number;
 
   state: State = {
     allUser: [],
     isJoined: false,
     msgs: [],
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
     this.getRtcEngine().registerMediaMetadataObserver(
       this,
       MetadataType.VideoMetadata
-    )
+    );
   }
 
   componentWillUnmount() {
     this.getRtcEngine().unregisterMediaMetadataObserver(
       this,
       MetadataType.VideoMetadata
-    )
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    );
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
@@ -85,15 +85,15 @@ export default class SendMetaData
     elapsed: number
   ): void {
     try {
-      const { allUser: oldAllUser } = this.state
-      const newAllUser = [...oldAllUser]
-      newAllUser.push({ isMyself: true, uid: localUid })
+      const { allUser: oldAllUser } = this.state;
+      const newAllUser = [...oldAllUser];
+      newAllUser.push({ isMyself: true, uid: localUid });
       this.setState({
         isJoined: true,
         allUser: newAllUser,
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -108,14 +108,14 @@ export default class SendMetaData
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -123,38 +123,38 @@ export default class SendMetaData
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onMetadataReceived?({ uid, size, buffer, timeStampMs }: Metadata): void {
-    console.log('onMetadataReceived', uid, size, buffer, timeStampMs)
+    console.log('onMetadataReceived', uid, size, buffer, timeStampMs);
     this.setState({
       msgs: [...this.state.msgs, `from:${uid} message:${buffer.toString()}`],
-    })
+    });
   }
 
   pressSendMetaData = (msg: string) => {
     if (!msg) {
-      return
+      return;
     }
-    const buffer = Buffer.from(msg)
+    const buffer = Buffer.from(msg);
     this.getRtcEngine().sendMetaData(
       {
         uid: localUid,
@@ -162,19 +162,19 @@ export default class SendMetaData
         buffer: buffer,
       },
       VideoSourceType.VideoSourceCamera
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
-    const { isJoined, msgs } = this.state
+    const { isJoined, msgs } = this.state;
 
     return (
       <div className={styles.rightBarBig}>
@@ -192,9 +192,9 @@ export default class SendMetaData
           <div>
             <p>Send Meta Data:</p>
             <Search
-              placeholder='input meta data'
-              enterButton='Send'
-              size='middle'
+              placeholder="input meta data"
+              enterButton="Send"
+              size="middle"
               onSearch={this.pressSendMetaData}
               disabled={!isJoined}
             />
@@ -202,9 +202,9 @@ export default class SendMetaData
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {
-            this.setState({ channelId })
-            this.getRtcEngine().enableVideo()
-            console.log(`localUid: ${localUid}`)
+            this.setState({ channelId });
+            this.getRtcEngine().enableVideo();
+            console.log(`localUid: ${localUid}`);
             this.getRtcEngine().joinChannelWithOptions(
               '',
               channelId,
@@ -214,18 +214,18 @@ export default class SendMetaData
                   ChannelProfileType.ChannelProfileLiveBroadcasting,
                 clientRoleType: ClientRoleType.ClientRoleBroadcaster,
               }
-            )
+            );
           }}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -240,6 +240,6 @@ export default class SendMetaData
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

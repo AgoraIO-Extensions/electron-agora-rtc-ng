@@ -1,4 +1,4 @@
-import { Card, Switch } from 'antd'
+import { Card, Switch } from 'antd';
 import createAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
@@ -10,49 +10,49 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
-import { rgbImageBufferToBase64 } from '../../../utils/base64'
-import screenStyle from './SendMultiVideoStream.scss'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import { FpsMap, ResolutionMap } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
+import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import screenStyle from './SendMultiVideoStream.scss';
 
-const localUid1 = getRandomInt(1, 9999999)
-const localUid2 = getRandomInt(1, 9999999)
+const localUid1 = getRandomInt(1, 9999999);
+const localUid2 = getRandomInt(1, 9999999);
 
 interface State {
-  captureInfoList: any[]
-  currentShareInfo?: any
-  channelId: string
-  isStart: boolean
-  cameraDevices: Device[]
-  firstCameraId: string
-  enableShare: boolean
-  enableCamera: boolean
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
-  currentShareFps?: number
-  currentShareResolution?: { width: number; height: number }
-  captureMouseCursor: boolean
+  captureInfoList: any[];
+  currentShareInfo?: any;
+  channelId: string;
+  isStart: boolean;
+  cameraDevices: Device[];
+  firstCameraId: string;
+  enableShare: boolean;
+  enableCamera: boolean;
+  currentFps?: number;
+  currentResolution?: { width: number; height: number };
+  currentShareFps?: number;
+  currentShareResolution?: { width: number; height: number };
+  captureMouseCursor: boolean;
 }
 
 interface Device {
-  deviceId: string
-  deviceName: string
+  deviceId: string;
+  deviceName: string;
 }
 
 export default class SendMultiVideoStream
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  videoDeviceManager: IVideoDeviceManager
+  videoDeviceManager: IVideoDeviceManager;
 
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
   state: State = {
     captureInfoList: [],
@@ -63,24 +63,24 @@ export default class SendMultiVideoStream
     enableShare: false,
     enableCamera: true,
     captureMouseCursor: true,
-  }
+  };
 
   componentDidMount = async () => {
-    this.getScreenCaptureInfo()
+    this.getScreenCaptureInfo();
 
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
 
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
+    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
 
     this.setState({
       cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
-  }
+    });
+  };
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.onPressStop()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.onPressStop();
+    this.getRtcEngine().release();
   }
 
   getScreenCaptureInfo = async () => {
@@ -88,11 +88,11 @@ export default class SendMultiVideoStream
       { width: 500, height: 500 },
       { width: 500, height: 500 },
       true
-    )
+    );
 
     const imageList = list.map((item) =>
       rgbImageBufferToBase64(item.thumbImage)
-    )
+    );
 
     const formatList = list.map(
       ({ sourceName, sourceTitle, sourceId, type }, index) => ({
@@ -105,35 +105,35 @@ export default class SendMultiVideoStream
             ? sourceTitle
             : sourceTitle.replace(/\s+/g, '').substr(0, 20) + '...',
       })
-    )
-    this.setState({ captureInfoList: formatList })
-  }
+    );
+    this.setState({ captureInfoList: formatList });
+  };
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   startCameraCapture = (channelId: string) => {
-    const { firstCameraId, enableCamera } = this.state
+    const { firstCameraId, enableCamera } = this.state;
     if (!enableCamera) {
-      return
+      return;
     }
-    const rtcEngine = this.getRtcEngine()
-    let res = rtcEngine.startPrimaryCameraCapture({ deviceId: firstCameraId })
-    console.log('startPrimaryCameraCapture', res)
+    const rtcEngine = this.getRtcEngine();
+    let res = rtcEngine.startPrimaryCameraCapture({ deviceId: firstCameraId });
+    console.log('startPrimaryCameraCapture', res);
 
     res = rtcEngine.joinChannelEx(
       '',
@@ -154,9 +154,9 @@ export default class SendMultiVideoStream
         autoSubscribeVideo: false,
         clientRoleType: 1,
       }
-    )
-    console.log('joinChannelEx', res)
-  }
+    );
+    console.log('joinChannelEx', res);
+  };
 
   startScreenCapture = (channelId: string) => {
     const {
@@ -165,14 +165,14 @@ export default class SendMultiVideoStream
       currentFps,
       currentShareResolution,
       captureMouseCursor,
-    } = this.state
+    } = this.state;
     if (!enableShare) {
-      return
+      return;
     }
-    const { isScreen, sourceId } = currentShareInfo
-    console.log(currentShareInfo)
+    const { isScreen, sourceId } = currentShareInfo;
+    console.log(currentShareInfo);
 
-    const rtcEngine = this.getRtcEngine()
+    const rtcEngine = this.getRtcEngine();
     if (isScreen) {
       this.getRtcEngine().startScreenCaptureByDisplayId(
         sourceId,
@@ -191,7 +191,7 @@ export default class SendMultiVideoStream
           excludeWindowList: [],
           excludeWindowCount: 0,
         }
-      )
+      );
     } else {
       this.getRtcEngine().startScreenCaptureByWindowId(
         sourceId,
@@ -210,7 +210,7 @@ export default class SendMultiVideoStream
           excludeWindowList: [],
           excludeWindowCount: 0,
         }
-      )
+      );
     }
 
     const res = rtcEngine.joinChannelEx(
@@ -233,32 +233,32 @@ export default class SendMultiVideoStream
         autoSubscribeVideo: false,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
-    )
-    console.log('joinChannelEx', res)
-  }
+    );
+    console.log('joinChannelEx', res);
+  };
 
   onPressStart = async (channelId: string) => {
-    this.setState({ channelId, isStart: true })
-    await this.startScreenCapture(channelId)
-    await this.startCameraCapture(channelId)
+    this.setState({ channelId, isStart: true });
+    await this.startScreenCapture(channelId);
+    await this.startCameraCapture(channelId);
 
-    return false
-  }
+    return false;
+  };
 
   onPressStop = () => {
-    this.setState({ isStart: false })
-    const rtcEngine = this.getRtcEngine()
-    rtcEngine.stopPrimaryScreenCapture()
+    this.setState({ isStart: false });
+    const rtcEngine = this.getRtcEngine();
+    rtcEngine.stopPrimaryScreenCapture();
 
-    const { channelId } = this.state
-    rtcEngine.leaveChannelEx({ channelId, localUid: localUid1 })
-    rtcEngine.leaveChannelEx({ channelId, localUid: localUid2 })
-  }
+    const { channelId } = this.state;
+    rtcEngine.leaveChannelEx({ channelId, localUid: localUid1 });
+    rtcEngine.leaveChannelEx({ channelId, localUid: localUid2 });
+  };
 
   setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
+    const { currentFps, currentResolution } = this.state;
     if (!currentResolution || !currentFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().setVideoEncoderConfiguration({
@@ -270,15 +270,15 @@ export default class SendMultiVideoStream
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
+    });
+  };
 
   updateScreenCaptureParameters = () => {
     const { currentShareResolution, currentShareFps, captureMouseCursor } =
-      this.state
+      this.state;
 
     if (!currentShareResolution || !currentShareFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().updateScreenCaptureParameters({
@@ -288,24 +288,24 @@ export default class SendMultiVideoStream
       windowFocus: false,
       excludeWindowList: [],
       excludeWindowCount: 0,
-    })
-  }
+    });
+  };
 
   renderPopup = (item: { image: string }) => {
     return (
       <div>
         <img
           src={item.image}
-          alt='preview img'
+          alt="preview img"
           className={screenStyle.previewShotBig}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
     const { captureInfoList, cameraDevices, enableShare, enableCamera } =
-      this.state
+      this.state;
     return (
       <div className={styles.rightBar}>
         <div>
@@ -319,11 +319,11 @@ export default class SendMultiVideoStream
           >
             {'Enable Camera:   '}
             <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
+              checkedChildren="Enable"
+              unCheckedChildren="Disable"
               defaultChecked={enableCamera}
               onChange={(value) => {
-                this.setState({ enableCamera: value })
+                this.setState({ enableCamera: value });
               }}
             />
           </div>
@@ -331,30 +331,33 @@ export default class SendMultiVideoStream
             <>
               <DropDownButton
                 options={cameraDevices.map((obj) => {
-                  const { deviceId, deviceName } = obj
-                  return { dropId: deviceId, dropText: deviceName, ...obj }
+                  const { deviceId, deviceName } = obj;
+                  return { dropId: deviceId, dropText: deviceName, ...obj };
                 })}
                 onPress={(res) => {
-                  const deviceId = res.dropId
-                  this.setState({ firstCameraId: deviceId })
+                  const deviceId = res.dropId;
+                  this.setState({ firstCameraId: deviceId });
                 }}
-                title='Camera Device'
+                title="Camera Device"
               />
               <DropDownButton
-                title='Resolution'
+                title="Resolution"
                 options={configMapToOptions(ResolutionMap)}
                 onPress={(res) => {
                   this.setState(
                     { currentResolution: res.dropId },
                     this.setVideoConfig
-                  )
+                  );
                 }}
               />
               <DropDownButton
-                title='FPS'
+                title="FPS"
                 options={configMapToOptions(FpsMap)}
                 onPress={(res) => {
-                  this.setState({ currentFps: res.dropId }, this.setVideoConfig)
+                  this.setState(
+                    { currentFps: res.dropId },
+                    this.setVideoConfig
+                  );
                 }}
               />
             </>
@@ -369,54 +372,54 @@ export default class SendMultiVideoStream
           >
             {'Enable Share:   '}
             <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
+              checkedChildren="Enable"
+              unCheckedChildren="Disable"
               defaultChecked={enableShare}
               onChange={(value) => {
-                this.setState({ enableShare: value })
+                this.setState({ enableShare: value });
               }}
             />
           </div>
           {!enableShare && (
             <DropDownButton
               defaultIndex={0}
-              title='Share Window/Screen'
+              title="Share Window/Screen"
               options={captureInfoList.map((obj) => ({
                 dropId: obj,
                 dropText: obj.sourceName || obj.sourceTitle,
               }))}
               PopContent={this.renderPopup}
-              PopContentTitle='Preview'
+              PopContentTitle="Preview"
               onPress={(res) => {
-                const info = res.dropId
+                const info = res.dropId;
                 if (info === undefined) {
-                  return
+                  return;
                 }
-                this.setState({ currentShareInfo: info })
+                this.setState({ currentShareInfo: info });
               }}
             />
           )}
           {enableShare && (
             <>
               <DropDownButton
-                title='Resolution'
+                title="Resolution"
                 options={configMapToOptions(ResolutionMap)}
                 defaultIndex={configMapToOptions(ResolutionMap).length - 1}
                 onPress={(res) => {
                   this.setState(
                     { currentShareResolution: res.dropId },
                     this.updateScreenCaptureParameters
-                  )
+                  );
                 }}
               />
               <DropDownButton
-                title='FPS'
+                title="FPS"
                 options={configMapToOptions(FpsMap)}
                 onPress={(res) => {
                   this.setState(
                     { currentShareFps: res.dropId },
                     this.updateScreenCaptureParameters
-                  )
+                  );
                 }}
               />
               <div
@@ -428,14 +431,14 @@ export default class SendMultiVideoStream
               >
                 {'CaptureMouseCursor'}
                 <Switch
-                  checkedChildren='Enable'
-                  unCheckedChildren='Disable'
+                  checkedChildren="Enable"
+                  unCheckedChildren="Disable"
                   defaultChecked={false}
                   onChange={(enable) => {
                     this.setState(
                       { captureMouseCursor: enable },
                       this.updateScreenCaptureParameters
-                    )
+                    );
                   }}
                 />
               </div>
@@ -443,24 +446,24 @@ export default class SendMultiVideoStream
           )}
         </div>
         <JoinChannelBar
-          buttonTitle='Start'
-          buttonTitleDisable='Stop'
+          buttonTitle="Start"
+          buttonTitleDisable="Stop"
           onPressJoin={this.onPressStart}
           onPressLeave={this.onPressStop}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isStart, channelId, enableCamera, enableShare } = this.state
+    const { isStart, channelId, enableCamera, enableShare } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
           {isStart && (
             <>
               {enableShare && (
-                <Card title='Local Share' className={styles.card}>
+                <Card title="Local Share" className={styles.card}>
                   <Window
                     uid={localUid1}
                     rtcEngine={this.rtcEngine!}
@@ -470,7 +473,7 @@ export default class SendMultiVideoStream
                 </Card>
               )}
               {enableCamera && (
-                <Card title='Local Camera' className={styles.card}>
+                <Card title="Local Camera" className={styles.card}>
                   <Window
                     uid={localUid2}
                     rtcEngine={this.rtcEngine!}
@@ -484,6 +487,6 @@ export default class SendMultiVideoStream
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

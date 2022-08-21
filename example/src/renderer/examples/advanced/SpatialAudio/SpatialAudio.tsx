@@ -1,4 +1,4 @@
-import { Card, Divider, List, Switch } from 'antd'
+import { Card, Divider, List, Switch } from 'antd';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -9,41 +9,41 @@ import createAgoraRtcEngine, {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import SliderBar from '../../component/SliderBar'
-import { AudioProfileList, AudioScenarioList } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import SliderBar from '../../component/SliderBar';
+import { AudioProfileList, AudioScenarioList } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface Device {
-  deviceId: string
-  deviceName: string
+  deviceId: string;
+  deviceName: string;
 }
 
 interface State {
-  audioRecordDevices: Device[]
-  audioProfile: number
-  audioScenario: number
-  allUser: User[]
-  isJoined: boolean
+  audioRecordDevices: Device[];
+  audioProfile: number;
+  audioScenario: number;
+  allUser: User[];
+  isJoined: boolean;
 }
 
 export default class JoinChannelAudio
   extends Component<State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     audioRecordDevices: [],
@@ -51,49 +51,49 @@ export default class JoinChannelAudio
     audioScenario: AudioScenarioList.Default,
     allUser: [],
     isJoined: false,
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
+    this.getRtcEngine().registerEventHandler(this);
 
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -107,14 +107,14 @@ export default class JoinChannelAudio
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -122,45 +122,45 @@ export default class JoinChannelAudio
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   setAudioProfile = () => {
-    const { audioProfile, audioScenario } = this.state
-    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario)
-  }
+    const { audioProfile, audioScenario } = this.state;
+    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario);
+  };
   onPressSpatialAudio = (enabled) => {
-    const res = this.getRtcEngine().enableSpatialAudio(enabled)
-    console.log('enableSpatialAudio', enabled, '\nres:', res)
-  }
+    const res = this.getRtcEngine().enableSpatialAudio(enabled);
+    console.log('enableSpatialAudio', enabled, '\nres:', res);
+  };
 
   renderItem = ({ isMyself, uid }) => {
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   renderRightBar = () => {
-    const { audioRecordDevices: audioDevices } = this.state
+    const { audioRecordDevices: audioDevices } = this.state;
     return (
       <div className={styles.rightBar}>
         <div>
@@ -169,45 +169,45 @@ export default class JoinChannelAudio
             onPress={(res) =>
               this.setState({ audioProfile: res.dropId }, this.setAudioProfile)
             }
-            title='Audio Profile'
+            title="Audio Profile"
           />
           <DropDownButton
             options={configMapToOptions(AudioScenarioList)}
             onPress={(res) =>
               this.setState({ audioScenario: res.dropId }, this.setAudioProfile)
             }
-            title='Audio Scenario'
+            title="Audio Scenario"
           />
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
 
           <SliderBar
             max={100}
-            title='SDK Recording Volume'
+            title="SDK Recording Volume"
             onChange={(value) => {
-              this.getRtcEngine().adjustRecordingSignalVolume(value)
+              this.getRtcEngine().adjustRecordingSignalVolume(value);
             }}
           />
           <SliderBar
             max={100}
-            title='Device Playout Volume'
+            title="Device Playout Volume"
             onChange={(value) => {
-              this.getRtcEngine().adjustAudioMixingPlayoutVolume(value)
+              this.getRtcEngine().adjustAudioMixingPlayoutVolume(value);
             }}
           />
           <SliderBar
             max={100}
-            title='SDK Playout Volume SDK'
+            title="SDK Playout Volume SDK"
             onChange={(value) => {
-              this.getRtcEngine().adjustPlaybackSignalVolume(value)
+              this.getRtcEngine().adjustPlaybackSignalVolume(value);
             }}
           />
           <Divider>Spatial Audio</Divider>
@@ -220,8 +220,8 @@ export default class JoinChannelAudio
           >
             {'SpatialAudio:   '}
             <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
+              checkedChildren="Enable"
+              unCheckedChildren="Disable"
               defaultChecked={false}
               onChange={this.onPressSpatialAudio}
             />
@@ -229,9 +229,9 @@ export default class JoinChannelAudio
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {
-            this.getRtcEngine().enableAudio()
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
+            this.getRtcEngine().enableAudio();
+            const localUid = getRandomInt(1, 9999999);
+            console.log(`localUid: ${localUid}`);
             this.getRtcEngine().joinChannelWithOptions(
               '',
               channelId,
@@ -241,18 +241,18 @@ export default class JoinChannelAudio
                   ChannelProfileType.ChannelProfileLiveBroadcasting,
                 clientRoleType: ClientRoleType.ClientRoleBroadcaster,
               }
-            )
+            );
           }}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
 
     return (
       <div className={styles.screen}>
@@ -268,6 +268,6 @@ export default class JoinChannelAudio
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

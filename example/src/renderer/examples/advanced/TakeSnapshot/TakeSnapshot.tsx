@@ -16,50 +16,50 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Button, Card, Divider, List } from 'antd'
-import os from 'os'
-import path from 'path'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Button, Card, Divider, List } from 'antd';
+import os from 'os';
+import path from 'path';
+import { Component } from 'react';
+import DropDownButton from '../../component/DropDownButton';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { configMapToOptions, getRandomInt } from '../../../utils';
 
 interface Device {
-  deviceId: string
-  deviceName: string
+  deviceId: string;
+  deviceName: string;
 }
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  audioRecordDevices: Device[]
-  cameraDevices: Device[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
+  isJoined: boolean;
+  channelId: string;
+  allUser: User[];
+  audioRecordDevices: Device[];
+  cameraDevices: Device[];
+  currentFps?: number;
+  currentResolution?: { width: number; height: number };
 }
 
-const localUid = getRandomInt(1, 9999999)
+const localUid = getRandomInt(1, 9999999);
 
 export default class TakeSnapshot
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
-  videoDeviceManager: IVideoDeviceManager
+  videoDeviceManager: IVideoDeviceManager;
 
-  audioDeviceManager: IAudioDeviceManager
+  audioDeviceManager: IAudioDeviceManager;
 
   state: State = {
     channelId: '',
@@ -67,50 +67,50 @@ export default class TakeSnapshot
     isJoined: false,
     audioRecordDevices: [],
     cameraDevices: [],
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
+    this.getRtcEngine().registerEventHandler(this);
+    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
+    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
 
     this.setState({
       audioRecordDevices:
         this.audioDeviceManager.enumerateRecordingDevices() as any,
       cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -124,14 +124,14 @@ export default class TakeSnapshot
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -139,24 +139,24 @@ export default class TakeSnapshot
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onSnapshotTaken(
@@ -175,23 +175,23 @@ export default class TakeSnapshot
       width,
       height,
       errCode
-    )
+    );
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    console.log(`localUid: ${localUid}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    console.log(`localUid: ${localUid}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
+    const { currentFps, currentResolution } = this.state;
     if (!currentResolution || !currentFps) {
-      return
+      return;
     }
 
     this.getRtcEngine().setVideoEncoderConfiguration({
@@ -203,66 +203,66 @@ export default class TakeSnapshot
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
+    });
+  };
 
   onPressTakeSnapshot = () => {
     const filePath = path.resolve(
       os.homedir(),
       `./snapshot${getRandomInt()}.jpg`
-    )
-    const res = this.getRtcEngine().takeSnapshot(0, filePath)
-    console.log(`takeSnapshot ${filePath}: `, res)
-  }
+    );
+    const res = this.getRtcEngine().takeSnapshot(0, filePath);
+    console.log(`takeSnapshot ${filePath}: `, res);
+  };
 
   renderRightBar = () => {
-    const { audioRecordDevices, cameraDevices, isJoined } = this.state
+    const { audioRecordDevices, cameraDevices, isJoined } = this.state;
 
     return (
       <div className={styles.rightBar}>
         <div>
           <DropDownButton
             options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId)
+              this.videoDeviceManager.setDevice(res.dropId);
             }}
-            title='Camera'
+            title="Camera"
           />
           <DropDownButton
-            title='Microphone'
+            title="Microphone"
             options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              const { deviceId, deviceName } = obj;
+              return { dropId: deviceId, dropText: deviceName, ...obj };
             })}
             onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
+              this.audioDeviceManager.setRecordingDevice(res.dropId);
             }}
           />
           <DropDownButton
-            title='Role'
+            title="Role"
             options={configMapToOptions(RoleTypeMap)}
             onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId)
+              this.getRtcEngine().setClientRole(res.dropId);
             }}
           />
           <DropDownButton
-            title='Resolution'
+            title="Resolution"
             options={configMapToOptions(ResolutionMap)}
             onPress={(res) => {
               this.setState(
                 { currentResolution: res.dropId },
                 this.setVideoConfig
-              )
+              );
             }}
           />
           <DropDownButton
-            title='FPS'
+            title="FPS"
             options={configMapToOptions(FpsMap)}
             onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
+              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
             }}
           />
 
@@ -276,18 +276,18 @@ export default class TakeSnapshot
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     const videoSourceType = isMyself
       ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
+      : VideoSourceType.VideoSourceRemote;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -299,11 +299,11 @@ export default class TakeSnapshot
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -325,6 +325,6 @@ export default class TakeSnapshot
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }

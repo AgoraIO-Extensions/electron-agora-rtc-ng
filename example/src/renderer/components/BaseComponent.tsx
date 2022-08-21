@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react'
+import React, { Component, ReactNode } from 'react';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -8,33 +8,34 @@ import {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import STYLES from '../examples/config/public.scss'
-import { Card, Divider, List } from 'antd'
-import JoinChannelBar from '../examples/component/JoinChannelBar'
-import Window from '../examples/component/Window'
+} from 'electron-agora-rtc-ng';
+import { Card, List } from 'antd';
+
+import AgoraStyle from '../examples/config/public.scss';
+import Window from '../examples/component/Window';
+import { AgoraButton, AgoraDivider, AgoraTextInput, AgoraView } from './ui';
 
 export interface BaseComponentState {
-  appId: string
-  enableVideo: boolean
-  channelId?: string
-  token?: string
-  uid?: number
-  joinChannelSuccess?: boolean
-  remoteUsers?: number[]
-  startPreview?: boolean
+  appId: string;
+  enableVideo: boolean;
+  channelId?: string;
+  token?: string;
+  uid?: number;
+  joinChannelSuccess?: boolean;
+  remoteUsers?: number[];
+  startPreview?: boolean;
 }
 
 export interface BaseAudioComponentState extends BaseComponentState {
-  channelId: string
-  token: string
-  uid: number
-  joinChannelSuccess: boolean
-  remoteUsers: number[]
+  channelId: string;
+  token: string;
+  uid: number;
+  joinChannelSuccess: boolean;
+  remoteUsers: number[];
 }
 
 export interface BaseVideoComponentState extends BaseAudioComponentState {
-  startPreview: boolean
+  startPreview: boolean;
 }
 
 export abstract class BaseComponent<
@@ -44,33 +45,33 @@ export abstract class BaseComponent<
   extends Component<P, S>
   implements IRtcEngineEventHandler
 {
-  protected engine?: IRtcEngine
+  protected engine?: IRtcEngine;
 
   protected constructor(props: P) {
-    super(props)
-    this.state = this.createState()
+    super(props);
+    this.state = this.createState();
   }
 
   componentDidMount() {
-    this.initRtcEngine()
+    this.initRtcEngine();
   }
 
   componentWillUnmount() {
-    this.releaseRtcEngine()
+    this.releaseRtcEngine();
   }
 
-  protected abstract createState(): S
+  protected abstract createState(): S;
 
-  protected abstract initRtcEngine(): void
+  protected abstract initRtcEngine(): void;
 
   protected joinChannel() {}
 
   protected leaveChannel() {}
 
-  protected abstract releaseRtcEngine(): void
+  protected abstract releaseRtcEngine(): void;
 
   onError(err: ErrorCodeType, msg: string) {
-    this.error('onError', 'err', err, 'msg', msg)
+    this.error('onError', 'err', err, 'msg', msg);
   }
 
   onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
@@ -80,13 +81,13 @@ export abstract class BaseComponent<
       connection,
       'elapsed',
       elapsed
-    )
-    this.setState({ joinChannelSuccess: true })
+    );
+    this.setState({ joinChannelSuccess: true });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
-    this.info('onLeaveChannel', 'connection', connection, 'stats', stats)
-    this.setState(this.createState())
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    this.setState(this.createState());
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
@@ -98,12 +99,12 @@ export abstract class BaseComponent<
       remoteUid,
       'elapsed',
       elapsed
-    )
-    const { remoteUsers } = this.state
-    if (remoteUsers === undefined) return
+    );
+    const { remoteUsers } = this.state;
+    if (remoteUsers === undefined) return;
     this.setState({
       remoteUsers: [...remoteUsers!, remoteUid],
-    })
+    });
   }
 
   onUserOffline(
@@ -119,50 +120,62 @@ export abstract class BaseComponent<
       remoteUid,
       'reason',
       reason
-    )
-    const { remoteUsers } = this.state
-    if (remoteUsers === undefined) return
+    );
+    const { remoteUsers } = this.state;
+    if (remoteUsers === undefined) return;
     this.setState({
       remoteUsers: remoteUsers!.filter((value) => value !== remoteUid),
-    })
+    });
   }
 
   render() {
-    const right = this.renderRight()
+    const configuration = this.renderConfiguration();
     return (
-      <div className={STYLES.screen}>
-        <div className={STYLES.content}>{this.renderUsers()}</div>
-        <div className={STYLES.rightBar}>
-          <div>
-            {right ? (
-              <>
-                <Divider>The Configuration of {this.constructor.name}</Divider>
-                <Divider />
-                <div>{right}</div>
-              </>
-            ) : undefined}
-          </div>
-          {this.renderBottom()}
-        </div>
-      </div>
-    )
+      <AgoraView className={AgoraStyle.screen}>
+        <AgoraView className={AgoraStyle.content}>
+          {this.renderUsers()}
+        </AgoraView>
+        <AgoraView className={AgoraStyle.rightBar}>
+          {configuration ? (
+            <>
+              <AgoraDivider>
+                The Configuration of {this.constructor.name}
+              </AgoraDivider>
+              {configuration}
+            </>
+          ) : undefined}
+          {this.renderAction()}
+          {this.renderChannel()}
+        </AgoraView>
+      </AgoraView>
+    );
   }
 
-  protected renderBottom(): ReactNode {
-    const { channelId, joinChannelSuccess } = this.state
+  protected renderChannel(): ReactNode {
+    const { channelId, joinChannelSuccess } = this.state;
     return (
       <>
-        <JoinChannelBar
-          onPressJoin={this.joinChannel.bind(this)}
-          onPressLeave={this.leaveChannel.bind(this)}
+        <AgoraDivider>Channel</AgoraDivider>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ channelId: text });
+          }}
+          placeholder={`channelId`}
+          value={channelId}
+        />
+        <AgoraButton
+          title={`${joinChannelSuccess ? 'leave' : 'join'} Channel`}
+          onPress={() => {
+            joinChannelSuccess ? this.leaveChannel() : this.joinChannel();
+          }}
         />
       </>
-    )
+    );
   }
 
   protected renderUsers(): ReactNode {
     const { enableVideo, startPreview, joinChannelSuccess, remoteUsers, uid } =
-      this.state
+      this.state;
     return (
       <>
         {startPreview || joinChannelSuccess ? (
@@ -189,11 +202,11 @@ export abstract class BaseComponent<
           />
         ) : undefined}
       </>
-    )
+    );
   }
 
   private renderVideo(uid: number): ReactNode {
-    const { channelId, enableVideo } = this.state
+    const { channelId, enableVideo } = this.state;
     return (
       <List.Item>
         <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -211,11 +224,15 @@ export abstract class BaseComponent<
           ) : undefined}
         </Card>
       </List.Item>
-    )
+    );
   }
 
-  protected renderRight(): ReactNode {
-    return undefined
+  protected renderConfiguration(): ReactNode {
+    return undefined;
+  }
+
+  protected renderAction(): ReactNode {
+    return undefined;
   }
 
   private _logSink(
@@ -223,27 +240,27 @@ export abstract class BaseComponent<
     message?: any,
     ...optionalParams: any[]
   ): string {
-    console[level](message, optionalParams)
-    return `${optionalParams.map((v) => JSON.stringify(v))}`
+    console[level](message, optionalParams);
+    return `${optionalParams.map((v) => JSON.stringify(v))}`;
   }
 
   protected debug(message?: any, ...optionalParams: any[]): void {
-    alert(this._logSink('debug', message, optionalParams))
+    alert(this._logSink('debug', message, optionalParams));
   }
 
   protected log(message?: any, ...optionalParams: any[]): void {
-    this._logSink('log', message, optionalParams)
+    this._logSink('log', message, optionalParams);
   }
 
   protected info(message?: any, ...optionalParams: any[]): void {
-    this._logSink('info', message, optionalParams)
+    this._logSink('info', message, optionalParams);
   }
 
   protected warn(message?: any, ...optionalParams: any[]): void {
-    this._logSink('warn', message, optionalParams)
+    this._logSink('warn', message, optionalParams);
   }
 
   protected error(message?: any, ...optionalParams: any[]): void {
-    this._logSink('error', message, optionalParams)
+    this._logSink('error', message, optionalParams);
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Card, Input, List, message } from 'antd'
+import { Button, Card, Input, List, message } from 'antd';
 import createAgoraRtcEngine, {
   AudioCodecProfileType,
   AudioProfileType,
@@ -17,36 +17,36 @@ import createAgoraRtcEngine, {
   UserOfflineReasonType,
   VideoCodecProfileType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import config from '../../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../../utils'
+} from 'electron-agora-rtc-ng';
+import { Component } from 'react';
+import JoinChannelBar from '../../component/JoinChannelBar';
+import Window from '../../component/Window';
+import config from '../../../config/agora.config';
+import styles from '../../config/public.scss';
+import { getRandomInt } from '../../../utils';
 
-const localUid1 = getRandomInt(1, 9999999)
+const localUid1 = getRandomInt(1, 9999999);
 
 interface User {
-  isMyself: boolean
-  uid: number
+  isMyself: boolean;
+  uid: number;
 }
 
 interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  url: string
-  rtmpUrl: string
-  isRtmping: boolean
-  rtmpResult: string
+  isJoined: boolean;
+  channelId: string;
+  allUser: User[];
+  url: string;
+  rtmpUrl: string;
+  isRtmping: boolean;
+  rtmpResult: string;
 }
 
 export default class RTMPStreaming
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
+  rtcEngine?: IRtcEngineEx;
 
   state: State = {
     channelId: '',
@@ -57,31 +57,31 @@ export default class RTMPStreaming
       'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
     isRtmping: false,
     rtmpResult: '',
-  }
+  };
 
   componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-    this.getRtcEngine().enableVideo()
-    this.getRtcEngine().enableAudio()
+    this.getRtcEngine().registerEventHandler(this);
+    this.getRtcEngine().enableVideo();
+    this.getRtcEngine().enableAudio();
   }
 
   componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this)
-    this.getRtcEngine().leaveChannel()
-    this.getRtcEngine().release()
+    this.getRtcEngine().unregisterEventHandler(this);
+    this.getRtcEngine().leaveChannel();
+    this.getRtcEngine().release();
   }
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine();
       //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appId })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+      window.rtcEngine = this.rtcEngine;
+      const res = this.rtcEngine.initialize({ appId: config.appId });
+      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
+      console.log('initialize:', res);
     }
 
-    return this.rtcEngine
+    return this.rtcEngine;
   }
 
   onRtmpStreamingStateChanged(
@@ -89,47 +89,47 @@ export default class RTMPStreaming
     state: RtmpStreamPublishState,
     errCode: RtmpStreamPublishErrorType
   ): void {
-    let stateStr: string
+    let stateStr: string;
     switch (state) {
       case RtmpStreamPublishState.RtmpStreamPublishStateIdle:
-        stateStr = 'Idle'
-        break
+        stateStr = 'Idle';
+        break;
       case RtmpStreamPublishState.RtmpStreamPublishStateConnecting:
-        stateStr = 'Connecting'
-        break
+        stateStr = 'Connecting';
+        break;
       case RtmpStreamPublishState.RtmpStreamPublishStateRunning:
-        stateStr = 'Running'
-        break
+        stateStr = 'Running';
+        break;
       case RtmpStreamPublishState.RtmpStreamPublishStateRecovering:
-        stateStr = 'Recovering'
-        break
+        stateStr = 'Recovering';
+        break;
       case RtmpStreamPublishState.RtmpStreamPublishStateFailure:
-        stateStr = 'Failure'
-        break
+        stateStr = 'Failure';
+        break;
       case RtmpStreamPublishState.RtmpStreamPublishStateDisconnecting:
-        stateStr = 'Disconnecting'
-        break
+        stateStr = 'Disconnecting';
+        break;
 
       default:
-        break
+        break;
     }
-    this.setState({ rtmpResult: stateStr })
+    this.setState({ rtmpResult: stateStr });
     console.log(
       `onRtmpStreamingStateChanged url:${url} publishState:${stateStr} errCode:${errCode}`
-    )
+    );
   }
 
   onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: true, uid: localUid });
     this.setState({
       isJoined: true,
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserJoined(
@@ -143,14 +143,14 @@ export default class RTMPStreaming
       connection,
       'remoteUid',
       remoteUid
-    )
+    );
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser];
+    newAllUser.push({ isMyself: false, uid: remoteUid });
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onUserOffline(
@@ -158,46 +158,46 @@ export default class RTMPStreaming
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid);
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
+    const { allUser: oldAllUser } = this.state;
+    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
     this.setState({
       allUser: newAllUser,
-    })
+    });
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
-    })
+    });
   }
 
   onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+    console.error(err, msg);
   }
 
   onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.getRtcEngine().enableVideo()
-    console.log(`localUid: ${localUid1}`)
+    this.setState({ channelId });
+    this.getRtcEngine().enableVideo();
+    console.log(`localUid: ${localUid1}`);
     this.getRtcEngine().joinChannelWithOptions('', channelId, localUid1, {
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    })
-  }
+    });
+  };
 
   onPressRTMP = () => {
-    const { rtmpUrl, isRtmping } = this.state
-    let res
+    const { rtmpUrl, isRtmping } = this.state;
+    let res;
     if (isRtmping) {
-      res = this.getRtcEngine().stopRtmpStream(rtmpUrl)
-      console.log('stopRtmpStream', res)
+      res = this.getRtcEngine().stopRtmpStream(rtmpUrl);
+      console.log('stopRtmpStream', res);
     } else {
       if (!rtmpUrl || !rtmpUrl.startsWith('rtmp://') || rtmpUrl === 'rtmp://') {
-        message.error("RTMP URL cannot be empty or not start with 'rtmp://'")
-        return
+        message.error("RTMP URL cannot be empty or not start with 'rtmp://'");
+        return;
       }
 
       const transcoding: LiveTranscoding = {
@@ -225,16 +225,16 @@ export default class RTMPStreaming
         audioBitrate: 48,
         audioChannels: 1,
         audioCodecProfile: AudioCodecProfileType.AudioCodecProfileLcAac,
-      }
+      };
 
-      res = this.getRtcEngine().startRtmpStreamWithoutTranscoding(rtmpUrl)
-      console.log('startRtmpStreamWithTranscoding', res)
+      res = this.getRtcEngine().startRtmpStreamWithoutTranscoding(rtmpUrl);
+      console.log('startRtmpStreamWithTranscoding', res);
     }
-    this.setState({ isRtmping: !isRtmping })
-  }
+    this.setState({ isRtmping: !isRtmping });
+  };
 
   renderRightBar = () => {
-    const { rtmpUrl, isRtmping, isJoined, rtmpResult } = this.state
+    const { rtmpUrl, isRtmping, isJoined, rtmpResult } = this.state;
 
     return (
       <div className={styles.rightBar}>
@@ -243,13 +243,13 @@ export default class RTMPStreaming
             <>
               <p>rtmp</p>
               <Input
-                placeholder='rtmp://'
+                placeholder="rtmp://"
                 defaultValue={rtmpUrl}
                 onChange={(res) => {
                   this.setState({
                     //@ts-ignore
                     rtmpUrl: res.nativeEvent.target.value as string,
-                  })
+                  });
                 }}
               />
 
@@ -269,18 +269,18 @@ export default class RTMPStreaming
         <JoinChannelBar
           onPressJoin={this.onPressJoinChannel}
           onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+            this.getRtcEngine().leaveChannel();
           }}
         />
       </div>
-    )
-  }
+    );
+  };
 
   renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
+    const { channelId } = this.state;
     const videoSourceType = isMyself
       ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
+      : VideoSourceType.VideoSourceRemote;
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
@@ -292,11 +292,11 @@ export default class RTMPStreaming
           />
         </Card>
       </List.Item>
-    )
-  }
+    );
+  };
 
   render() {
-    const { isJoined, allUser } = this.state
+    const { isJoined, allUser } = this.state;
     return (
       <div className={styles.screen}>
         <div className={styles.content}>
@@ -318,6 +318,6 @@ export default class RTMPStreaming
         </div>
         {this.renderRightBar()}
       </div>
-    )
+    );
   }
 }
