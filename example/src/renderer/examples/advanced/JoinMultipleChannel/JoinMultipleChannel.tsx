@@ -70,7 +70,6 @@ export default class JoinMultipleChannel
       this.rtcEngine.setLogFile(config.nativeSDKLogPath)
       console.log('initialize:', res)
     }
-
     return this.rtcEngine
   }
 
@@ -164,12 +163,10 @@ export default class JoinMultipleChannel
       '',
       { localUid: localUid1, channelId },
       {
-        autoSubscribeAudio: false,
+        autoSubscribeAudio: true,
         autoSubscribeVideo: true,
-        publishMicrophoneTrack: false,
+        publishMicrophoneTrack: true,
         publishCameraTrack: true,
-        publishScreenTrack: false,
-        enableAudioRecordingOrPlayout: false,
         channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
@@ -184,12 +181,10 @@ export default class JoinMultipleChannel
       '',
       { localUid: localUid2, channelId },
       {
-        autoSubscribeAudio: false,
+        autoSubscribeAudio: true,
         autoSubscribeVideo: true,
-        publishMicrophoneTrack: false,
+        publishMicrophoneTrack: true,
         publishCameraTrack: true,
-        publishScreenTrack: false,
-        enableAudioRecordingOrPlayout: false,
         channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
