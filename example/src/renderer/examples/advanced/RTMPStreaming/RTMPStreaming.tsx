@@ -227,10 +227,7 @@ export default class RTMPStreaming
         audioCodecProfile: AudioCodecProfileType.AudioCodecProfileLcAac,
       }
 
-      res = this.getRtcEngine().startRtmpStreamWithTranscoding(
-        rtmpUrl,
-        transcoding
-      )
+      res = this.getRtcEngine().startRtmpStreamWithoutTranscoding(rtmpUrl)
       console.log('startRtmpStreamWithTranscoding', res)
     }
     this.setState({ isRtmping: !isRtmping })
