@@ -1,6 +1,6 @@
 import { Input, Row, Card, Form, Button, Checkbox } from 'antd'
 import { AgoraEnv } from 'electron-agora-rtc-ng'
-import config from '../agora.config'
+import config from '../../../config/agora.config'
 
 console.log('config', config)
 

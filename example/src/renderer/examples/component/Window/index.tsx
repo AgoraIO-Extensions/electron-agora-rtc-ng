@@ -8,7 +8,7 @@ import {
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
 import { Component } from 'react'
-import { getRandomInt } from '../../util'
+import { getRandomInt } from '../../../utils'
 import styles from './index.scss'
 
 interface WindowProps {

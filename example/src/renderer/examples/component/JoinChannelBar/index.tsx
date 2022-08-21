@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Divider, Input, Form, Button } from 'antd'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 
 type JoinChannelBarHandler = (
   channelId?: string

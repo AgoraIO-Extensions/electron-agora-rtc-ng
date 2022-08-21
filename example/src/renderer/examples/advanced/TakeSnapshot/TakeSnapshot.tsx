@@ -25,9 +25,9 @@ import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
 import Window from '../../component/Window'
 import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
+import { configMapToOptions, getRandomInt } from '../../../utils'
 
 interface Device {
   deviceId: string

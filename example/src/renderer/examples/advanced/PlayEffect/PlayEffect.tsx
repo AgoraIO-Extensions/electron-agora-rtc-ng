@@ -10,8 +10,8 @@ import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent'
-import Config from '../../config/agora.config'
-import { getResourcePath } from '../../util'
+import Config from '../../../config/agora.config'
+import { getResourcePath } from '../../../utils'
 import { Button, Divider, Input, Switch } from 'antd'
 import SliderBar from '../../component/SliderBar'
 

@@ -19,9 +19,9 @@ import {
   EqualizationReverbMap,
   VoiceBeautifierMap,
 } from '../../config'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
+import { configMapToOptions, getRandomInt } from '../../../utils'
 
 interface User {
   isMyself: boolean

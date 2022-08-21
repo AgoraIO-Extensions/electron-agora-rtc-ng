@@ -17,10 +17,10 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent'
-import Config from '../../config/agora.config'
+import Config from '../../../config/agora.config'
 import { Button, Divider, Input } from 'antd'
 import DropDownButton from '../../component/DropDownButton'
-import { configEnumToOptions } from '../../util'
+import { configEnumToOptions } from '../../../utils'
 import SliderBar from '../../component/SliderBar'
 
 interface State extends BaseVideoComponentState {

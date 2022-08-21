@@ -16,10 +16,10 @@ import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
 import Window from '../../component/Window'
 import { FpsMap, ResolutionMap } from '../../config'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
-import { rgbImageBufferToBase64 } from '../../util/base64'
+import { configMapToOptions, getRandomInt } from '../../../utils'
+import { rgbImageBufferToBase64 } from '../../../utils/base64'
 import screenStyle from './SendMultiVideoStream.scss'
 
 const localUid1 = getRandomInt(1, 9999999)

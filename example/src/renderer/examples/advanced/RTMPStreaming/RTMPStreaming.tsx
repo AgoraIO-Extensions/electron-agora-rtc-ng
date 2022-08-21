@@ -21,9 +21,9 @@ import createAgoraRtcEngine, {
 import { Component } from 'react'
 import JoinChannelBar from '../../component/JoinChannelBar'
 import Window from '../../component/Window'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { getRandomInt } from '../../util'
+import { getRandomInt } from '../../../utils'
 
 const localUid1 = getRandomInt(1, 9999999)
 

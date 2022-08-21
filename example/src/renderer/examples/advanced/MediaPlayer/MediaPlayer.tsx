@@ -12,9 +12,9 @@ import { Button, Input } from 'antd'
 import { Component } from 'react'
 import SliderBar from '../../component/SliderBar'
 import Window from '../../component/Window'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { getRandomInt } from '../../util'
+import { getRandomInt } from '../../../utils'
 
 const { Search } = Input
 
