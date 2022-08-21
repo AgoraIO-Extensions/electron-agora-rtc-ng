@@ -15,9 +15,9 @@ import createAgoraRtcEngine, {
 } from 'electron-agora-rtc-ng'
 import { Component } from 'react'
 import JoinChannelBar from '../../component/JoinChannelBar'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { getRandomInt } from '../../util'
+import { getRandomInt } from '../../../utils'
 import sendMetaDataStyle from './SendMetaData.scss'
 
 const { Search } = Input

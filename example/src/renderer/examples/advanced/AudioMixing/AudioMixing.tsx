@@ -9,12 +9,12 @@ import {
 } from 'electron-agora-rtc-ng'
 import { Button, Input, Divider, Switch } from 'antd'
 
-import Config from '../../config/agora.config'
+import Config from '../../../config/agora.config'
 import {
   BaseComponent,
   BaseAudioComponentState,
 } from '../../../components/BaseComponent'
-import { getResourcePath } from '../../util'
+import { getResourcePath } from '../../../utils'
 
 interface State extends BaseAudioComponentState {
   filePath: string

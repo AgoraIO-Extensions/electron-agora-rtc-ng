@@ -18,7 +18,7 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent'
-import Config from '../../config/agora.config'
+import Config from '../../../config/agora.config'
 import { Button, Divider, Input } from 'antd'
 
 interface State extends BaseVideoComponentState {

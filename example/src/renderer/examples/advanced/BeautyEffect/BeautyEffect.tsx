@@ -11,13 +11,13 @@ import createAgoraRtcEngine, {
 } from 'electron-agora-rtc-ng'
 import { Button, Divider } from 'antd'
 
-import Config from '../../config/agora.config'
+import Config from '../../../config/agora.config'
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent'
 import DropDownButton from '../../component/DropDownButton'
-import { configEnumToOptions } from '../../util'
+import { configEnumToOptions } from '../../../utils'
 import SliderBar from '../../component/SliderBar'
 
 interface State extends BaseVideoComponentState {

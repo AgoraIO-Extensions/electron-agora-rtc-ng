@@ -14,9 +14,9 @@ import { Component } from 'react'
 import DropDownButton from '../component/DropDownButton'
 import JoinChannelBar from '../component/JoinChannelBar'
 import { AudioProfileList, AudioScenarioList } from '../config'
-import config from '../config/agora.config'
+import config from '../../config/agora.config'
 import styles from '../config/public.scss'
-import { configMapToOptions } from '../util'
+import { configMapToOptions } from '../../utils'
 
 interface User {
   isMyself: boolean

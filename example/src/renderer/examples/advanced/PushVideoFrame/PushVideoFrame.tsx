@@ -15,9 +15,9 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent'
-import Config from '../../config/agora.config'
+import Config from '../../../config/agora.config'
 import DropDownButton from '../../component/DropDownButton'
-import { rgbImageBufferToBase64 } from '../../util/base64'
+import { rgbImageBufferToBase64 } from '../../../utils/base64'
 import { ScreenCaptureSourceInfo } from '../../../../../../ts/Private/IAgoraRtcEngine'
 import screenStyle from '../ScreenShare/ScreenShare.scss'
 

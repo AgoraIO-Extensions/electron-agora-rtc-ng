@@ -15,9 +15,13 @@ import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
 import SliderBar from '../../component/SliderBar'
 import { AudioProfileList, AudioScenarioList } from '../../config'
-import config from '../../config/agora.config'
+import config from '../../../config/agora.config'
 import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt, getResourcePath } from '../../util'
+import {
+  configMapToOptions,
+  getRandomInt,
+  getResourcePath,
+} from '../../../utils'
 
 const { Search } = Input
 
