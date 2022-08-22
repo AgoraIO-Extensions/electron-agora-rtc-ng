@@ -73,4 +73,5 @@ const JoinChannelBar = ({
     </div>
   );
 };
+
 export default JoinChannelBar;

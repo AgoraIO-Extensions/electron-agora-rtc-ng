@@ -156,10 +156,11 @@ class RendererManager {
     this.setupVideo({ ...rendererConfig });
     return 0;
   }
+
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
-      logError('setupLocalVideo videoSourceType error', videoSourceType);
+      logError('setupRemoteVideo videoSourceType error', videoSourceType);
       return -1;
     }
     this.setupVideo({

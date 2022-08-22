@@ -1,13 +1,15 @@
 import React from 'react';
-import os from 'os';
 import {
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
-  ErrorCodeType,
+  IMetadataObserver,
   IRtcEngineEventHandler,
-  RtcConnection,
+  Metadata,
+  MetadataType,
+  VideoSourceType,
 } from 'electron-agora-rtc-ng';
+import { Buffer } from 'buffer';
 
 import Config from '../../../config/agora.config';
 
@@ -15,23 +17,15 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraDropdown,
-  AgoraImage,
-} from '../../../components/ui';
-import { arrayToItems } from '../../../utils';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
 interface State extends BaseVideoComponentState {
-  targetUid: number;
-  filePath: string;
-  takeSnapshot: boolean;
+  metadataBuffer: string;
 }
 
-export default class TakeSnapshot
+export default class SendMetadata
   extends BaseComponent<{}, State>
-  implements IRtcEngineEventHandler
+  implements IRtcEngineEventHandler, IMetadataObserver
 {
   protected createState(): State {
     return {
@@ -43,9 +37,7 @@ export default class TakeSnapshot
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      targetUid: 0,
-      filePath: os.homedir(),
-      takeSnapshot: false,
+      metadataBuffer: '',
     };
   }
 
@@ -69,6 +61,8 @@ export default class TakeSnapshot
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
+
+    this.registerMediaMetadataObserver();
   }
 
   /**
@@ -98,16 +92,34 @@ export default class TakeSnapshot
   }
 
   /**
-   * Step 3: takeSnapshot
+   * Step 3-1: registerMediaMetadataObserver
    */
-  takeSnapshot = () => {
-    const { targetUid, filePath } = this.state;
-    if (!filePath) {
-      this.error('filePath is invalid');
+  registerMediaMetadataObserver = () => {
+    this.engine?.registerMediaMetadataObserver(
+      this,
+      MetadataType.VideoMetadata
+    );
+  };
+
+  /**
+   * Step 3-2: sendMetaData
+   */
+  sendMetaData = () => {
+    const { metadataBuffer } = this.state;
+    if (!metadataBuffer) {
+      this.error('metadataBuffer is invalid');
       return;
     }
 
-    this.engine?.takeSnapshot(targetUid, `${filePath}/${targetUid}.jpg`);
+    const buffer = Buffer.from(metadataBuffer);
+    this.engine?.sendMetaData(
+      {
+        buffer: buffer,
+        size: buffer.length,
+      },
+      VideoSourceType.VideoSourceCamera
+    );
+    this.setState({ metadataBuffer: '' });
   };
 
   /**
@@ -124,57 +136,25 @@ export default class TakeSnapshot
     this.engine?.release();
   }
 
-  onSnapshotTaken(
-    connection: RtcConnection,
-    uid: number,
-    filePath: string,
-    width: number,
-    height: number,
-    errCode: number
-  ) {
-    this.info(
-      'onSnapshotTaken',
-      'connection',
-      connection,
-      'uid',
-      uid,
-      'filePath',
-      filePath,
-      'width',
-      width,
-      'height',
-      height,
-      'errCode',
-      errCode
+  onMetadataReceived(metadata: Metadata) {
+    this.info('onMetadataReceived', 'metadata', metadata);
+    this.alert(
+      `Receive from uid:${metadata.uid}`,
+      `${metadata.buffer?.toString()}`
     );
-    const { targetUid, filePath: path } = this.state;
-    if (filePath === `${path}/${targetUid}.jpg`) {
-      this.setState({ takeSnapshot: errCode === ErrorCodeType.ErrOk });
-    }
   }
 
   protected renderConfiguration(): React.ReactNode {
-    const { remoteUsers, targetUid, filePath, takeSnapshot } = this.state;
+    const { metadataBuffer } = this.state;
     return (
       <>
-        <AgoraDropdown
-          title={'targetUid'}
-          items={arrayToItems([0, ...remoteUsers])}
-          value={targetUid}
-          onValueChange={(value) => {
-            this.setState({ targetUid: value });
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ metadataBuffer: text });
           }}
+          placeholder={`metadataBuffer`}
+          value={metadataBuffer}
         />
-        {takeSnapshot ? (
-          <>
-            <AgoraDivider />
-            <AgoraImage
-              style={styles.image}
-              source={`file://${filePath}/${targetUid}.jpg`}
-            />
-          </>
-        ) : undefined}
-        <AgoraDivider />
       </>
     );
   }
@@ -185,17 +165,10 @@ export default class TakeSnapshot
       <>
         <AgoraButton
           disabled={!joinChannelSuccess}
-          title={`take Snapshot`}
-          onPress={this.takeSnapshot}
+          title={`send Metadata`}
+          onPress={this.sendMetaData}
         />
       </>
     );
   }
 }
-
-const styles = {
-  image: {
-    width: 120,
-    height: 120,
-  },
-};

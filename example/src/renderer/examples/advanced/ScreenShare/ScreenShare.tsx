@@ -8,13 +8,13 @@ import { Component } from 'react';
 import ChooseFilterWindowModal from '../../component/ChooseFilterWindowModal';
 import DropDownButton from '../../component/DropDownButton';
 import JoinChannelBar from '../../component/JoinChannelBar';
-import Window from '../../component/Window';
 import { FpsMap, ResolutionMap } from '../../config';
 import config from '../../../config/agora.config';
 import styles from '../../config/public.scss';
 import { configMapToOptions, getRandomInt } from '../../../utils';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
 import screenStyle from './ScreenShare.scss';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 
 const localScreenUid1 = getRandomInt(1, 9999999);
 const localScreenUid2 = getRandomInt(1, 9999999);
@@ -372,19 +372,21 @@ export default class ScreenShare extends Component<{}, State, any> {
           {isShared && (
             <>
               <Card title="Local Share1" className={styles.card}>
-                <Window
-                  uid={localScreenUid1}
-                  rtcEngine={this.rtcEngine!}
-                  videoSourceType={VideoSourceType.VideoSourceScreenPrimary}
-                  channelId={channelId}
+                <RtcSurfaceView
+                  canvas={{
+                    uid: localScreenUid1,
+                    sourceType: VideoSourceType.VideoSourceScreenPrimary,
+                  }}
+                  connection={{ channelId }}
                 />
               </Card>
               <Card title="Local Share2" className={styles.card}>
-                <Window
-                  uid={localScreenUid2}
-                  rtcEngine={this.rtcEngine!}
-                  videoSourceType={VideoSourceType.VideoSourceScreenSecondary}
-                  channelId={channelId}
+                <RtcSurfaceView
+                  canvas={{
+                    uid: localScreenUid2,
+                    sourceType: VideoSourceType.VideoSourceScreenSecondary,
+                  }}
+                  connection={{ channelId }}
                 />
               </Card>
             </>

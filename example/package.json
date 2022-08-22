@@ -69,8 +69,10 @@
     "electron-agora-rtc-ng": "latest",
     "history": "^5.0.0",
     "react": "^18.1.0",
+    "react-color": "^2.19.3",
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.2.0",
+    "recharts": "^2.1.13",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {

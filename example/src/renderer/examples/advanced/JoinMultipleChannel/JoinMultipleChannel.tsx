@@ -1,282 +1,454 @@
-import { Button, Card, Input, List } from 'antd';
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
+  RemoteVideoState,
+  RemoteVideoStateReason,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-  VideoSourceType,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import Window from '../../component/Window';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { getRandomInt } from '../../../utils';
+import { Card, List } from 'antd';
 
-const { Search } = Input;
+import Config from '../../../config/agora.config';
 
-const localUid1 = getRandomInt();
-const localUid2 = getRandomInt();
+import {
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import { AgoraButton, AgoraText, AgoraTextInput } from '../../../components/ui';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 
-interface User {
-  isMyself: boolean;
-  uid: number;
-  channelId?: string;
-}
-
-interface State {
-  allUser1: User[];
-  allUser2: User[];
-  channel1: string;
-  channel2: string;
-  isJoined1: boolean;
-  isJoined2: boolean;
+interface State extends BaseVideoComponentState {
+  channelId2: string;
+  token2: string;
+  uid2: number;
+  joinChannelSuccess2: boolean;
+  remoteUsers2: number[];
 }
 
 export default class JoinMultipleChannel
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx;
+  // @ts-ignore
+  protected engine?: IRtcEngineEx;
 
-  state: State = {
-    allUser1: [],
-    allUser2: [],
-    channel1: '',
-    channel2: '',
-    isJoined1: false,
-    isJoined2: false,
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      channelId2: '',
+      token2: '',
+      uid2: 0,
+      joinChannelSuccess2: false,
+      remoteUsers2: [],
+    };
+  }
+
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
+    }
+
+    this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+
+    // Need to startPreview before joinChannelEx
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
+  }
+
+  /**
+   * Step 2-1: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid <= 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelEx(
+      token,
+      {
+        channelId,
+        localUid: uid,
+      },
+      {
+        // Make myself as the broadcaster to send stream to remote
+        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+        publishMicrophoneTrack: false,
+        publishCameraTrack: false,
+      }
+    );
+  }
+
+  /**
+   * Step 2-2: joinChannel2
+   */
+  protected joinChannel2() {
+    const { channelId2, token2, uid2 } = this.state;
+    if (!channelId2) {
+      this.error('channelId2 is invalid');
+      return;
+    }
+    if (uid2 <= 0) {
+      this.error('uid2 is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelEx(
+      token2,
+      {
+        channelId: channelId2,
+        localUid: uid2,
+      },
+      {
+        // Make myself as the broadcaster to send stream to remote
+        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+        publishMicrophoneTrack: false,
+        publishCameraTrack: false,
+      }
+    );
+  }
+
+  /**
+   * Step 3-1: publishStreamToChannel
+   */
+  publishStreamToChannel = () => {
+    const { channelId, channelId2, uid, uid2 } = this.state;
+    this.engine?.updateChannelMediaOptionsEx(
+      { publishMicrophoneTrack: false, publishCameraTrack: false },
+      {
+        channelId: channelId2,
+        localUid: uid2,
+      }
+    );
+    this.engine?.updateChannelMediaOptionsEx(
+      { publishMicrophoneTrack: true, publishCameraTrack: true },
+      {
+        channelId,
+        localUid: uid,
+      }
+    );
   };
 
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
-  }
-
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.onPressLeaveAll();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
-    }
-    return this.rtcEngine;
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    console.log('onJoinChannelSuccess', channelId, localUid);
-    if (localUid === localUid1) {
-      this.setState({ isJoined1: true });
-    } else if (localUid === localUid2) {
-      this.setState({ isJoined2: true });
-    }
-  }
-
-  onUserJoined(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log('onUserJoined', 'channelId', channelId, 'remoteUid', remoteUid);
-
-    if (localUid === localUid1) {
-      const { allUser1: oldAllUser } = this.state;
-      const newAllUser = [...oldAllUser];
-      newAllUser.push({
-        isMyself: false,
-        uid: remoteUid,
+  /**
+   * Step 3-2: publishStreamToChannel2
+   */
+  publishStreamToChannel2 = () => {
+    const { channelId, channelId2, uid, uid2 } = this.state;
+    this.engine?.updateChannelMediaOptionsEx(
+      { publishMicrophoneTrack: false, publishCameraTrack: false },
+      {
         channelId,
-      });
+        localUid: uid,
+      }
+    );
+    this.engine?.updateChannelMediaOptionsEx(
+      { publishMicrophoneTrack: true, publishCameraTrack: true },
+      {
+        channelId: channelId2,
+        localUid: uid2,
+      }
+    );
+  };
+
+  /**
+   * Step 4-1: leaveChannel
+   */
+  protected leaveChannel() {
+    const { channelId, uid } = this.state;
+    this.engine?.leaveChannelEx({
+      channelId,
+      localUid: uid,
+    });
+  }
+
+  /**
+   * Step 4-2: leaveChannel2
+   */
+  protected leaveChannel2() {
+    const { channelId2, uid2 } = this.state;
+    this.engine?.leaveChannelEx({
+      channelId: channelId2,
+      localUid: uid2,
+    });
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
+    this.info(
+      'onJoinChannelSuccess',
+      'connection',
+      connection,
+      'elapsed',
+      elapsed
+    );
+    const { channelId, channelId2 } = this.state;
+    if (connection.channelId === channelId) {
       this.setState({
-        allUser1: newAllUser,
+        joinChannelSuccess: true,
       });
-    } else if (localUid === localUid2) {
-      const { allUser2: oldAllUser } = this.state;
-      const newAllUser = [...oldAllUser];
-      newAllUser.push({
-        isMyself: false,
-        uid: remoteUid,
-        channelId,
-      });
+    } else if (connection.channelId === channelId2) {
       this.setState({
-        allUser2: newAllUser,
+        joinChannelSuccess2: true,
       });
     }
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    const { channelId, channelId2 } = this.state;
+    if (connection.channelId === channelId) {
+      this.setState({
+        joinChannelSuccess: false,
+        remoteUsers: [],
+      });
+    } else if (connection.channelId === channelId2) {
+      this.setState({
+        joinChannelSuccess2: false,
+        remoteUsers2: [],
+      });
+    }
+    // Keep preview after leave channel
+    this.engine?.startPreview();
+  }
+
+  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
+    this.info(
+      'onUserJoined',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'elapsed',
+      elapsed
+    );
   }
 
   onUserOffline(
-    { localUid, channelId }: RtcConnection,
+    connection: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, localUid, remoteUid);
-    const { channel1, channel2 } = this.state;
-    if (channelId === channel1) {
-      const { allUser1: oldAllUser } = this.state;
-      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-      this.setState({
-        allUser1: newAllUser,
-      });
-    } else if (channelId === channel2) {
-      const { allUser2: oldAllUser } = this.state;
-      const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-      this.setState({
-        allUser2: newAllUser,
-      });
+  ) {
+    this.info(
+      'onUserOffline',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'reason',
+      reason
+    );
+  }
+
+  onRemoteVideoStateChanged(
+    connection: RtcConnection,
+    remoteUid: number,
+    state: RemoteVideoState,
+    reason: RemoteVideoStateReason,
+    elapsed: number
+  ) {
+    this.info(
+      'onRemoteVideoStateChanged',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'state',
+      state,
+      'reason',
+      reason,
+      'elapsed',
+      elapsed
+    );
+    const { channelId, channelId2, remoteUsers, remoteUsers2 } = this.state;
+    if (state === RemoteVideoState.RemoteVideoStateStarting) {
+      if (connection.channelId === channelId) {
+        this.setState({ remoteUsers: [...remoteUsers, remoteUid] });
+      } else if (connection.channelId === channelId2) {
+        this.setState({ remoteUsers2: [...remoteUsers2, remoteUid] });
+      }
+    } else if (state === RemoteVideoState.RemoteVideoStateStopped) {
+      if (connection.channelId === channelId) {
+        this.setState({
+          remoteUsers: remoteUsers.filter((value) => value !== remoteUid),
+        });
+      } else if (connection.channelId === channelId2) {
+        this.setState({
+          remoteUsers2: remoteUsers2.filter((value) => value !== remoteUid),
+        });
+      }
     }
   }
 
-  onLeaveChannel(
-    { channelId, localUid }: RtcConnection,
-    stats: RtcStats
-  ): void {
-    console.log('onLeaveChannel', channelId, localUid);
-    const { channel1, channel2 } = this.state;
-    if (channelId === channel1) {
-      this.setState({ isJoined1: false, allUser1: [] });
-    } else if (channelId === channel2) {
-      this.setState({ isJoined2: false, allUser2: [] });
-    }
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  onPressJoinChannel1 = (channelId) => {
-    console.log('onPressJoinChannel1', channelId);
-    this.setState({ channel1: channelId });
-    const res = this.getRtcEngine().joinChannelEx(
-      '',
-      { localUid: localUid1, channelId },
-      {
-        autoSubscribeAudio: true,
-        autoSubscribeVideo: true,
-        publishMicrophoneTrack: true,
-        publishCameraTrack: true,
-        channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      }
-    );
-    console.log('onPressJoinChannel1', res);
-  };
-
-  onPressJoinChannel2 = (channelId) => {
-    console.log('onPressJoinChannel2', channelId);
-    this.setState({ channel2: channelId });
-    const res = this.getRtcEngine().joinChannelEx(
-      '',
-      { localUid: localUid2, channelId },
-      {
-        autoSubscribeAudio: true,
-        autoSubscribeVideo: true,
-        publishMicrophoneTrack: true,
-        publishCameraTrack: true,
-        channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      }
-    );
-    console.log('onPressJoinChannel2', res);
-  };
-
-  onPressLeaveAll = () => {
-    const { channel1, channel2 } = this.state;
-    this.getRtcEngine().leaveChannelEx({
-      localUid: localUid1,
-      channelId: channel1,
-    });
-    this.getRtcEngine().leaveChannelEx({
-      localUid: localUid2,
-      channelId: channel2,
-    });
-  };
-
-  renderRightBar = () => {
-    const { isJoined1, isJoined2 } = this.state;
+  protected renderChannel(): React.ReactNode {
+    const {
+      channelId,
+      channelId2,
+      uid,
+      uid2,
+      joinChannelSuccess,
+      joinChannelSuccess2,
+    } = this.state;
     return (
-      <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
-        <Search
-          placeholder={'please input new channelId1'}
-          defaultValue="Channel1"
-          allowClear
-          enterButton={'Join Channel 1'}
-          size="small"
-          disabled={isJoined1}
-          onSearch={this.onPressJoinChannel1}
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ channelId: text });
+          }}
+          placeholder={`channelId`}
+          value={channelId}
         />
-        <br />
-        <Search
-          placeholder={'please input new channelId2'}
-          defaultValue="Channel2"
-          allowClear
-          enterButton={'Join Channel 2'}
-          size="small"
-          disabled={isJoined2}
-          onSearch={this.onPressJoinChannel2}
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ uid: +text });
+          }}
+          placeholder={`uid (must > 0)`}
+          value={uid > 0 ? uid.toString() : ''}
         />
-        <br />
-        <Button
-          disabled={!isJoined1 && !isJoined2}
-          onClick={this.onPressLeaveAll}
-        >
-          Leave All
-        </Button>
-      </div>
+        <AgoraButton
+          title={`${joinChannelSuccess ? 'leave' : 'join'} Channel`}
+          onPress={() => {
+            joinChannelSuccess ? this.leaveChannel() : this.joinChannel();
+          }}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ channelId2: text });
+          }}
+          placeholder={`channelId2`}
+          value={channelId2}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ uid2: +text });
+          }}
+          placeholder={`uid2 (must > 0)`}
+          value={uid2 > 0 ? uid2.toString() : ''}
+        />
+        <AgoraButton
+          title={`${joinChannelSuccess2 ? 'leave' : 'join'} Channel2`}
+          onPress={() => {
+            joinChannelSuccess2 ? this.leaveChannel2() : this.joinChannel2();
+          }}
+        />
+      </>
     );
-  };
+  }
 
-  renderItem = ({ isMyself, uid, channelId }: User) => {
+  protected renderUsers(): React.ReactNode {
+    const {
+      startPreview,
+      channelId,
+      channelId2,
+      joinChannelSuccess,
+      joinChannelSuccess2,
+      uid,
+      remoteUsers,
+      remoteUsers2,
+    } = this.state;
+    return (
+      <>
+        {startPreview || joinChannelSuccess || joinChannelSuccess2 ? (
+          <List
+            style={{ width: '100%' }}
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 1,
+              md: 1,
+              lg: 1,
+              xl: 1,
+              xxl: 2,
+            }}
+            dataSource={[uid, ...remoteUsers, ...remoteUsers2]}
+            renderItem={(item) => {
+              return this.renderVideo(
+                item,
+                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2
+              );
+            }}
+          />
+        ) : undefined}
+      </>
+    );
+  }
+
+  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
     return (
       <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={VideoSourceType.VideoSourceRemote}
-            channelId={channelId}
-          />
+        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
+          <AgoraText>Click view to mirror</AgoraText>
+          <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
         </Card>
       </List.Item>
     );
-  };
+  }
 
-  render() {
-    const { allUser1, allUser2 } = this.state;
-    const hasUser = allUser1.length > 0 || allUser2.length > 0;
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess, joinChannelSuccess2 } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {hasUser && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
-              }}
-              dataSource={[...allUser1, ...allUser2]}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          disabled={!joinChannelSuccess}
+          title={`publish Stream To Channel`}
+          onPress={this.publishStreamToChannel}
+        />
+        <AgoraButton
+          disabled={!joinChannelSuccess2}
+          title={`publish Stream To Channel2`}
+          onPress={this.publishStreamToChannel2}
+        />
+      </>
     );
   }
 }

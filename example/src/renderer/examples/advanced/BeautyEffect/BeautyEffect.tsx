@@ -1,24 +1,25 @@
 import React from 'react';
-import createAgoraRtcEngine, {
+import {
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   LighteningContrastLevel,
-  RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
 } from 'electron-agora-rtc-ng';
-import { Button, Divider } from 'antd';
 
 import Config from '../../../config/agora.config';
+
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import DropDownButton from '../../component/DropDownButton';
-import { configEnumToOptions } from '../../../utils';
-import SliderBar from '../../component/SliderBar';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraSlider,
+} from '../../../components/ui';
+import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
   lighteningContrastLevel: LighteningContrastLevel;
@@ -58,7 +59,7 @@ export default class BeautyEffect
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine();
@@ -90,11 +91,11 @@ export default class BeautyEffect
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -154,134 +155,94 @@ export default class BeautyEffect
     this.engine?.release();
   }
 
-  onError(err: ErrorCodeType, msg: string) {
-    console.error('onError', 'err', err, 'msg', msg);
-  }
-
-  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
-    console.info(
-      'onJoinChannelSuccess',
-      'connection',
-      connection,
-      'elapsed',
-      elapsed
-    );
-    this.setState({ joinChannelSuccess: true });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
-    console.info('onLeaveChannel', 'connection', connection, 'stats', stats);
-    this.setState(this.createState());
-  }
-
-  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-    console.info(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid,
-      'elapsed',
-      elapsed
-    );
-    const { remoteUsers } = this.state;
-    if (remoteUsers === undefined) return;
-    this.setState({
-      remoteUsers: [...remoteUsers!, remoteUid],
-    });
-  }
-
-  onUserOffline(
-    connection: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ) {
-    console.info(
-      'onUserOffline',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid,
-      'reason',
-      reason
-    );
-    const { remoteUsers } = this.state;
-    if (remoteUsers === undefined) return;
-    this.setState({
-      remoteUsers: remoteUsers!.filter((value) => value !== remoteUid),
-    });
-  }
-
-  protected renderRight(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, enableBeautyEffect } = this.state;
+  protected renderConfiguration(): React.ReactNode {
+    const {
+      lighteningContrastLevel,
+      lighteningLevel,
+      smoothnessLevel,
+      rednessLevel,
+      sharpnessLevel,
+    } = this.state;
     return (
       <>
-        <DropDownButton
+        <AgoraDropdown
           title={'lighteningContrastLevel'}
-          options={configEnumToOptions(LighteningContrastLevel)}
-          onPress={(res) =>
-            this.setState({ lighteningContrastLevel: res.dropId })
-          }
+          items={enumToItems(LighteningContrastLevel)}
+          value={lighteningContrastLevel}
+          onValueChange={(value) => {
+            this.setState({ lighteningContrastLevel: value });
+          }}
         />
-        <Divider />
-        <SliderBar
-          title={'lighteningLevel'}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={(value) => {
+        <AgoraDivider />
+        <AgoraSlider
+          title={`lighteningLevel ${lighteningLevel}`}
+          minimumValue={0}
+          maximumValue={1}
+          step={0.1}
+          value={lighteningLevel}
+          onSlidingComplete={(value) => {
             this.setState({
               lighteningLevel: value,
             });
           }}
         />
-        <Divider />
-        <SliderBar
-          title={'smoothnessLevel'}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={(value) => {
+        <AgoraDivider />
+        <AgoraSlider
+          title={`smoothnessLevel ${smoothnessLevel}`}
+          minimumValue={0}
+          maximumValue={1}
+          step={0.1}
+          value={smoothnessLevel}
+          onSlidingComplete={(value) => {
             this.setState({
               smoothnessLevel: value,
             });
           }}
         />
-        <Divider />
-        <SliderBar
-          title={'rednessLevel'}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={(value) => {
+        <AgoraDivider />
+        <AgoraSlider
+          title={`rednessLevel ${rednessLevel}`}
+          minimumValue={0}
+          maximumValue={1}
+          step={0.1}
+          value={rednessLevel}
+          onSlidingComplete={(value) => {
             this.setState({
               rednessLevel: value,
             });
           }}
         />
-        <Divider />
-        <SliderBar
-          title={'sharpnessLevel'}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={(value) => {
+        <AgoraDivider />
+        <AgoraSlider
+          title={`sharpnessLevel ${sharpnessLevel}`}
+          minimumValue={0}
+          maximumValue={1}
+          step={0.1}
+          value={sharpnessLevel}
+          onSlidingComplete={(value) => {
             this.setState({
               sharpnessLevel: value,
             });
           }}
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
+        <AgoraDivider />
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { startPreview, joinChannelSuccess, enableBeautyEffect } = this.state;
+    return (
+      <>
+        <AgoraButton
           disabled={!(startPreview || joinChannelSuccess)}
-          onClick={(enableBeautyEffect
-            ? this.disableBeautyEffect
-            : this.enableBeautyEffect
-          ).bind(this)}
-        >
-          {enableBeautyEffect ? 'disable' : 'enable'} Beauty Effect
-        </Button>
+          title={`${enableBeautyEffect ? 'disable' : 'enable'} Beauty Effect`}
+          onPress={
+            enableBeautyEffect
+              ? this.disableBeautyEffect
+              : this.enableBeautyEffect
+          }
+        />
       </>
     );
   }

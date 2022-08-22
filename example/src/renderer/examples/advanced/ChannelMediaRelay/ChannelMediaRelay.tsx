@@ -1,251 +1,240 @@
-import { Card, Input, List } from 'antd';
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
+  ChannelMediaRelayError,
+  ChannelMediaRelayEvent,
+  ChannelMediaRelayState,
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
-  VideoSourceType,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import Window from '../../component/Window';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { getRandomInt } from '../../../utils';
 
-const { Search } = Input;
+import Config from '../../../config/agora.config';
 
-interface User {
-  isMyself: boolean;
-  uid: number;
-}
+import {
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraText,
+  AgoraTextInput,
+} from '../../../components/ui';
 
-interface State {
-  isJoined: boolean;
-  isRelaying: boolean;
-  channelId: string;
-  allUser: User[];
-  currentFps?: number;
-  currentResolution?: { width: number; height: number };
-  relayChannelName: string;
+interface State extends BaseVideoComponentState {
+  destChannelNames: string[];
+  startChannelMediaRelay: boolean;
+  pauseAllChannelMediaRelay: boolean;
 }
 
 export default class ChannelMediaRelay
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx;
-
-  state: State = {
-    channelId: '',
-    allUser: [],
-    isJoined: false,
-    isRelaying: false,
-    relayChannelName: 'testRelay',
-  };
-
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      destChannelNames: [],
+      startChannelMediaRelay: false,
+      pauseAllChannelMediaRelay: false,
+    };
   }
 
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine;
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    console.log(
-      `onJoinChannelSuccess channelId:${channelId} localUid:${localUid}`
-    );
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: true, uid: localUid });
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    });
-  }
-
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    );
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  onChannelMediaRelayEvent(code: number): void {
-    console.log('onChannelMediaRelayEvent', code);
-  }
-
-  onChannelMediaRelayStateChanged(state: number, code: number): void {
-    console.log(`onChannelMediaRelayStateChanged state:${state}, code${code}`);
-  }
-
-  onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId });
-    this.getRtcEngine().enableVideo();
-    const localUid = getRandomInt(1, 9999999);
-    console.log(`localUid: ${localUid}`);
-    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+  }
+
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
-  };
+  }
 
-  onPressChannelRelay = (relayChannelName: string) => {
-    const { isRelaying } = this.state;
-    if (isRelaying) {
-      this.getRtcEngine().stopChannelMediaRelay();
-    } else {
-      if (!relayChannelName) {
-        return;
-      }
-      const { channelId } = this.state;
-
-      this.getRtcEngine().startChannelMediaRelay({
-        srcInfo: {
-          channelName: channelId,
-          token: config.token,
-          uid: 0,
-        },
-        destInfos: [
-          {
-            channelName: relayChannelName,
-            token: config.token,
-            uid: 0,
-          },
-        ],
-        destCount: 1,
-      });
+  /**
+   * Step 3-1: startChannelMediaRelay
+   */
+  startChannelMediaRelay = () => {
+    const { channelId, token, uid, destChannelNames } = this.state;
+    if (destChannelNames.length <= 0) {
+      this.error('destChannelNames is invalid');
+      return;
     }
-    this.setState({ isRelaying: !isRelaying });
+
+    this.engine?.startChannelMediaRelay({
+      // Configure src info
+      // Set channel name defaults to current
+      // Set uid defaults to local
+      srcInfo: { channelName: channelId, uid, token },
+      // Configure dest infos
+      destInfos: destChannelNames.map((value) => {
+        return {
+          channelName: value,
+          uid: 0,
+          token: '',
+        };
+      }),
+      destCount: destChannelNames.length,
+    });
   };
 
-  renderRightBar = () => {
-    const { isJoined, isRelaying, relayChannelName } = this.state;
+  /**
+   * Step 3-2 (Optional): pauseAllChannelMediaRelay
+   */
+  pauseAllChannelMediaRelay = () => {
+    this.engine?.pauseAllChannelMediaRelay();
+    this.setState({ pauseAllChannelMediaRelay: true });
+  };
+
+  /**
+   * Step 3-3 (Optional): resumeAllChannelMediaRelay
+   */
+  resumeAllChannelMediaRelay = () => {
+    this.engine?.resumeAllChannelMediaRelay();
+    this.setState({ pauseAllChannelMediaRelay: false });
+  };
+
+  /**
+   * Step 3-4: stopChannelMediaRelay
+   */
+  stopChannelMediaRelay = () => {
+    this.engine?.stopChannelMediaRelay();
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  onChannelMediaRelayStateChanged(
+    state: ChannelMediaRelayState,
+    code: ChannelMediaRelayError
+  ) {
+    this.info('onChannelMediaRelayStateChanged', 'state', state, 'code', code);
+    switch (state) {
+      case ChannelMediaRelayState.RelayStateIdle:
+        this.setState({ startChannelMediaRelay: false });
+        break;
+      case ChannelMediaRelayState.RelayStateConnecting:
+        break;
+      case ChannelMediaRelayState.RelayStateRunning:
+        this.setState({
+          startChannelMediaRelay: true,
+          pauseAllChannelMediaRelay: false,
+        });
+        break;
+      case ChannelMediaRelayState.RelayStateFailure:
+        this.setState({ startChannelMediaRelay: false });
+        break;
+    }
+  }
+
+  onChannelMediaRelayEvent(code: ChannelMediaRelayEvent) {
+    this.info('onChannelMediaRelayEvent', 'code', code);
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const { destChannelNames } = this.state;
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <p>Relay Channel:</p>
-          <Search
-            placeholder="ChannelName"
-            allowClear
-            enterButton={!isRelaying ? 'Start Relay' : 'Stop Relay'}
-            size="small"
-            defaultValue={relayChannelName}
-            disabled={!isJoined}
-            onSearch={this.onPressChannelRelay}
-          />
-        </div>
-        <JoinChannelBar
-          onPressJoin={this.onPressJoinChannel}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel();
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ destChannelNames: text.split(' ') });
           }}
+          placeholder={'destChannelNames (split by blank)'}
+          value={destChannelNames.join(' ')}
         />
-      </div>
+        <AgoraText>{`destCount: ${destChannelNames.length}`}</AgoraText>
+        <AgoraDivider />
+      </>
     );
-  };
+  }
 
-  renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state;
+  protected renderAction(): React.ReactNode {
+    const {
+      joinChannelSuccess,
+      startChannelMediaRelay,
+      pauseAllChannelMediaRelay,
+    } = this.state;
     return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={VideoSourceType.VideoSourceCameraPrimary}
-            channelId={channelId}
-          />
-        </Card>
-      </List.Item>
-    );
-  };
-
-  render() {
-    const { isJoined, allUser } = this.state;
-    return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
-              }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          disabled={!joinChannelSuccess}
+          title={`${
+            startChannelMediaRelay ? 'stop' : 'start'
+          } Channel Media Relay`}
+          onPress={
+            startChannelMediaRelay
+              ? this.stopChannelMediaRelay
+              : this.startChannelMediaRelay
+          }
+        />
+        <AgoraButton
+          disabled={!startChannelMediaRelay}
+          title={`${
+            pauseAllChannelMediaRelay ? 'resume' : 'pause'
+          } All Channel Media Relay`}
+          onPress={
+            pauseAllChannelMediaRelay
+              ? this.resumeAllChannelMediaRelay
+              : this.pauseAllChannelMediaRelay
+          }
+        />
+      </>
     );
   }
 }

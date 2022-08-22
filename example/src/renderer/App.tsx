@@ -6,6 +6,7 @@ import {
   Link,
   Redirect,
 } from 'react-router-dom';
+import { createAgoraRtcEngine } from 'electron-agora-rtc-ng';
 import {
   HomeOutlined,
   DingtalkOutlined,
@@ -16,6 +17,7 @@ import { Layout, Menu } from 'antd';
 import AuthInfoScreen from './examples/config/AuthInfoScreen';
 import basicRoute from './examples/basic';
 import advanceRoute from './examples/advanced';
+import Config from './config/agora.config';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -23,7 +25,15 @@ const { SubMenu } = Menu;
 class App extends React.Component {
   state = {
     collapsed: false,
+    version: { version: undefined, build: undefined },
   };
+
+  componentDidMount() {
+    const engine = createAgoraRtcEngine();
+    engine.initialize({ appId: Config.appId });
+    this.setState({ version: engine.getVersion() });
+    engine.release();
+  }
 
   onCollapse = (collapsed) => {
     console.log(collapsed);
@@ -31,7 +41,7 @@ class App extends React.Component {
   };
 
   render() {
-    const { collapsed } = this.state;
+    const { collapsed, version } = this.state;
     return (
       <Router>
         <Layout style={{ minHeight: '100vh' }}>
@@ -87,7 +97,7 @@ class App extends React.Component {
               </Switch>
             </Content>
             <Footer style={{ textAlign: 'center' }}>
-              {`Agora Design ©2021 Created by Jerry.Luo, App process id is ${process.pid}`}
+              {`Powered by Agora RTC SDK ${version.version} ${version.build}`}
             </Footer>
           </Layout>
         </Layout>

@@ -25,7 +25,6 @@ import createAgoraRtcEngine, {
 import { Component } from 'react';
 import DropDownButton from '../../component/DropDownButton';
 import JoinChannelBar from '../../component/JoinChannelBar';
-import Window from '../../component/Window';
 import { FpsMap, ResolutionMap } from '../../config';
 import config from '../../../config/agora.config';
 import styles from '../../config/public.scss';
@@ -34,9 +33,9 @@ import {
   getRandomInt,
   getResourcePath,
 } from '../../../utils';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 
 const localUid1 = getRandomInt();
-const localUid2 = getRandomInt();
 
 interface Device {
   deviceId: string;
@@ -502,11 +501,12 @@ export default class LocalVideoTranscoder
     return (
       <List.Item>
         <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={videoSourceType}
-            channelId={channelId}
+          <RtcSurfaceView
+            canvas={{
+              uid,
+              sourceType: videoSourceType,
+            }}
+            connection={{ channelId }}
           />
         </Card>
       </List.Item>

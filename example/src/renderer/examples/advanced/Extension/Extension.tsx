@@ -3,10 +3,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
-  EncryptionErrorType,
-  EncryptionMode,
   IRtcEngineEventHandler,
-  RtcConnection,
 } from 'electron-agora-rtc-ng';
 
 import Config from '../../../config/agora.config';
@@ -15,23 +12,16 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraDropdown,
-  AgoraText,
-  AgoraTextInput,
-} from '../../../components/ui';
-import { enumToItems } from '../../../utils';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
 interface State extends BaseVideoComponentState {
-  encryptionMode: EncryptionMode;
-  encryptionKey: string;
-  encryptionKdfSalt: number[];
-  enableEncryption: boolean;
+  path: string;
+  provider: string;
+  extension: string;
+  enableExtension: boolean;
 }
 
-export default class Encryption
+export default class Extension
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
@@ -45,10 +35,10 @@ export default class Encryption
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      encryptionMode: EncryptionMode.Aes128Xts,
-      encryptionKey: '',
-      encryptionKdfSalt: [],
-      enableEncryption: false,
+      path: 'agora_segmentation_extension',
+      provider: 'agora_video_filters_segmentation',
+      extension: 'portrait_segmentation',
+      enableExtension: false,
     };
   }
 
@@ -75,7 +65,40 @@ export default class Encryption
   }
 
   /**
-   * Step 2: joinChannel
+   * Step 2-1: enableExtension
+   */
+  enableExtension = () => {
+    const { path, provider, extension } = this.state;
+    if (!path) {
+      this.error('path is invalid');
+      return;
+    }
+    if (!provider) {
+      this.error('provider is invalid');
+      return;
+    }
+    if (!extension) {
+      this.error('extension is invalid');
+      return;
+    }
+
+    this.engine?.loadExtensionProvider(path);
+
+    this.engine?.enableExtension(provider, extension, true);
+    this.setState({ enableExtension: true });
+  };
+
+  /**
+   * Step 2-2: disableExtension
+   */
+  disableExtension = () => {
+    const { provider, extension } = this.state;
+    this.engine?.enableExtension(provider, extension, false);
+    this.setState({ enableExtension: false });
+  };
+
+  /**
+   * Step 3: joinChannel
    */
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
@@ -101,32 +124,6 @@ export default class Encryption
   }
 
   /**
-   * Step 3-1: enableEncryption
-   */
-  enableEncryption = () => {
-    const { encryptionMode, encryptionKey, encryptionKdfSalt } = this.state;
-    if (!encryptionKey) {
-      this.error('encryptionKey is invalid');
-      return;
-    }
-
-    this.engine?.enableEncryption(true, {
-      encryptionMode,
-      encryptionKey,
-      encryptionKdfSalt,
-    });
-    this.setState({ enableEncryption: true });
-  };
-
-  /**
-   * Step 3-2: disableEncryption
-   */
-  disableEncryption = () => {
-    this.engine?.enableEncryption(false, {});
-    this.setState({ enableEncryption: false });
-  };
-
-  /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
@@ -140,60 +137,98 @@ export default class Encryption
     this.engine?.release();
   }
 
-  onEncryptionError(connection: RtcConnection, errorType: EncryptionErrorType) {
+  onExtensionErrored(
+    provider: string,
+    extName: string,
+    error: number,
+    msg: string
+  ) {
     this.error(
-      'onEncryptionError',
-      'connection',
-      connection,
-      'errorType',
-      errorType
+      'onExtensionErrored',
+      'provider',
+      provider,
+      'extName',
+      extName,
+      'error',
+      error,
+      'msg',
+      msg
     );
   }
 
+  onExtensionEvent(
+    provider: string,
+    extName: string,
+    key: string,
+    value: string
+  ) {
+    this.info(
+      'onExtensionEvent',
+      'provider',
+      provider,
+      'extName',
+      extName,
+      'key',
+      key,
+      'value',
+      value
+    );
+  }
+
+  onExtensionStarted(provider: string, extName: string) {
+    this.info('onExtensionStarted', 'provider', provider, 'extName', extName);
+    this.setState({ enableExtension: true });
+  }
+
+  onExtensionStopped(provider: string, extName: string) {
+    this.info('onExtensionStopped', 'provider', provider, 'extName', extName);
+    this.setState({ enableExtension: false });
+  }
+
   protected renderConfiguration(): React.ReactNode {
-    const { encryptionMode, encryptionKey, encryptionKdfSalt } = this.state;
+    const { path, provider, extension } = this.state;
     return (
       <>
-        <AgoraDropdown
-          title={'encryptionMode'}
-          items={enumToItems(EncryptionMode)}
-          value={encryptionMode}
-          onValueChange={(value) => {
-            this.setState({ encryptionMode: value });
-          }}
-        />
-        <AgoraDivider />
         <AgoraTextInput
           onChangeText={(text) => {
-            this.setState({ encryptionKey: text });
+            this.setState({
+              path: text,
+            });
           }}
-          placeholder={'encryptionKey'}
-          value={encryptionKey}
+          placeholder={'path'}
+          value={path}
         />
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({
-              encryptionKdfSalt: text.split(' ').map((value) => +value),
+              provider: text,
             });
           }}
-          placeholder={'encryptionKdfSalt (split by blank)'}
-          value={encryptionKdfSalt.join(' ')}
+          placeholder={'provider'}
+          value={provider}
         />
-        <AgoraText>{`encryptionKdfSaltLength: ${encryptionKdfSalt.length}`}</AgoraText>
-        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({
+              extension: text,
+            });
+          }}
+          placeholder={'extension'}
+          value={extension}
+        />
       </>
     );
   }
 
   protected renderAction(): React.ReactNode {
-    const { joinChannelSuccess, enableEncryption } = this.state;
+    const { joinChannelSuccess, enableExtension } = this.state;
     return (
       <>
         <AgoraButton
           disabled={joinChannelSuccess}
-          title={`${enableEncryption ? 'disable' : 'enable'} Encryption`}
+          title={`${enableExtension ? 'disable' : 'enable'} Extension`}
           onPress={
-            enableEncryption ? this.disableEncryption : this.enableEncryption
+            enableExtension ? this.disableExtension : this.enableExtension
           }
         />
       </>

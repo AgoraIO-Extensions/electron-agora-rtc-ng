@@ -1,157 +1,152 @@
-import { Button, Card, Divider, List } from 'antd';
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
   AudioSpectrumData,
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
-  IAudioDeviceManager,
+  createAgoraRtcEngine,
   IAudioSpectrumObserver,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  RtcConnection,
-  RtcStats,
   UserAudioSpectrumInfo,
-  UserOfflineReasonType,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import DropDownButton from '../../component/DropDownButton';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import { AudioProfileList, AudioScenarioList } from '../../config';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { configMapToOptions, getRandomInt } from '../../../utils';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  YAxis,
+} from 'recharts';
 
-interface User {
-  isMyself: boolean;
-  uid: number;
-}
+import Config from '../../../config/agora.config';
 
-interface Device {
-  deviceName: string;
-  deviceId: string;
-}
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
-interface State {
-  audioRecordDevices: Device[];
-  audioProfile: number;
-  audioScenario: number;
-  allUser: User[];
-  isJoined: boolean;
+interface State extends BaseAudioComponentState {
   intervalInMS: number;
+  enableAudioSpectrumMonitor: boolean;
   audioSpectrumData: number[];
 }
 
 export default class AudioSpectrum
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler, IAudioSpectrumObserver
 {
-  rtcEngine?: IRtcEngineEx;
-
-  audioDeviceManager: IAudioDeviceManager;
-
-  state: State = {
-    audioRecordDevices: [],
-    audioProfile: AudioProfileList.Default,
-    audioScenario: AudioScenarioList.Default,
-    allUser: [],
-    isJoined: false,
-    intervalInMS: 100,
-    audioSpectrumData: [],
-  };
-
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
-    this.getRtcEngine().registerAudioSpectrumObserver(this);
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-    });
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: false,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      intervalInMS: 100,
+      enableAudioSpectrumMonitor: false,
+      audioSpectrumData: [],
+    };
   }
 
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getRtcEngine().unregisterAudioSpectrumObserver(this);
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-
-      console.log('initialize:', res);
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine;
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
+
+    this.registerAudioSpectrumObserver();
   }
 
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: true, uid: localUid });
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
   }
 
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    );
+  /**
+   * Step 3-1: registerAudioSpectrumObserver
+   */
+  registerAudioSpectrumObserver = () => {
+    this.engine?.registerAudioSpectrumObserver(this);
+  };
 
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
-    });
+  /**
+   * Step 3-2: enableAudioSpectrumMonitor
+   */
+  enableAudioSpectrumMonitor = () => {
+    const { intervalInMS } = this.state;
+    this.engine?.enableAudioSpectrumMonitor(intervalInMS);
+    this.setState({ enableAudioSpectrumMonitor: true });
+  };
+
+  /**
+   * Step 3-3: disableAudioSpectrumMonitor
+   */
+  disableAudioSpectrumMonitor = () => {
+    this.engine?.disableAudioSpectrumMonitor();
+    this.setState({ enableAudioSpectrumMonitor: false });
+  };
+
+  /**
+   * Step 3-4: unregisterAudioSpectrumObserver
+   */
+  unregisterAudioSpectrumObserver = () => {
+    this.engine?.unregisterAudioSpectrumObserver(this);
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
   }
 
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.unregisterAudioSpectrumObserver();
+    this.engine?.release();
   }
 
   onLocalAudioSpectrum(data: AudioSpectrumData): boolean {
-    console.log('onLocalAudioSpectrum', data);
+    this.info('onLocalAudioSpectrum', 'data', data);
+    this.setState({ audioSpectrumData: data.audioSpectrumData ?? [] });
     return true;
   }
 
@@ -159,117 +154,79 @@ export default class AudioSpectrum
     spectrums: UserAudioSpectrumInfo[],
     spectrumNumber: number
   ): boolean {
-    console.log('onRemoteAudioSpectrum', spectrums, spectrumNumber);
+    this.info(
+      'onRemoteAudioSpectrum',
+      'spectrums',
+      spectrums,
+      'spectrumNumber',
+      spectrumNumber
+    );
     return true;
   }
 
-  setAudioProfile = () => {
-    const { audioProfile, audioScenario } = this.state;
-    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario);
-  };
-
-  renderItem = ({ isMyself, uid }: User) => {
+  protected renderUsers(): React.ReactNode {
+    const { enableAudioSpectrumMonitor, audioSpectrumData } = this.state;
     return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
-      </List.Item>
+      <>
+        {super.renderUsers()}
+        {enableAudioSpectrumMonitor && audioSpectrumData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={audioSpectrumData.map((value) => {
+                return {
+                  uv: value,
+                };
+              })}
+              width={500}
+              height={300}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <YAxis />
+              <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : undefined}
+      </>
     );
-  };
+  }
 
-  renderRightBar = () => {
-    const { audioRecordDevices } = this.state;
+  protected renderConfiguration(): React.ReactNode {
+    const { intervalInMS } = this.state;
     return (
-      <div className={styles.rightBar} style={{ width: '60%' }}>
-        <div style={{ overflow: 'auto' }}>
-          <DropDownButton
-            options={configMapToOptions(AudioProfileList)}
-            onPress={(res) =>
-              this.setState({ audioProfile: res.dropId }, this.setAudioProfile)
-            }
-            title="Audio Profile"
-          />
-          <DropDownButton
-            options={configMapToOptions(AudioScenarioList)}
-            onPress={(res) =>
-              this.setState({ audioScenario: res.dropId }, this.setAudioProfile)
-            }
-            title="Audio Scenario"
-          />
-          <DropDownButton
-            title="Microphone"
-            options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj;
-              return {
-                dropId: deviceId,
-                dropText: deviceName,
-                ...obj,
-              };
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId);
-            }}
-          />
-
-          <Divider>Audio Spectrum</Divider>
-          <Button
-            htmlType="button"
-            onClick={() => {
-              this.getRtcEngine().enableAudioSpectrumMonitor(
-                this.state.intervalInMS
-              );
-            }}
-          >
-            enableAudioSpectrumMonitor
-          </Button>
-          <Button
-            htmlType="button"
-            onClick={() => {
-              this.getRtcEngine().disableAudioSpectrumMonitor();
-            }}
-          >
-            disableAudioSpectrumMonitor
-          </Button>
-        </div>
-        <JoinChannelBar
-          onPressJoin={(channelId: string) => {
-            this.getRtcEngine().enableAudio();
-            const localUid = getRandomInt(1, 9999999);
-            console.log(`localUid: ${localUid}`);
-            this.getRtcEngine().joinChannelWithOptions(
-              '',
-              channelId,
-              localUid,
-              {
-                channelProfile:
-                  ChannelProfileType.ChannelProfileLiveBroadcasting,
-                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-              }
-            );
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ intervalInMS: +text });
           }}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel();
-          }}
+          placeholder={`intervalInMS (defaults: ${
+            this.createState().intervalInMS
+          })`}
+          value={
+            intervalInMS === this.createState().intervalInMS
+              ? ''
+              : intervalInMS.toString()
+          }
         />
-      </div>
+      </>
     );
-  };
+  }
 
-  render() {
-    const { isJoined, allUser } = this.state;
+  protected renderAction(): React.ReactNode {
+    const { enableAudioSpectrumMonitor } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              style={{ width: '100%' }}
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          title={`${
+            enableAudioSpectrumMonitor ? 'disable' : 'enable'
+          } Audio Spectrum Monitor`}
+          onPress={
+            enableAudioSpectrumMonitor
+              ? this.disableAudioSpectrumMonitor
+              : this.enableAudioSpectrumMonitor
+          }
+        />
+      </>
     );
   }
 }

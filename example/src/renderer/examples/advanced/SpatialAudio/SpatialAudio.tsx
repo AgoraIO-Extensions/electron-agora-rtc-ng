@@ -1,273 +1,277 @@
-import { Card, Divider, List, Switch } from 'antd';
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
+  AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
-  IAudioDeviceManager,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import DropDownButton from '../../component/DropDownButton';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import SliderBar from '../../component/SliderBar';
-import { AudioProfileList, AudioScenarioList } from '../../config';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { configMapToOptions, getRandomInt } from '../../../utils';
 
-interface User {
-  isMyself: boolean;
-  uid: number;
+import Config from '../../../config/agora.config';
+
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraSlider,
+  AgoraSwitch,
+} from '../../../components/ui';
+import { arrayToItems } from '../../../utils';
+
+interface State extends BaseAudioComponentState {
+  targetUid: number;
+  speaker_azimuth: number;
+  speaker_elevation: number;
+  speaker_distance: number;
+  speaker_orientation: number;
+  enable_blur: boolean;
+  enable_air_absorb: boolean;
+  enableSpatialAudio: boolean;
 }
 
-interface Device {
-  deviceId: string;
-  deviceName: string;
-}
-
-interface State {
-  audioRecordDevices: Device[];
-  audioProfile: number;
-  audioScenario: number;
-  allUser: User[];
-  isJoined: boolean;
-}
-
-export default class JoinChannelAudio
-  extends Component<State>
+export default class SpatialAudio
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx;
-
-  audioDeviceManager: IAudioDeviceManager;
-
-  state: State = {
-    audioRecordDevices: [],
-    audioProfile: AudioProfileList.Default,
-    audioScenario: AudioScenarioList.Default,
-    allUser: [],
-    isJoined: false,
-  };
-
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
-
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-    });
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: false,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      enableSpatialAudio: false,
+      targetUid: 0,
+      speaker_azimuth: 0,
+      speaker_elevation: 0,
+      speaker_distance: 1,
+      speaker_orientation: 0,
+      enable_blur: false,
+      enable_air_absorb: true,
+    };
   }
 
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine;
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: true, uid: localUid });
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      audioScenario: AudioScenarioType.AudioScenarioGameStreaming,
     });
-  }
 
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.audio.force_bluetooth_a2dp': true })
     );
 
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
+  }
+
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
   }
 
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  setAudioProfile = () => {
-    const { audioProfile, audioScenario } = this.state;
-    this.getRtcEngine().setAudioProfile(audioProfile, audioScenario);
-  };
-  onPressSpatialAudio = (enabled) => {
-    const res = this.getRtcEngine().enableSpatialAudio(enabled);
-    console.log('enableSpatialAudio', enabled, '\nres:', res);
+  /**
+   * Step 3-1: enableSpatialAudio
+   */
+  enableSpatialAudio = () => {
+    this.engine?.enableSpatialAudio(true);
+    this.setState({ enableSpatialAudio: true });
   };
 
-  renderItem = ({ isMyself, uid }) => {
+  /**
+   * Step 3-2: setRemoteUserSpatialAudioParams
+   */
+  setRemoteUserSpatialAudioParams = () => {
+    const {
+      targetUid,
+      speaker_azimuth,
+      speaker_elevation,
+      speaker_distance,
+      speaker_orientation,
+      enable_blur,
+      enable_air_absorb,
+    } = this.state;
+
+    this.engine?.setRemoteUserSpatialAudioParams(targetUid, {
+      speaker_azimuth,
+      speaker_elevation,
+      speaker_distance,
+      speaker_orientation,
+      enable_blur,
+      enable_air_absorb,
+    });
+  };
+
+  /**
+   * Step 3-3: disableSpatialAudio
+   */
+  disableSpatialAudio = () => {
+    this.engine?.enableSpatialAudio(false);
+    this.setState({ enableSpatialAudio: false });
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const {
+      remoteUsers,
+      targetUid,
+      speaker_azimuth,
+      speaker_elevation,
+      speaker_distance,
+      speaker_orientation,
+      enable_blur,
+      enable_air_absorb,
+    } = this.state;
     return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
-      </List.Item>
-    );
-  };
-
-  renderRightBar = () => {
-    const { audioRecordDevices: audioDevices } = this.state;
-    return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={configMapToOptions(AudioProfileList)}
-            onPress={(res) =>
-              this.setState({ audioProfile: res.dropId }, this.setAudioProfile)
-            }
-            title="Audio Profile"
-          />
-          <DropDownButton
-            options={configMapToOptions(AudioScenarioList)}
-            onPress={(res) =>
-              this.setState({ audioScenario: res.dropId }, this.setAudioProfile)
-            }
-            title="Audio Scenario"
-          />
-          <DropDownButton
-            title="Microphone"
-            options={audioDevices.map((obj) => {
-              const { deviceId, deviceName } = obj;
-              return { dropId: deviceId, dropText: deviceName, ...obj };
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId);
-            }}
-          />
-
-          <SliderBar
-            max={100}
-            title="SDK Recording Volume"
-            onChange={(value) => {
-              this.getRtcEngine().adjustRecordingSignalVolume(value);
-            }}
-          />
-          <SliderBar
-            max={100}
-            title="Device Playout Volume"
-            onChange={(value) => {
-              this.getRtcEngine().adjustAudioMixingPlayoutVolume(value);
-            }}
-          />
-          <SliderBar
-            max={100}
-            title="SDK Playout Volume SDK"
-            onChange={(value) => {
-              this.getRtcEngine().adjustPlaybackSignalVolume(value);
-            }}
-          />
-          <Divider>Spatial Audio</Divider>
-          <div
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {'SpatialAudio:   '}
-            <Switch
-              checkedChildren="Enable"
-              unCheckedChildren="Disable"
-              defaultChecked={false}
-              onChange={this.onPressSpatialAudio}
-            />
-          </div>
-        </div>
-        <JoinChannelBar
-          onPressJoin={(channelId) => {
-            this.getRtcEngine().enableAudio();
-            const localUid = getRandomInt(1, 9999999);
-            console.log(`localUid: ${localUid}`);
-            this.getRtcEngine().joinChannelWithOptions(
-              '',
-              channelId,
-              localUid,
-              {
-                channelProfile:
-                  ChannelProfileType.ChannelProfileLiveBroadcasting,
-                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-              }
-            );
-          }}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel();
+      <>
+        <AgoraDropdown
+          title={'targetUid'}
+          items={arrayToItems(remoteUsers)}
+          value={targetUid}
+          onValueChange={(value) => {
+            this.setState({ targetUid: value });
           }}
         />
-      </div>
+        <AgoraDivider />
+        <AgoraSlider
+          title={`speaker_azimuth`}
+          minimumValue={0}
+          maximumValue={360}
+          step={1}
+          value={speaker_azimuth}
+          onSlidingComplete={(value) => {
+            this.setState({ speaker_azimuth: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSlider
+          title={`speaker_elevation`}
+          minimumValue={-90}
+          maximumValue={90}
+          step={1}
+          value={speaker_elevation}
+          onSlidingComplete={(value) => {
+            this.setState({ speaker_elevation: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSlider
+          title={`speaker_distance`}
+          minimumValue={1}
+          maximumValue={50}
+          step={1}
+          value={speaker_distance}
+          onSlidingComplete={(value) => {
+            this.setState({ speaker_distance: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSlider
+          title={`speaker_orientation`}
+          minimumValue={0}
+          maximumValue={180}
+          step={1}
+          value={speaker_orientation}
+          onSlidingComplete={(value) => {
+            this.setState({ speaker_orientation: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSwitch
+          title={`enable_blur`}
+          value={enable_blur}
+          onValueChange={(value) => {
+            this.setState({
+              enable_blur: value,
+            });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSwitch
+          title={`enable_air_absorb`}
+          value={enable_air_absorb}
+          onValueChange={(value) => {
+            this.setState({
+              enable_air_absorb: value,
+            });
+          }}
+        />
+        <AgoraDivider />
+      </>
     );
-  };
+  }
 
-  render() {
-    const { isJoined, allUser } = this.state;
-
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess, enableSpatialAudio } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              style={{ width: '100%' }}
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          disabled={!joinChannelSuccess}
+          title={`${enableSpatialAudio ? 'disable' : 'enable'} Spatial Audio`}
+          onPress={
+            enableSpatialAudio
+              ? this.disableSpatialAudio
+              : this.enableSpatialAudio
+          }
+        />
+        <AgoraButton
+          disabled={!enableSpatialAudio}
+          title={`set Remote User Spatial Audio Params`}
+          onPress={this.setRemoteUserSpatialAudioParams}
+        />
+      </>
     );
   }
 }

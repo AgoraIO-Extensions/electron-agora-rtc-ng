@@ -3,17 +3,21 @@ import {
   ErrorCodeType,
   IRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-  VideoSourceType,
 } from 'electron-agora-rtc-ng';
 import { Card, List } from 'antd';
 
 import AgoraStyle from '../examples/config/public.scss';
-import Window from '../examples/component/Window';
-import { AgoraButton, AgoraDivider, AgoraTextInput, AgoraView } from './ui';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraText,
+  AgoraTextInput,
+  AgoraView,
+} from './ui';
+import RtcSurfaceView from './RtcSurfaceView';
 
 export interface BaseComponentState {
   appId: string;
@@ -136,6 +140,7 @@ export abstract class BaseComponent<
           {this.renderUsers()}
         </AgoraView>
         <AgoraView className={AgoraStyle.rightBar}>
+          {this.renderChannel()}
           {configuration ? (
             <>
               <AgoraDivider>
@@ -144,8 +149,8 @@ export abstract class BaseComponent<
               {configuration}
             </>
           ) : undefined}
+          <AgoraDivider />
           {this.renderAction()}
-          {this.renderChannel()}
         </AgoraView>
       </AgoraView>
     );
@@ -155,7 +160,6 @@ export abstract class BaseComponent<
     const { channelId, joinChannelSuccess } = this.state;
     return (
       <>
-        <AgoraDivider>Channel</AgoraDivider>
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({ channelId: text });
@@ -174,8 +178,14 @@ export abstract class BaseComponent<
   }
 
   protected renderUsers(): ReactNode {
-    const { enableVideo, startPreview, joinChannelSuccess, remoteUsers, uid } =
-      this.state;
+    const {
+      enableVideo,
+      startPreview,
+      channelId,
+      joinChannelSuccess,
+      remoteUsers,
+      uid,
+    } = this.state;
     return (
       <>
         {startPreview || joinChannelSuccess ? (
@@ -198,29 +208,25 @@ export abstract class BaseComponent<
                   }
             }
             dataSource={[uid, ...remoteUsers]}
-            renderItem={this.renderVideo.bind(this)}
+            renderItem={(item) => {
+              return this.renderVideo(item, channelId);
+            }}
           />
         ) : undefined}
       </>
     );
   }
 
-  private renderVideo(uid: number): ReactNode {
-    const { channelId, enableVideo } = this.state;
+  protected renderVideo(uid: number, channelId?: string): ReactNode {
+    const { enableVideo } = this.state;
     return (
       <List.Item>
         <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
           {enableVideo ? (
-            <Window
-              uid={uid}
-              rtcEngine={this.engine as IRtcEngineEx}
-              videoSourceType={
-                uid === 0
-                  ? VideoSourceType.VideoSourceCamera
-                  : VideoSourceType.VideoSourceRemote
-              }
-              channelId={channelId}
-            />
+            <>
+              <AgoraText>Click view to mirror</AgoraText>
+              <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
+            </>
           ) : undefined}
         </Card>
       </List.Item>
@@ -245,7 +251,7 @@ export abstract class BaseComponent<
   }
 
   protected debug(message?: any, ...optionalParams: any[]): void {
-    alert(this._logSink('debug', message, optionalParams));
+    this.alert(message, this._logSink('debug', message, optionalParams));
   }
 
   protected log(message?: any, ...optionalParams: any[]): void {
@@ -262,5 +268,9 @@ export abstract class BaseComponent<
 
   protected error(message?: any, ...optionalParams: any[]): void {
     this._logSink('error', message, optionalParams);
+  }
+
+  protected alert(title: string, message?: string): void {
+    alert(`${title}: ${message}`);
   }
 }

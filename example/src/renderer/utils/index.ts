@@ -30,7 +30,7 @@ export const objectToItems = (object: any): AgoraDropdownItem[] => {
 };
 
 export const arrayToItems = (array: any[]): AgoraDropdownItem[] => {
-  return Object.keys(array).map((value) => {
+  return array.map((value) => {
     return {
       label: value.toString(),
       value: value,

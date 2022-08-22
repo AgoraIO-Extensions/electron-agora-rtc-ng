@@ -1,5 +1,5 @@
 import { app, BrowserWindow, systemPreferences } from 'electron';
-import * as path from 'path';
+import path from 'path';
 import { format as formatUrl } from 'url';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -17,7 +17,11 @@ function createMainWindow() {
   const window = new BrowserWindow({
     width: 1024,
     height: 728,
-    webPreferences: { nodeIntegration: true, contextIsolation: false },
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false,
+    },
   });
 
   window.webContents.openDevTools({

@@ -14,12 +14,13 @@ import {
 } from 'electron-agora-rtc-ng';
 import { Buffer } from 'buffer';
 
+import Config from '../../../config/agora.config';
+
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import Config from '../../../config/agora.config';
-import { Button, Divider, Input } from 'antd';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
 interface State extends BaseVideoComponentState {
   imageBuffer: string;
@@ -52,7 +53,7 @@ export default class EncodedVideoFrame
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
@@ -77,11 +78,11 @@ export default class EncodedVideoFrame
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -91,7 +92,6 @@ export default class EncodedVideoFrame
     // 2. If app certificate is turned on at dashboard, token is needed
     // when joining channel. The channel name and uid used to calculate
     // the token has to match the ones used for channel join
-    // this.engine?.joinChannel(token, channelId, '', uid);
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
@@ -129,7 +129,7 @@ export default class EncodedVideoFrame
   pushEncodedVideoImage = () => {
     const { imageBuffer } = this.state;
     if (!imageBuffer) {
-      console.error('imageBuffer is invalid');
+      this.error('imageBuffer is invalid');
       return;
     }
 
@@ -189,31 +189,36 @@ export default class EncodedVideoFrame
       'videoEncodedFrameInfo',
       videoEncodedFrameInfo
     );
-    this.debug(`Receive from uid:${uid}`, `${imageBuffer.toString()}`);
+    if (videoEncodedFrameInfo.codecType === VideoCodecType.VideoCodecGeneric) {
+      this.alert(`Receive from uid:${uid}`, `${imageBuffer.toString()}`);
+    }
     return true;
   }
 
-  protected renderRight(): React.ReactNode {
-    const { imageBuffer, joinChannelSuccess } = this.state;
+  protected renderConfiguration(): React.ReactNode {
+    const { imageBuffer } = this.state;
     return (
       <>
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
             this.setState({ imageBuffer: text });
           }}
-          placeholder={'imageBuffer'}
-          defaultValue={imageBuffer}
-          allowClear
-          size="small"
+          placeholder={`imageBuffer`}
+          value={imageBuffer}
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess } = this.state;
+    return (
+      <>
+        <AgoraButton
           disabled={!joinChannelSuccess}
-          onClick={this.pushEncodedVideoImage.bind(this)}
-        >
-          push Encoded Video Image
-        </Button>
+          title={`push Encoded Video Image`}
+          onPress={this.pushEncodedVideoImage}
+        />
       </>
     );
   }

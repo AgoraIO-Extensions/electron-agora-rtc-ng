@@ -4,6 +4,7 @@ import { Divider, Modal, Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 let resultResolve;
 let finishCallBack;
+
 const ChooseFilterWindowModal = ({ cRef }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [windows, setWindows] = useState([]);

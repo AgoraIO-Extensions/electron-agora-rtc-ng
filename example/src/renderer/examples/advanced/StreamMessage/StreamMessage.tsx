@@ -1,262 +1,249 @@
-import { Card, Input, List } from 'antd';
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
   RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { getRandomInt } from '../../../utils';
-import createDataStreamStyle from './StreamMessage.scss';
+import { Buffer } from 'buffer';
 
-const { Search } = Input;
+import Config from '../../../config/agora.config';
 
-interface User {
-  isMyself: boolean;
-  uid: number;
-}
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraSwitch,
+  AgoraText,
+  AgoraTextInput,
+} from '../../../components/ui';
 
-interface State {
-  allUser: User[];
-  isJoined: boolean;
-  msgs: string[];
+interface State extends BaseAudioComponentState {
+  syncWithAudio: boolean;
+  ordered: boolean;
+  streamId?: number;
+  data: string;
 }
 
 export default class StreamMessage
-  extends Component<State>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx;
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: false,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      syncWithAudio: false,
+      ordered: false,
+      streamId: undefined,
+      data: '',
+    };
+  }
 
-  streamId?: number;
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
+    }
 
-  state: State = {
-    allUser: [],
-    isJoined: false,
-    msgs: [],
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
+  }
+
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    });
+  }
+
+  /**
+   * Step 3-1: createDataStream
+   */
+  createDataStream = () => {
+    const { syncWithAudio, ordered, streamId } = this.state;
+    if (streamId === undefined) {
+      this.setState({
+        streamId: this.engine?.createDataStream({
+          syncWithAudio,
+          ordered,
+        }),
+      });
+    }
   };
 
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
-  }
-
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
+  /**
+   * Step 3-2: sendStreamMessage
+   */
+  sendStreamMessage = () => {
+    const { streamId, data } = this.state;
+    if (!data) {
+      this.error('data is invalid');
+      return;
     }
 
-    return this.rtcEngine;
+    const buffer = Buffer.from(data);
+    this.engine?.sendStreamMessage(streamId!, buffer, buffer.length);
+    this.setState({ data: '' });
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
   }
 
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    try {
-      const { allUser: oldAllUser } = this.state;
-      const newAllUser = [...oldAllUser];
-      newAllUser.push({ isMyself: true, uid: localUid });
-      this.setState({
-        isJoined: true,
-        allUser: newAllUser,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
   }
 
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    );
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  onStreamMessage?(
+  onStreamMessage(
     connection: RtcConnection,
     remoteUid: number,
     streamId: number,
     data: Uint8Array,
     length: number,
     sentTs: number
-  ): void {
-    this.setState({
-      msgs: [
-        ...this.state.msgs,
-        `from:${remoteUid} message:${data.toString()}`,
-      ],
-    });
-    console.log('received message: ', remoteUid, streamId, data);
+  ) {
+    this.info(
+      'onStreamMessage',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'streamId',
+      streamId,
+      'data',
+      data,
+      'length',
+      length,
+      'sentTs',
+      sentTs
+    );
+    this.alert(
+      `Receive from uid:${remoteUid}`,
+      `StreamId ${streamId}: ${data.toString()}`
+    );
   }
 
-  onStreamMessageError?(
+  onStreamMessageError(
     connection: RtcConnection,
     remoteUid: number,
     streamId: number,
     code: number,
     missed: number,
     cached: number
-  ): void {
-    console.log('onStreamMessageError');
+  ) {
+    this.error(
+      'onStreamMessageError',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'streamId',
+      streamId,
+      'code',
+      code,
+      'missed',
+      missed,
+      'cached',
+      cached
+    );
   }
 
-  getStreamId = () => {
-    if (!this.streamId) {
-      this.streamId = this.getRtcEngine().createDataStream({
-        syncWithAudio: false,
-        ordered: true,
-      });
-      console.log(this.streamId);
-    }
-
-    return this.streamId!;
-  };
-
-  pressSendMsg = (msg: string) => {
-    if (!msg) {
-      return;
-    }
-    // create the data stream
-    // Each user can create up to five data streams during the lifecycle of the agoraKit
-    const streamId = this.getStreamId();
-    console.log('current stream id', streamId);
-    const buffer = Buffer.from(msg);
-    this.getRtcEngine().sendStreamMessage(streamId, buffer, buffer.length);
-    console.log('streamId:', this.streamId, ' content:', msg);
-  };
-
-  renderItem = ({ isMyself, uid }) => {
+  protected renderConfiguration(): React.ReactNode {
+    const { syncWithAudio, ordered, streamId, data } = this.state;
     return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
-      </List.Item>
-    );
-  };
-
-  renderRightBar = () => {
-    const { isJoined, msgs } = this.state;
-
-    return (
-      <div className={styles.rightBarBig}>
-        <div className={createDataStreamStyle.toolBarContent}>
-          <div>
-            <p>Received Messages:</p>
-            <div className={createDataStreamStyle.msgList}>
-              {msgs.map((msg, index) => (
-                <div key={index} className={createDataStreamStyle.msg}>
-                  {msg}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p>Send Message:</p>
-            <Search
-              placeholder="input msg text"
-              enterButton="Send"
-              size="middle"
-              onSearch={this.pressSendMsg}
-              disabled={!isJoined}
-            />
-          </div>
-        </div>
-        <JoinChannelBar
-          onPressJoin={(channelId) => {
-            this.setState({ channelId });
-            const localUid = getRandomInt(1, 9999999);
-            console.log(`localUid: ${localUid}`);
-            this.getRtcEngine().joinChannelWithOptions(
-              '',
-              channelId,
-              localUid,
-              {
-                channelProfile:
-                  ChannelProfileType.ChannelProfileLiveBroadcasting,
-                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-              }
-            );
-          }}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel();
+      <>
+        <AgoraSwitch
+          disabled={streamId !== undefined}
+          title={`syncWithAudio`}
+          value={syncWithAudio}
+          onValueChange={(value) => {
+            this.setState({ syncWithAudio: value });
           }}
         />
-      </div>
+        <AgoraDivider />
+        <AgoraSwitch
+          disabled={streamId !== undefined}
+          title={`ordered`}
+          value={ordered}
+          onValueChange={(value) => {
+            this.setState({ ordered: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraText>{`streamId: ${streamId}`}</AgoraText>
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ data: text });
+          }}
+          placeholder={`data`}
+          value={data}
+        />
+      </>
     );
-  };
+  }
 
-  render() {
-    const { isJoined, allUser } = this.state;
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess, streamId } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              style={{ width: '100%' }}
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          disabled={!joinChannelSuccess}
+          title={`create Data Stream`}
+          onPress={this.createDataStream}
+        />
+        <AgoraButton
+          disabled={streamId === undefined}
+          title={`send Stream Message`}
+          onPress={this.sendStreamMessage}
+        />
+      </>
     );
   }
 }

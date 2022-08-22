@@ -1,391 +1,229 @@
-import { Card, List, Switch } from 'antd';
-import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
+import React from 'react';
+import {
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
   ClientRoleType,
-  DegradationPreference,
-  ErrorCodeType,
-  IAudioDeviceManager,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  IVideoDeviceManager,
-  MediaSourceType,
-  OrientationMode,
-  RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
-  VideoCodecType,
-  VideoMirrorModeType,
-  VideoSourceType,
-  VirtualBackgroundSource,
 } from 'electron-agora-rtc-ng';
-import { Component } from 'react';
-import DropDownButton from '../../component/DropDownButton';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import Window from '../../component/Window';
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
+import { SketchPicker } from 'react-color';
+
+import Config from '../../../config/agora.config';
+
 import {
-  configMapToOptions,
-  getRandomInt,
-  getResourcePath,
-} from '../../../utils';
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDropdown,
+  AgoraTextInput,
+} from '../../../components/ui';
+import { enumToItems, getResourcePath } from '../../../utils';
 
-interface Device {
-  deviceId: string;
-  deviceName: string;
+interface State extends BaseVideoComponentState {
+  background_source_type: BackgroundSourceType;
+  color: number;
+  source: string;
+  blur_degree: BackgroundBlurDegree;
+  enableVirtualBackground: boolean;
 }
-
-interface User {
-  isMyself: boolean;
-  uid: number;
-}
-
-interface State {
-  isJoined: boolean;
-  channelId: string;
-  allUser: User[];
-  audioRecordDevices: Device[];
-  cameraDevices: Device[];
-  currentFps?: number;
-  currentResolution?: { width: number; height: number };
-  enableVirtual: boolean;
-  isColorMode: boolean;
-}
-
-const localUid = getRandomInt(1, 9999999);
 
 export default class VirtualBackground
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx;
-
-  videoDeviceManager: IVideoDeviceManager;
-
-  audioDeviceManager: IAudioDeviceManager;
-
-  state: State = {
-    channelId: '',
-    allUser: [],
-    isJoined: false,
-    audioRecordDevices: [],
-    cameraDevices: [],
-    enableVirtual: false,
-    isColorMode: true,
-  };
-
-  componentDidMount() {
-    const rtcEngine = this.getRtcEngine();
-    let res = rtcEngine.enableExtension(
-      'agora_segmentation',
-      'PortraitSegmentation',
-      true,
-      MediaSourceType.PrimaryCameraSource
-    );
-    console.log('enableExtension', res);
-
-    this.getRtcEngine().registerEventHandler(this);
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager();
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-      cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    });
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      background_source_type: BackgroundSourceType.BackgroundColor,
+      color: 0xffffff,
+      source: getResourcePath('png.png'),
+      blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
+      enableVirtualBackground: false,
+    };
   }
 
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({
-        appId: config.appId,
-      });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine;
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: true, uid: localUid });
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
-  }
 
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
+    this.engine?.enableExtension(
+      'agora_video_filters_segmentation',
+      'portrait_segmentation',
+      true
     );
 
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
-    });
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+
+    // This case works if startPreview without joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
   }
 
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId });
-    this.getRtcEngine().enableVideo();
-    console.log(`localUid: ${localUid}`);
-    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid, {
-      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-    });
-  };
-
-  setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state;
-    if (!currentResolution || !currentFps) {
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
       return;
     }
 
-    this.getRtcEngine().setVideoEncoderConfiguration({
-      codecType: VideoCodecType.VideoCodecH264,
-      dimensions: currentResolution!,
-      frameRate: currentFps,
-      bitrate: 65,
-      minBitrate: 1,
-      orientationMode: OrientationMode.OrientationModeAdaptive,
-      degradationPreference: DegradationPreference.MaintainBalanced,
-      mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
-  };
+  }
 
-  onPressVirtualBackground = (enableVirtual) => {
-    const { isColorMode } = this.state;
-    const rtcEngine = this.getRtcEngine();
-
-    rtcEngine.enableVideo();
-
-    let virtualBackgroundSource: VirtualBackgroundSource;
-    if (isColorMode) {
-      virtualBackgroundSource = {
-        background_source_type: BackgroundSourceType.BackgroundColor,
-        color: 232,
-        blur_degree: BackgroundBlurDegree.BlurDegreeHigh,
-      };
-    } else {
-      virtualBackgroundSource = {
-        background_source_type: BackgroundSourceType.BackgroundImg,
-        source: getResourcePath('png.png'),
-        blur_degree: BackgroundBlurDegree.BlurDegreeHigh,
-      };
+  /**
+   * Step 3-1: enableVirtualBackground
+   */
+  enableVirtualBackground = async () => {
+    const { background_source_type, color, source, blur_degree } = this.state;
+    if (
+      background_source_type === BackgroundSourceType.BackgroundImg &&
+      !source
+    ) {
+      this.error('source is invalid');
+      return;
     }
-    this.getRtcEngine().enableVirtualBackground(
-      enableVirtual,
-      virtualBackgroundSource,
+
+    this.engine?.enableVirtualBackground(
+      true,
+      {
+        background_source_type,
+        color,
+        source,
+        blur_degree,
+      },
       {}
     );
-
-    this.setState({ enableVirtual });
+    this.setState({ enableVirtualBackground: true });
   };
 
-  renderRightBar = () => {
-    const {
-      audioRecordDevices,
-      cameraDevices,
-      isJoined,
-      enableVirtual,
-      isColorMode,
-    } = this.state;
+  /**
+   * Step 3-2: disableVirtualBackground
+   */
+  disableVirtualBackground = () => {
+    this.engine?.enableVirtualBackground(false, {}, {});
+    this.setState({ enableVirtualBackground: false });
+  };
 
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const { background_source_type, color, source, blur_degree } = this.state;
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj;
-              return { dropId: deviceId, dropText: deviceName, ...obj };
-            })}
-            onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId);
-            }}
-            title="Camera"
-          />
-          <DropDownButton
-            title="Microphone"
-            options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj;
-              return { dropId: deviceId, dropText: deviceName, ...obj };
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId);
-            }}
-          />
-          <DropDownButton
-            title="Role"
-            options={configMapToOptions(RoleTypeMap)}
-            onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId);
-            }}
-          />
-          <DropDownButton
-            title="Resolution"
-            options={configMapToOptions(ResolutionMap)}
-            onPress={(res) => {
-              this.setState(
-                { currentResolution: res.dropId },
-                this.setVideoConfig
-              );
-            }}
-          />
-          <DropDownButton
-            title="FPS"
-            options={configMapToOptions(FpsMap)}
-            onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
-            }}
-          />
-          {isJoined && (
-            <>
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'Enable Virtual:   '}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={enableVirtual}
-                  onChange={(value) => {
-                    this.onPressVirtualBackground(value);
-                  }}
-                />
-              </div>
-              {!enableVirtual && (
-                <div
-                  style={{
-                    display: 'flex',
-                    textAlign: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  {'Mode:   '}
-                  <Switch
-                    unCheckedChildren="Image"
-                    checkedChildren="Color"
-                    defaultChecked={isColorMode}
-                    onChange={(value) => {
-                      this.setState({ isColorMode: value });
-                    }}
-                  />
-                </div>
-              )}
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          onPressJoin={this.onPressJoinChannel}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel();
+      <>
+        <AgoraDropdown
+          title={'backgroundSourceType'}
+          items={enumToItems(BackgroundSourceType)}
+          value={background_source_type}
+          onValueChange={(value) => {
+            this.setState({ background_source_type: value });
           }}
         />
-      </div>
-    );
-  };
-
-  renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state;
-    const videoSourceType = isMyself
-      ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote;
-    return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={videoSourceType}
-            channelId={channelId}
+        {background_source_type === BackgroundSourceType.BackgroundColor ? (
+          <SketchPicker
+            onChangeComplete={({ hex }) => {
+              this.setState({
+                color: +hex.replace('#', '0x'),
+              });
+            }}
+            color={`#${color?.toString(16)}`}
           />
-        </Card>
-      </List.Item>
+        ) : undefined}
+        <AgoraTextInput
+          editable={
+            background_source_type === BackgroundSourceType.BackgroundImg
+          }
+          onChangeText={(text) => {
+            this.setState({
+              source: text,
+            });
+          }}
+          placeholder={'source'}
+          value={source}
+        />
+        <AgoraDropdown
+          enabled={
+            background_source_type === BackgroundSourceType.BackgroundBlur
+          }
+          title={'blurDegree'}
+          items={enumToItems(BackgroundBlurDegree)}
+          value={blur_degree}
+          onValueChange={(value) => {
+            this.setState({ blur_degree: value });
+          }}
+        />
+      </>
     );
-  };
+  }
 
-  render() {
-    const { isJoined, allUser } = this.state;
+  protected renderAction(): React.ReactNode {
+    const { startPreview, joinChannelSuccess, enableVirtualBackground } =
+      this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
-              }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          disabled={!(startPreview || joinChannelSuccess)}
+          title={`${
+            enableVirtualBackground ? 'disable' : 'enable'
+          } Virtual Background`}
+          onPress={
+            enableVirtualBackground
+              ? this.disableVirtualBackground
+              : this.enableVirtualBackground
+          }
+        />
+      </>
     );
   }
 }

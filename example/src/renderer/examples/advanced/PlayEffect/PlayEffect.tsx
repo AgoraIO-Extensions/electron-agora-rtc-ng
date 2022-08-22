@@ -6,14 +6,20 @@ import {
   IRtcEngineEventHandler,
 } from 'electron-agora-rtc-ng';
 
+import Config from '../../../config/agora.config';
+
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
-import Config from '../../../config/agora.config';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraSlider,
+  AgoraSwitch,
+  AgoraTextInput,
+} from '../../../components/ui';
 import { getResourcePath } from '../../../utils';
-import { Button, Divider, Input, Switch } from 'antd';
-import SliderBar from '../../component/SliderBar';
 
 interface State extends BaseAudioComponentState {
   soundId: number;
@@ -60,7 +66,7 @@ export default class PlayEffect
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine();
@@ -81,11 +87,11 @@ export default class PlayEffect
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -116,11 +122,11 @@ export default class PlayEffect
       startPos,
     } = this.state;
     if (!filePath) {
-      console.error('filePath is invalid');
+      this.error('filePath is invalid');
       return;
     }
     if (startPos < 0) {
-      console.error('startPos is invalid');
+      this.error('startPos is invalid');
       return;
     }
 
@@ -183,7 +189,7 @@ export default class PlayEffect
     this.setState({ playEffect: false });
   }
 
-  protected renderRight(): React.ReactNode {
+  protected renderConfiguration(): React.ReactNode {
     const {
       soundId,
       filePath,
@@ -193,113 +199,106 @@ export default class PlayEffect
       gain,
       publish,
       startPos,
-      playEffect,
-      pauseEffect,
     } = this.state;
     return (
       <>
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ soundId: +text });
           }}
-          placeholder={`soundId (defaults: ${soundId})`}
-          defaultValue={
+          placeholder={`soundId (defaults: ${this.createState().soundId})`}
+          value={
             soundId === this.createState().soundId ? '' : soundId.toString()
           }
-          allowClear
-          size="small"
         />
-        <Divider />
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ filePath: text });
+          }}
+          placeholder={'filePath'}
+          value={filePath}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ loopCount: +text });
           }}
-          placeholder={`loopCount (defaults: ${loopCount})`}
-          defaultValue={
+          placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
+          value={
             loopCount === this.createState().loopCount
               ? ''
               : loopCount.toString()
           }
-          allowClear
-          size="small"
         />
-        <Divider />
-        <SliderBar
-          title={'pitch'}
-          min={0.5}
-          max={2.0}
-          step={0.01}
-          onChange={(value) => {
-            this.setState({
-              pitch: value,
-            });
+        <AgoraSlider
+          title={`pitch`}
+          minimumValue={0.5}
+          maximumValue={2.0}
+          step={0.1}
+          value={pitch}
+          onSlidingComplete={(value) => {
+            this.setState({ pitch: value });
           }}
         />
-        <Divider />
-        <SliderBar
-          title={'pan'}
-          min={-1.0}
-          max={1.0}
-          step={0.01}
-          onChange={(value) => {
-            this.setState({
-              pan: value,
-            });
+        <AgoraDivider />
+        <AgoraSlider
+          title={`pan`}
+          minimumValue={-1.0}
+          maximumValue={1.0}
+          step={0.1}
+          value={pan}
+          onSlidingComplete={(value) => {
+            this.setState({ pan: value });
           }}
         />
-        <Divider />
-        <SliderBar
-          title={'gain'}
-          min={0.0}
-          max={100.0}
-          step={0.01}
-          onChange={(value) => {
-            this.setState({
-              gain: value,
-            });
+        <AgoraDivider />
+        <AgoraSlider
+          title={`gain`}
+          minimumValue={0}
+          maximumValue={100}
+          step={0.1}
+          value={gain}
+          onSlidingComplete={(value) => {
+            this.setState({ gain: value });
           }}
         />
-        <Divider />
-        <Switch
-          checkedChildren="publish"
-          unCheckedChildren="publish"
-          defaultChecked={publish}
-          onChange={(value) => {
+        <AgoraDivider />
+        <AgoraSwitch
+          title={'publish'}
+          value={publish}
+          onValueChange={(value) => {
             this.setState({ publish: value });
           }}
         />
-        <Divider />
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ startPos: +text });
           }}
-          placeholder={`startPos (defaults: ${startPos})`}
-          defaultValue={
+          placeholder={`startPos (defaults: ${this.createState().startPos})`}
+          value={
             startPos === this.createState().startPos ? '' : startPos.toString()
           }
-          allowClear
-          size="small"
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
-          onClick={(playEffect ? this.stopEffect : this.playEffect).bind(this)}
-        >
-          {playEffect ? 'stop' : 'play'} Effect
-        </Button>
-        <Divider />
-        <Button
-          htmlType={'button'}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { playEffect, pauseEffect } = this.state;
+    return (
+      <>
+        <AgoraButton
+          title={`${playEffect ? 'stop' : 'play'} Effect`}
+          onPress={playEffect ? this.stopEffect : this.playEffect}
+        />
+        <AgoraButton
           disabled={!playEffect}
-          onClick={(pauseEffect ? this.resumeEffect : this.pauseEffect).bind(
-            this
-          )}
-        >
-          {pauseEffect ? 'resume' : 'pause'} Effect
-        </Button>
+          title={`${pauseEffect ? 'resume' : 'pause'} Effect`}
+          onPress={pauseEffect ? this.resumeEffect : this.pauseEffect}
+        />
       </>
     );
   }

@@ -1,5 +1,4 @@
 import React from 'react';
-import os from 'os';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -7,45 +6,36 @@ import {
   ErrorCodeType,
   IRtcEngineEventHandler,
   RtcConnection,
+  RtcStats,
+  UserOfflineReasonType,
 } from 'electron-agora-rtc-ng';
 
 import Config from '../../../config/agora.config';
 
 import {
+  BaseAudioComponentState,
   BaseComponent,
-  BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraDropdown,
-  AgoraImage,
-} from '../../../components/ui';
-import { arrayToItems } from '../../../utils';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
-interface State extends BaseVideoComponentState {
-  targetUid: number;
-  filePath: string;
-  takeSnapshot: boolean;
+interface State extends BaseAudioComponentState {
+  userAccount: string;
 }
 
-export default class TakeSnapshot
+export default class StringUid
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
   protected createState(): State {
     return {
       appId: Config.appId,
-      enableVideo: true,
+      enableVideo: false,
       channelId: Config.channelId,
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      startPreview: false,
-      targetUid: 0,
-      filePath: os.homedir(),
-      takeSnapshot: false,
+      userAccount: '',
     };
   }
 
@@ -66,22 +56,21 @@ export default class TakeSnapshot
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
 
-    // Need to enable video on this case
-    // If you only call `enableAudio`, only relay the audio stream to the target channel
-    this.engine.enableVideo();
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
   }
 
   /**
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state;
+    const { channelId, token, userAccount } = this.state;
     if (!channelId) {
       this.error('channelId is invalid');
       return;
     }
-    if (uid < 0) {
-      this.error('uid is invalid');
+    if (!userAccount) {
+      this.error('userAccount is invalid');
       return;
     }
 
@@ -91,23 +80,23 @@ export default class TakeSnapshot
     // 2. If app certificate is turned on at dashboard, token is needed
     // when joining channel. The channel name and uid used to calculate
     // the token has to match the ones used for channel join
-    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+    this.engine?.joinChannelWithUserAccount(token, channelId, userAccount, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
   }
 
   /**
-   * Step 3: takeSnapshot
+   * Step 3 (Optional): getUserInfoByUserAccount
    */
-  takeSnapshot = () => {
-    const { targetUid, filePath } = this.state;
-    if (!filePath) {
-      this.error('filePath is invalid');
-      return;
+  getUserInfoByUserAccount = () => {
+    const { userAccount } = this.state;
+    const userInfo = this.engine?.getUserInfoByUserAccount(userAccount);
+    if (userInfo) {
+      this.debug('getUserInfoByUserAccount', 'userInfo', userInfo);
+    } else {
+      this.error('getUserInfoByUserAccount');
     }
-
-    this.engine?.takeSnapshot(targetUid, `${filePath}/${targetUid}.jpg`);
   };
 
   /**
@@ -124,57 +113,46 @@ export default class TakeSnapshot
     this.engine?.release();
   }
 
-  onSnapshotTaken(
+  onError(err: ErrorCodeType, msg: string) {
+    super.onError(err, msg);
+  }
+
+  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
+    super.onJoinChannelSuccess(connection, elapsed);
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    super.onLeaveChannel(connection, stats);
+  }
+
+  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
+    super.onUserJoined(connection, remoteUid, elapsed);
+  }
+
+  onUserOffline(
     connection: RtcConnection,
-    uid: number,
-    filePath: string,
-    width: number,
-    height: number,
-    errCode: number
+    remoteUid: number,
+    reason: UserOfflineReasonType
   ) {
-    this.info(
-      'onSnapshotTaken',
-      'connection',
-      connection,
-      'uid',
-      uid,
-      'filePath',
-      filePath,
-      'width',
-      width,
-      'height',
-      height,
-      'errCode',
-      errCode
-    );
-    const { targetUid, filePath: path } = this.state;
-    if (filePath === `${path}/${targetUid}.jpg`) {
-      this.setState({ takeSnapshot: errCode === ErrorCodeType.ErrOk });
-    }
+    super.onUserOffline(connection, remoteUid, reason);
+  }
+
+  onLocalUserRegistered(uid: number, userAccount: string) {
+    this.info('LocalUserRegistered', uid, userAccount);
   }
 
   protected renderConfiguration(): React.ReactNode {
-    const { remoteUsers, targetUid, filePath, takeSnapshot } = this.state;
+    const { userAccount, joinChannelSuccess } = this.state;
     return (
       <>
-        <AgoraDropdown
-          title={'targetUid'}
-          items={arrayToItems([0, ...remoteUsers])}
-          value={targetUid}
-          onValueChange={(value) => {
-            this.setState({ targetUid: value });
+        <AgoraTextInput
+          editable={!joinChannelSuccess}
+          onChangeText={(text) => {
+            this.setState({ userAccount: text });
           }}
+          placeholder={`userAccount`}
+          value={userAccount}
         />
-        {takeSnapshot ? (
-          <>
-            <AgoraDivider />
-            <AgoraImage
-              style={styles.image}
-              source={`file://${filePath}/${targetUid}.jpg`}
-            />
-          </>
-        ) : undefined}
-        <AgoraDivider />
       </>
     );
   }
@@ -185,17 +163,10 @@ export default class TakeSnapshot
       <>
         <AgoraButton
           disabled={!joinChannelSuccess}
-          title={`take Snapshot`}
-          onPress={this.takeSnapshot}
+          title={`get User Info By User Account`}
+          onPress={this.getUserInfoByUserAccount}
         />
       </>
     );
   }
 }
-
-const styles = {
-  image: {
-    width: 120,
-    height: 120,
-  },
-};

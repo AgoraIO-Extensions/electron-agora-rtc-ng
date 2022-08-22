@@ -13,15 +13,20 @@ import {
   RecorderState,
 } from 'electron-agora-rtc-ng';
 
+import Config from '../../../config/agora.config';
+
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import Config from '../../../config/agora.config';
-import { Button, Divider, Input } from 'antd';
-import DropDownButton from '../../component/DropDownButton';
-import { configEnumToOptions } from '../../../utils';
-import SliderBar from '../../component/SliderBar';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraSlider,
+  AgoraTextInput,
+} from '../../../components/ui';
+import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
   storagePath: string;
@@ -61,7 +66,7 @@ export default class MediaRecorder
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine();
@@ -87,11 +92,11 @@ export default class MediaRecorder
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -101,7 +106,6 @@ export default class MediaRecorder
     // 2. If app certificate is turned on at dashboard, token is needed
     // when joining channel. The channel name and uid used to calculate
     // the token has to match the ones used for channel join
-    // this.engine?.joinChannel(token, channelId, '', uid);
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
@@ -176,78 +180,78 @@ export default class MediaRecorder
     }
   }
 
-  protected renderRight(): React.ReactNode {
+  protected renderConfiguration(): React.ReactNode {
     const {
       storagePath,
       containerFormat,
       streamType,
       maxDurationMs,
       recorderInfoUpdateInterval,
-      joinChannelSuccess,
-      startRecoding,
     } = this.state;
     return (
       <>
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
             this.setState({ storagePath: text });
           }}
           placeholder={'storagePath'}
-          defaultValue={storagePath}
-          allowClear
-          size="small"
+          value={storagePath}
         />
-        <Divider />
-        <DropDownButton
+        <AgoraDropdown
           title={'containerFormat'}
-          options={configEnumToOptions(MediaRecorderContainerFormat)}
-          onPress={(res) => this.setState({ containerFormat: res.dropId })}
+          items={enumToItems(MediaRecorderContainerFormat)}
+          value={containerFormat}
+          onValueChange={(value) => {
+            this.setState({ containerFormat: value });
+          }}
         />
-        <Divider />
-        <DropDownButton
+        <AgoraDivider />
+        <AgoraDropdown
           title={'streamType'}
-          options={configEnumToOptions(MediaRecorderStreamType)}
-          onPress={(res) => this.setState({ streamType: res.dropId })}
+          items={enumToItems(MediaRecorderStreamType)}
+          value={streamType}
+          onValueChange={(value) => {
+            this.setState({ streamType: value });
+          }}
         />
-        <Divider />
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ maxDurationMs: +text });
           }}
-          placeholder={`maxDurationMs (defaults: ${maxDurationMs})`}
-          defaultValue={
+          placeholder={`maxDurationMs (defaults: ${
+            this.createState().maxDurationMs
+          })`}
+          value={
             maxDurationMs === this.createState().maxDurationMs
               ? ''
               : maxDurationMs.toString()
           }
-          allowClear
-          size="small"
         />
-        <Divider />
-        <SliderBar
+        <AgoraSlider
           title={'recorderInfoUpdateInterval'}
-          min={1000}
-          max={10000}
+          minimumValue={1000}
+          maximumValue={10000}
           step={1}
           value={recorderInfoUpdateInterval}
-          onChange={(value) => {
-            this.setState({
-              recorderInfoUpdateInterval: value,
-            });
+          onSlidingComplete={(value) => {
+            this.setState({ recorderInfoUpdateInterval: value });
           }}
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess, startRecoding } = this.state;
+    return (
+      <>
+        <AgoraButton
           disabled={!joinChannelSuccess}
-          onClick={(startRecoding
-            ? this.stopRecording
-            : this.startRecording
-          ).bind(this)}
-        >
-          {startRecoding ? 'stop' : 'start'} Recording
-        </Button>
+          title={`${startRecoding ? 'stop' : 'start'} Recording`}
+          onPress={startRecoding ? this.stopRecording : this.startRecording}
+        />
       </>
     );
   }

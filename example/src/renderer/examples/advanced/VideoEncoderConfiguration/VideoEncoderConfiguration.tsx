@@ -4,14 +4,8 @@ import {
   ClientRoleType,
   createAgoraRtcEngine,
   DegradationPreference,
-  DirectCdnStreamingError,
-  DirectCdnStreamingState,
-  DirectCdnStreamingStats,
-  IDirectCdnStreamingEventHandler,
   IRtcEngineEventHandler,
   OrientationMode,
-  RtcConnection,
-  RtcStats,
   VideoCodecType,
   VideoMirrorModeType,
 } from 'electron-agora-rtc-ng';
@@ -33,7 +27,6 @@ import {
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
-  url: string;
   codecType: VideoCodecType;
   width: number;
   height: number;
@@ -43,12 +36,11 @@ interface State extends BaseVideoComponentState {
   orientationMode: OrientationMode;
   degradationPreference: DegradationPreference;
   mirrorMode: VideoMirrorModeType;
-  startDirectCdnStreaming: boolean;
 }
 
-export default class DirectCdnStreaming
+export default class VideoEncoderConfiguration
   extends BaseComponent<{}, State>
-  implements IRtcEngineEventHandler, IDirectCdnStreamingEventHandler
+  implements IRtcEngineEventHandler
 {
   protected createState(): State {
     return {
@@ -60,7 +52,6 @@ export default class DirectCdnStreaming
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      url: 'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
       codecType: VideoCodecType.VideoCodecH264,
       width: 640,
       height: 360,
@@ -70,7 +61,6 @@ export default class DirectCdnStreaming
       orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainQuality,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
-      startDirectCdnStreaming: false,
     };
   }
 
@@ -94,6 +84,10 @@ export default class DirectCdnStreaming
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
+
+    // This case works if startPreview without joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
   }
 
   /**
@@ -123,25 +117,9 @@ export default class DirectCdnStreaming
   }
 
   /**
-   * Step 3-1: startDirectCdnStreaming
+   * Step 3: setVideoEncoderConfiguration
    */
-  startDirectCdnStreaming = () => {
-    const { url } = this.state;
-    if (!url) {
-      this.error('url is invalid');
-      return;
-    }
-
-    this.engine?.startDirectCdnStreaming(this, url, {
-      publishCameraTrack: true,
-      publishMicrophoneTrack: true,
-    });
-  };
-
-  /**
-   * Step 3-2 (Optional): setDirectCdnStreamingVideoConfiguration
-   */
-  setDirectCdnStreamingVideoConfiguration = () => {
+  setVideoEncoderConfiguration = () => {
     const {
       codecType,
       width,
@@ -153,7 +131,7 @@ export default class DirectCdnStreaming
       degradationPreference,
       mirrorMode,
     } = this.state;
-    this.engine?.setDirectCdnStreamingVideoConfiguration({
+    this.engine?.setVideoEncoderConfiguration({
       codecType,
       dimensions: {
         width: width,
@@ -166,13 +144,6 @@ export default class DirectCdnStreaming
       degradationPreference,
       mirrorMode,
     });
-  };
-
-  /**
-   * Step 3-3: stopDirectCdnStreaming
-   */
-  stopDirectCdnStreaming = () => {
-    this.engine?.stopDirectCdnStreaming();
   };
 
   /**
@@ -189,50 +160,8 @@ export default class DirectCdnStreaming
     this.engine?.release();
   }
 
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
-    const { startDirectCdnStreaming } = this.state;
-    if (startDirectCdnStreaming) {
-      this.stopDirectCdnStreaming();
-    }
-    super.onLeaveChannel(connection, stats);
-  }
-
-  onDirectCdnStreamingStateChanged(
-    state: DirectCdnStreamingState,
-    error: DirectCdnStreamingError,
-    message: string
-  ) {
-    this.info(
-      'onDirectCdnStreamingStateChanged',
-      'state',
-      state,
-      'error',
-      error,
-      'message',
-      message
-    );
-    switch (state) {
-      case DirectCdnStreamingState.DirectCdnStreamingStateIdle:
-        break;
-      case DirectCdnStreamingState.DirectCdnStreamingStateRunning:
-        this.setState({ startDirectCdnStreaming: true });
-        break;
-      case DirectCdnStreamingState.DirectCdnStreamingStateStopped:
-      case DirectCdnStreamingState.DirectCdnStreamingStateFailed:
-        this.setState({ startDirectCdnStreaming: false });
-        break;
-      case DirectCdnStreamingState.DirectCdnStreamingStateRecovering:
-        break;
-    }
-  }
-
-  onDirectCdnStreamingStats(stats: DirectCdnStreamingStats) {
-    this.info('onDirectCdnStreamingStats', 'stats', stats);
-  }
-
   protected renderConfiguration(): React.ReactNode {
     const {
-      url,
       codecType,
       width,
       height,
@@ -242,17 +171,9 @@ export default class DirectCdnStreaming
       orientationMode,
       degradationPreference,
       mirrorMode,
-      startDirectCdnStreaming,
     } = this.state;
     return (
       <>
-        <AgoraTextInput
-          onChangeText={(text) => {
-            this.setState({ url: text });
-          }}
-          placeholder={`url`}
-          value={url}
-        />
         <AgoraDropdown
           title={'codecType'}
           items={enumToItems(VideoCodecType)}
@@ -347,28 +268,16 @@ export default class DirectCdnStreaming
           }}
         />
         <AgoraDivider />
-        <AgoraButton
-          disabled={startDirectCdnStreaming}
-          title={`set Direct Cdn Streaming Video Configuration`}
-          onPress={this.setDirectCdnStreamingVideoConfiguration}
-        />
       </>
     );
   }
 
   protected renderAction(): React.ReactNode {
-    const { startDirectCdnStreaming } = this.state;
     return (
       <>
         <AgoraButton
-          title={`${
-            startDirectCdnStreaming ? 'stop' : 'start'
-          } Direct Cdn Streaming`}
-          onPress={
-            startDirectCdnStreaming
-              ? this.stopDirectCdnStreaming
-              : this.startDirectCdnStreaming
-          }
+          title={`set Video Encoder Configuration`}
+          onPress={this.setVideoEncoderConfiguration}
         />
       </>
     );

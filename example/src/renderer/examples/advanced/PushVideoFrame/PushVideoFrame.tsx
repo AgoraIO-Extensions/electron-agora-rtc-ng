@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button, Divider } from 'antd';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -9,17 +8,17 @@ import {
   IRtcEngineEx,
   VideoBufferType,
   VideoPixelFormat,
+  ScreenCaptureSourceInfo,
 } from 'electron-agora-rtc-ng';
+
+import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import Config from '../../../config/agora.config';
-import DropDownButton from '../../component/DropDownButton';
+import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import { ScreenCaptureSourceInfo } from '../../../../../../ts/Private/IAgoraRtcEngine';
-import screenStyle from '../ScreenShare/ScreenShare.scss';
 
 interface State extends BaseVideoComponentState {
   sources: ScreenCaptureSourceInfo[];
@@ -54,7 +53,7 @@ export default class PushVideoFrame
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
@@ -70,12 +69,15 @@ export default class PushVideoFrame
     this.engine.enableVideo();
 
     this.setExternalVideoSource();
+
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
+      true
+    );
     this.setState({
-      sources: this.engine?.getScreenCaptureSources(
-        { width: 1920, height: 1080 },
-        { width: 64, height: 64 },
-        true
-      ),
+      sources,
+      targetSource: sources[0],
     });
   }
 
@@ -85,11 +87,11 @@ export default class PushVideoFrame
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -99,7 +101,6 @@ export default class PushVideoFrame
     // 2. If app certificate is turned on at dashboard, token is needed
     // when joining channel. The channel name and uid used to calculate
     // the token has to match the ones used for channel join
-    // this.engine?.joinChannel(token, channelId, '', uid);
     this.engine?.joinChannelWithOptions(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
@@ -151,40 +152,41 @@ export default class PushVideoFrame
     this.engine?.release();
   }
 
-  protected renderRight(): React.ReactNode {
-    const { sources, joinChannelSuccess } = this.state;
+  protected renderConfiguration(): React.ReactNode {
+    const { sources, targetSource } = this.state;
     return (
       <>
-        <DropDownButton
+        <AgoraDropdown
           title="Sources"
-          options={sources.map((value) => {
+          items={sources.map((value) => {
             return {
-              dropId: value,
-              dropText: value.sourceName,
+              value: value.sourceId,
+              label: value.sourceName,
             };
           })}
-          PopContentTitle="Preview"
-          PopContent={(item: ScreenCaptureSourceInfo) => {
-            return (
-              <img
-                src={rgbImageBufferToBase64(item.thumbImage)}
-                className={screenStyle.previewShotBig}
-                alt={'Preview'}
-              />
-            );
-          }}
-          onPress={({ dropId }) => {
-            this.setState({ targetSource: dropId });
+          value={targetSource?.sourceId}
+          onValueChange={(value, index) => {
+            this.setState({ targetSource: sources[index] });
           }}
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
+        {targetSource ? (
+          <AgoraImage
+            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+          />
+        ) : undefined}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess } = this.state;
+    return (
+      <>
+        <AgoraButton
           disabled={!joinChannelSuccess}
-          onClick={this.pushVideoFrame.bind(this)}
-        >
-          push Video Frame
-        </Button>
+          title={`push Video Frame`}
+          onPress={this.pushVideoFrame}
+        />
       </>
     );
   }

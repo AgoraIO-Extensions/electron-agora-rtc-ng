@@ -49,10 +49,16 @@ export const AgoraButton = (
     onPress?: React.MouseEventHandler<HTMLElement>;
   }
 ) => {
+  const { title, onPress, ...others } = props;
   return (
     <>
-      <Button type={'primary'} {...props} onClick={props.onPress}>
-        {props.title}
+      <Button
+        type={'primary'}
+        style={{ marginTop: 10, marginBottom: 10 }}
+        {...others}
+        onClick={onPress}
+      >
+        {title}
       </Button>
     </>
   );
@@ -67,25 +73,30 @@ export const AgoraDivider = (props: DividerProps) => {
 };
 
 export const AgoraTextInput = (
-  props: InputProps & { onChangeText?: (text: string) => void }
+  props: InputProps & {
+    editable?: boolean;
+    onChangeText?: (text: string) => void;
+  }
 ) => {
-  const [value, setValue] = useState(props.value);
+  const { value, editable, onChangeText, ...others } = props;
+
+  const [_value, setValue] = useState(value);
 
   useEffect(() => {
-    setValue(props.value);
-  }, [props.value]);
+    setValue(value);
+  }, [value]);
 
-  const { style, ...others } = props;
   return (
     <>
       <Input
-        style={style}
+        style={{ marginTop: 10, marginBottom: 10 }}
+        disabled={editable === undefined ? false : !editable}
         {...others}
         onChange={({ target: { value: text } }) => {
           setValue(text);
-          props.onChangeText?.call(this, text);
+          onChangeText?.call(this, text);
         }}
-        value={value}
+        value={_value}
       />
     </>
   );
@@ -100,63 +111,77 @@ export const AgoraSlider = (
     onSlidingComplete?: (value: number) => void;
   }
 ) => {
-  const [value, setValue] = useState(props.value);
+  const {
+    value,
+    title,
+    minimumValue,
+    maximumValue,
+    onValueChange,
+    onSlidingComplete,
+    ...others
+  } = props;
+
+  const [_value, setValue] = useState(value);
 
   useEffect(() => {
-    setValue(props.value);
-  }, [props.value]);
+    setValue(value);
+  }, [value]);
 
-  const { title, ...others } = props;
   return (
     <>
       <AgoraText children={title} />
       <Slider
         {...others}
-        min={props.minimumValue}
-        max={props.maximumValue}
-        value={value}
+        min={minimumValue}
+        max={maximumValue}
+        value={_value}
         onChange={(v) => {
           setValue(v);
-          props.onValueChange?.call(this, v);
+          onValueChange?.call(this, v);
         }}
-        onAfterChange={props.onSlidingComplete}
+        onAfterChange={onSlidingComplete}
       />
     </>
   );
 };
 
 export const AgoraSwitch = (
-  props: SwitchProps & {
+  props: Omit<SwitchProps, 'checked'> & {
     title?: string;
+    value?: boolean;
     onValueChange?: (value: boolean) => void;
   }
 ) => {
-  const [checked, setChecked] = useState(props.checked);
+  const { value, title, onValueChange, ...others } = props;
+
+  const [_value, setValue] = useState(value);
 
   useEffect(() => {
-    setChecked(props.checked);
-  }, [props.checked]);
+    setValue(value);
+  }, [value]);
 
-  const { title, ...others } = props;
   return (
-    <>
+    <AgoraView>
       <AgoraText children={title} />
       <Switch
         {...others}
-        checked={checked}
+        checked={_value}
         onChange={(checked, event) => {
-          setChecked(checked);
-          props.onValueChange?.call(this, checked);
+          setValue(checked);
+          onValueChange?.call(this, checked);
         }}
       />
-    </>
+    </AgoraView>
   );
 };
 
-export const AgoraImage = (props: ImageProps) => {
+export const AgoraImage = (
+  props: Omit<ImageProps, 'src'> & { source?: string }
+) => {
+  const { source, ...others } = props;
   return (
     <>
-      <Image {...props} />
+      <Image {...others} src={source} />
     </>
   );
 };
@@ -167,43 +192,47 @@ export interface AgoraDropdownItem {
 }
 
 export const AgoraDropdown = (
-  props: Omit<DropdownProps, 'overlay'> & {
+  props: Omit<DropdownProps, 'overlay' | 'disabled'> & {
+    enabled?: boolean;
     title?: string;
     onValueChange?: (value: any, index: number) => void;
     items?: AgoraDropdownItem[];
     value?: any;
   }
 ) => {
-  const [items, setItems] = useState(props.items);
-  const [value, setValue] = useState(props.value);
+  const { items, value, enabled, title, onValueChange, ...others } = props;
+
+  const [_items, setItems] = useState(items);
+  const [_value, setValue] = useState(value);
 
   useEffect(() => {
-    setItems(props.items);
-    setValue(props.value);
-  }, [props.items, props.value]);
+    setItems(items);
+    setValue(value);
+  }, [items, value]);
 
   return (
     <AgoraView>
-      <AgoraText children={props.title} />
+      <AgoraText children={title} />
       <Dropdown
-        {...props}
+        {...others}
+        disabled={enabled === undefined ? false : !enabled}
         overlay={
           <Menu
             selectable={true}
-            items={items.map(({ label, value }) => ({
+            items={_items.map(({ label, value }) => ({
               label,
               key: value,
             }))}
-            selectedKeys={[value.toString()]}
-            defaultSelectedKeys={[value.toString()]}
+            selectedKeys={[_value?.toString()]}
+            defaultSelectedKeys={[_value?.toString()]}
             onSelect={(info) => {
               let key;
-              if (typeof value === 'number') {
+              if (typeof _value === 'number') {
                 key = +info.key;
               } else {
                 key = info.key;
               }
-              const index = items.findIndex(({ value }) => {
+              const index = _items.findIndex(({ value }) => {
                 return value === key;
               });
               setValue(key);
@@ -214,9 +243,9 @@ export const AgoraDropdown = (
       >
         <Button>
           {
-            items.find((item) => {
-              return value === item.value;
-            }).label
+            _items.find((item) => {
+              return _value === item.value;
+            })?.label
           }
           <DownOutlined />
         </Button>

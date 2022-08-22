@@ -125,7 +125,13 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {
-    const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
+    const {
+      sourceType = VideoSourceType.VideoSourceCamera,
+      uid,
+      view,
+      renderMode,
+      mirrorMode,
+    } = canvas;
     AgoraEnv.AgoraRendererManager?.setupLocalVideo({
       videoSourceType: sourceType,
       channelId: '',
@@ -140,7 +146,13 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override setupRemoteVideo(canvas: VideoCanvas): number {
-    const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
+    const {
+      sourceType = VideoSourceType.VideoSourceRemote,
+      uid,
+      view,
+      renderMode,
+      mirrorMode,
+    } = canvas;
     AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
       videoSourceType: sourceType,
       channelId: '',
@@ -158,7 +170,13 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     canvas: VideoCanvas,
     connection: RtcConnection
   ): number {
-    const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
+    const {
+      sourceType = VideoSourceType.VideoSourceRemote,
+      uid,
+      view,
+      renderMode,
+      mirrorMode,
+    } = canvas;
     const { channelId } = connection;
     AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
       videoSourceType: sourceType,

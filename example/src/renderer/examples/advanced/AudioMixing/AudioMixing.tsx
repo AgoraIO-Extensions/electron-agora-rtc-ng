@@ -7,12 +7,18 @@ import {
   createAgoraRtcEngine,
   IRtcEngineEventHandler,
 } from 'electron-agora-rtc-ng';
-import { Button, Input, Divider, Switch } from 'antd';
 
 import Config from '../../../config/agora.config';
+
 import {
-  BaseComponent,
+  AgoraButton,
+  AgoraDivider,
+  AgoraSwitch,
+  AgoraTextInput,
+} from '../../../components/ui';
+import {
   BaseAudioComponentState,
+  BaseComponent,
 } from '../../../components/BaseComponent';
 import { getResourcePath } from '../../../utils';
 
@@ -53,7 +59,7 @@ export default class AudioMixing
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
-      console.error(`appId is invalid`);
+      this.error(`appId is invalid`);
     }
 
     this.engine = createAgoraRtcEngine();
@@ -74,11 +80,11 @@ export default class AudioMixing
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
-      console.error('channelId is invalid');
+      this.error('channelId is invalid');
       return;
     }
     if (uid < 0) {
-      console.error('uid is invalid');
+      this.error('uid is invalid');
       return;
     }
 
@@ -100,15 +106,15 @@ export default class AudioMixing
   startAudioMixing = () => {
     const { filePath, loopback, cycle, startPos } = this.state;
     if (!filePath) {
-      console.error('filePath is invalid');
+      this.error('filePath is invalid');
       return;
     }
     if (cycle < -1) {
-      console.error('cycle is invalid');
+      this.error('cycle is invalid');
       return;
     }
     if (startPos < 0) {
-      console.error('startPos is invalid');
+      this.error('startPos is invalid');
       return;
     }
 
@@ -188,90 +194,69 @@ export default class AudioMixing
     this.info('AudioMixingFinished');
   }
 
-  protected renderRight(): React.ReactNode {
-    const {
-      filePath,
-      loopback,
-      cycle,
-      startPos,
-      startAudioMixing,
-      pauseAudioMixing,
-    } = this.state;
+  protected renderConfiguration(): React.ReactNode {
+    const { filePath, loopback, cycle, startPos } = this.state;
     return (
       <>
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
             this.setState({ filePath: text });
           }}
           placeholder={'filePath'}
-          defaultValue={filePath}
-          allowClear
-          size="small"
+          value={filePath}
         />
-        <Divider />
-        <Switch
-          checkedChildren="loopback"
-          unCheckedChildren="loopback"
-          defaultChecked={loopback}
-          onChange={(value) => {
+        <AgoraSwitch
+          title={'loopback'}
+          value={loopback}
+          onValueChange={(value) => {
             this.setState({ loopback: value });
           }}
         />
-        <Divider />
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ cycle: +text });
           }}
-          placeholder={`cycle (defaults: ${cycle})`}
-          defaultValue={
-            cycle === this.createState().cycle ? '' : cycle.toString()
-          }
-          allowClear
-          size="small"
+          placeholder={`cycle (defaults: ${this.createState().cycle})`}
+          value={cycle === this.createState().cycle ? '' : cycle.toString()}
         />
-        <Divider />
-        <Input
-          onChange={({ target: { value: text } }) => {
+        <AgoraTextInput
+          onChangeText={(text) => {
             if (isNaN(+text)) return;
             this.setState({ startPos: +text });
           }}
-          placeholder={`startPos (defaults: ${startPos})`}
-          defaultValue={
+          placeholder={`startPos (defaults: ${this.createState().startPos})`}
+          value={
             startPos === this.createState().startPos ? '' : startPos.toString()
           }
-          allowClear
-          size="small"
         />
-        <Divider />
-        <Button
-          htmlType={'button'}
-          onClick={(startAudioMixing
-            ? this.stopAudioMixing
-            : this.startAudioMixing
-          ).bind(this)}
-        >
-          {startAudioMixing ? 'stop' : 'start'} Audio Mixing
-        </Button>
-        <Divider />
-        <Button
-          htmlType={'button'}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { startAudioMixing, pauseAudioMixing } = this.state;
+    return (
+      <>
+        <AgoraButton
+          title={`${startAudioMixing ? 'stop' : 'start'} Audio Mixing`}
+          onPress={
+            startAudioMixing ? this.stopAudioMixing : this.startAudioMixing
+          }
+        />
+        <AgoraButton
           disabled={!startAudioMixing}
-          onClick={(pauseAudioMixing
-            ? this.resumeAudioMixing
-            : this.pauseAudioMixing
-          ).bind(this)}
-        >
-          {pauseAudioMixing ? 'resume' : 'pause'} Audio Mixing
-        </Button>
-        <Divider />
-        <Button
-          htmlType={'button'}
+          title={`${pauseAudioMixing ? 'resume' : 'pause'} Audio Mixing`}
+          onPress={
+            pauseAudioMixing ? this.resumeAudioMixing : this.pauseAudioMixing
+          }
+        />
+        <AgoraButton
           disabled={!startAudioMixing}
-          onClick={this.getAudioMixingCurrentPosition.bind(this)}
-        >
-          get Audio Mixing Current Position
-        </Button>
+          title={`get Audio Mixing Current Position`}
+          onPress={this.getAudioMixingCurrentPosition}
+        />
       </>
     );
   }
