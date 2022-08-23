@@ -1,5 +1,5 @@
 import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
-import { RtcEngineExImplInternal } from './Private/internal/RtcEngineExImplInternal';
+import { RtcEngineExInternal } from './Private/internal/RtcEngineExInternal';
 import { IMediaPlayerCacheManager } from './Private/IAgoraMediaPlayer';
 import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
 
@@ -20,7 +20,7 @@ export * from './Renderer/RendererManager';
 export * from './Types';
 export * from './Utils';
 
-const instance = new RtcEngineExImplInternal();
+const instance = new RtcEngineExInternal();
 
 /**
  * Creates the IRtcEngine object.

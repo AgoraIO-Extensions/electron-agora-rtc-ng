@@ -323,7 +323,7 @@ export default class LocalVideoTranscoder
     if (isAddMPK) {
       streams.push({
         sourceType: MediaSourceType.MediaPlayerSource,
-        remoteUserUid: this.getMediaPlayer().getMediaPlayerId(),
+        imageUrl: this.getMediaPlayer().getMediaPlayerId().toString(),
         x: 320,
         y: 640,
         width: 640,
