@@ -9,6 +9,8 @@ import {
   VideoBufferType,
   VideoPixelFormat,
   ScreenCaptureSourceInfo,
+  RtcConnection,
+  RtcStats,
 } from 'electron-agora-rtc-ng';
 
 import Config from '../../../config/agora.config';
@@ -21,7 +23,7 @@ import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
 
 interface State extends BaseVideoComponentState {
-  sources: ScreenCaptureSourceInfo[];
+  sources?: ScreenCaptureSourceInfo[];
   targetSource?: ScreenCaptureSourceInfo;
 }
 
@@ -69,16 +71,7 @@ export default class PushVideoFrame
     this.engine.enableVideo();
 
     this.setExternalVideoSource();
-
-    const sources = this.engine?.getScreenCaptureSources(
-      { width: 1920, height: 1080 },
-      { width: 64, height: 64 },
-      true
-    );
-    this.setState({
-      sources,
-      targetSource: sources[0],
-    });
+    this.getScreenCaptureSources();
   }
 
   /**
@@ -119,7 +112,22 @@ export default class PushVideoFrame
   };
 
   /**
-   * Step 3-2: pushVideoFrame
+   * Step 3-2 (Optional): getScreenCaptureSources
+   */
+  getScreenCaptureSources = () => {
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
+      true
+    );
+    this.setState({
+      sources,
+      targetSource: sources[0],
+    });
+  };
+
+  /**
+   * Step 3-3: pushVideoFrame
    */
   pushVideoFrame = () => {
     const { targetSource } = this.state;
@@ -150,6 +158,14 @@ export default class PushVideoFrame
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    const state = this.createState();
+    delete state.sources;
+    delete state.targetSource;
+    this.setState(this.createState());
   }
 
   protected renderConfiguration(): React.ReactNode {

@@ -38,7 +38,7 @@ import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcE
 interface State extends BaseVideoComponentState {
   token2: string;
   uid2: number;
-  sources: ScreenCaptureSourceInfo[];
+  sources?: ScreenCaptureSourceInfo[];
   targetSource?: ScreenCaptureSourceInfo;
   width: number;
   height: number;
@@ -49,8 +49,8 @@ interface State extends BaseVideoComponentState {
   highLightWidth: number;
   highLightColor: number;
   enableHighLight: boolean;
-  startScreenCapture?: boolean;
-  publishScreenCapture?: boolean;
+  startScreenCapture: boolean;
+  publishScreenCapture: boolean;
 }
 
 export default class ScreenShare
@@ -113,15 +113,7 @@ export default class ScreenShare
     this.engine.startPreview();
     this.setState({ startPreview: true });
 
-    const sources = this.engine?.getScreenCaptureSources(
-      { width: 1920, height: 1080 },
-      { width: 64, height: 64 },
-      true
-    );
-    this.setState({
-      sources,
-      targetSource: sources[0],
-    });
+    this.getScreenCaptureSources();
   }
 
   /**
@@ -209,7 +201,22 @@ export default class ScreenShare
   };
 
   /**
-   * Step 3-2: publishScreenCapture
+   * Step 3-2: getScreenCaptureSources
+   */
+  getScreenCaptureSources = () => {
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
+      true
+    );
+    this.setState({
+      sources,
+      targetSource: sources[0],
+    });
+  };
+
+  /**
+   * Step 3-3: publishScreenCapture
    */
   publishScreenCapture = () => {
     const { channelId, token2, uid2 } = this.state;
@@ -234,14 +241,14 @@ export default class ScreenShare
   };
 
   /**
-   * Step 3-3: stopScreenCapture
+   * Step 3-4: stopScreenCapture
    */
   stopScreenCapture = () => {
     this.engine?.stopScreenCapture();
   };
 
   /**
-   * Step 3-4: unpublishScreenCapture
+   * Step 3-5: unpublishScreenCapture
    */
   unpublishScreenCapture = () => {
     const { channelId, uid2 } = this.state;
@@ -280,13 +287,16 @@ export default class ScreenShare
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
     const { uid2 } = this.state;
     if (connection.localUid === uid2) {
-      this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
       this.setState({ publishScreenCapture: false });
       return;
     }
-    super.onLeaveChannel(connection, stats);
+    const state = this.createState();
+    delete state.sources;
+    delete state.targetSource;
+    this.setState(this.createState());
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {

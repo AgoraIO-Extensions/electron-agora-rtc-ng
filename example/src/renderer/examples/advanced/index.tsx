@@ -25,6 +25,7 @@ import PushVideoFrame from './PushVideoFrame/PushVideoFrame';
 import VideoEncoderConfiguration from './VideoEncoderConfiguration/VideoEncoderConfiguration';
 import Extension from './Extension/Extension';
 import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudioEngine';
+import DeviceManager from './DeviceManager/DeviceManager';
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
@@ -39,6 +40,11 @@ const advanceRoute = [
     path: '/ContentInspect',
     component: ContentInspect,
     title: 'ContentInspect',
+  },
+  {
+    path: '/DeviceManager',
+    component: DeviceManager,
+    title: 'DeviceManager',
   },
   {
     path: '/DirectCdnStreaming',
