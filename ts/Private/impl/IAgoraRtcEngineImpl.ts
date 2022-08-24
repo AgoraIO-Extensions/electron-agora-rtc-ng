@@ -262,17 +262,6 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
-    case 'onVideoSourceFrameSizeChanged':
-      if (handler.onVideoSourceFrameSizeChanged !== undefined) {
-        handler.onVideoSourceFrameSizeChanged(
-          jsonParams.connection,
-          jsonParams.sourceType,
-          jsonParams.width,
-          jsonParams.height
-        );
-      }
-      break;
-
     case 'onFirstRemoteVideoDecoded':
       if (handler.onFirstRemoteVideoDecoded !== undefined) {
         handler.onFirstRemoteVideoDecoded(
@@ -289,6 +278,7 @@ export function processIRtcEngineEventHandler(
       if (handler.onVideoSizeChanged !== undefined) {
         handler.onVideoSizeChanged(
           jsonParams.connection,
+          jsonParams.sourceType,
           jsonParams.uid,
           jsonParams.width,
           jsonParams.height,

@@ -36,7 +36,6 @@ import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
 import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
 import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';
-import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import {
   callIrisApi,
   getBridge,
@@ -49,9 +48,18 @@ import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
+import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   private readonly eventKey: string;
+  private _audio_device_manager: IAudioDeviceManager =
+    new IAudioDeviceManagerImpl();
+  private _video_device_manager: IVideoDeviceManager =
+    new IVideoDeviceManagerImpl();
+  private _media_engine: IMediaEngine = new MediaEngineInternal();
+  private _media_recorder: IMediaRecorder = new MediaRecorderInternal();
+  private _local_spatial_audio_engine: ILocalSpatialAudioEngine =
+    new LocalSpatialAudioEngineInternal();
 
   constructor() {
     super();
@@ -91,6 +99,18 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       logWarn('release: rtcEngine have not initialize');
       return;
     }
+    this._audio_device_manager.release();
+    this._video_device_manager.release();
+    this._media_engine.release();
+    this._media_recorder.release();
+    this._local_spatial_audio_engine.release();
+    AgoraEnv.rtcEventHandlers = [];
+    AgoraEnv.rtcAudioSpectrumObservers = [];
+    AgoraEnv.rtcAudioEncodedFrameObservers = [];
+    AgoraEnv.mpkEventHandlers = [];
+    AgoraEnv.mpkAudioFrameObservers = [];
+    AgoraEnv.mpkVideoFrameObservers = [];
+    AgoraEnv.mpkAudioSpectrumObservers = [];
     AgoraEnv.AgoraRendererManager?.enableRender(false);
     AgoraEnv.isInitializeEngine = false;
     super.release(sync);
@@ -141,6 +161,16 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraEnv.mpkEventHandlers = AgoraEnv.mpkEventHandlers.filter(
       (obj) => obj.mpk !== mediaPlayer
     );
+    AgoraEnv.mpkAudioFrameObservers = AgoraEnv.mpkAudioFrameObservers.filter(
+      (obj) => obj.mpk !== mediaPlayer
+    );
+    AgoraEnv.mpkVideoFrameObservers = AgoraEnv.mpkVideoFrameObservers.filter(
+      (obj) => obj.mpk !== mediaPlayer
+    );
+    AgoraEnv.mpkAudioSpectrumObservers =
+      AgoraEnv.mpkAudioSpectrumObservers.filter(
+        (obj) => obj.mpk !== mediaPlayer
+      );
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
@@ -150,11 +180,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     publishUrl: string,
     options: DirectCdnStreamingMediaOptions
   ): number {
-    const result = AgoraEnv.cdnEventHandlers.filter(
+    const result = AgoraEnv.rtcEventHandlers.filter(
       (handler) => handler === eventHandler
     );
     if (result.length === 0) {
-      AgoraEnv.cdnEventHandlers.push(eventHandler);
+      AgoraEnv.rtcEventHandlers.push(eventHandler);
     }
     return super.startDirectCdnStreaming(eventHandler, publishUrl, options);
   }
@@ -163,11 +193,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     observer: IMetadataObserver,
     type: MetadataType
   ): number {
-    const res = AgoraEnv.metadataObservers.filter(
-      (value) => value === observer
-    );
+    const res = AgoraEnv.rtcEventHandlers.filter((value) => value === observer);
     if (res && res.length == 0) {
-      AgoraEnv.metadataObservers.push(observer);
+      AgoraEnv.rtcEventHandlers.push(observer);
     }
     return super.registerMediaMetadataObserver(observer, type);
   }
@@ -176,7 +204,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     observer: IMetadataObserver,
     type: MetadataType
   ): number {
-    AgoraEnv.metadataObservers = AgoraEnv.metadataObservers.filter(
+    AgoraEnv.rtcEventHandlers = AgoraEnv.rtcEventHandlers.filter(
       (value) => value !== observer
     );
     return super.unregisterMediaMetadataObserver(observer, type);
@@ -279,23 +307,23 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {
-    return new AudioDeviceManagerInternal();
+    return this._audio_device_manager;
   }
 
   getVideoDeviceManager(): IVideoDeviceManager {
-    return new IVideoDeviceManagerImpl();
+    return this._video_device_manager;
   }
 
   getMediaEngine(): IMediaEngine {
-    return new MediaEngineInternal();
+    return this._media_engine;
   }
 
   getMediaRecorder(): IMediaRecorder {
-    return new MediaRecorderInternal();
+    return this._media_recorder;
   }
 
   getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine {
-    return new LocalSpatialAudioEngineInternal();
+    return this._local_spatial_audio_engine;
   }
 
   registerAudioEncodedFrameObserver(
@@ -335,11 +363,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraEnv.rtcAudioSpectrumObservers =
       AgoraEnv.rtcAudioSpectrumObservers.filter((value) => value !== observer);
     return super.unregisterAudioSpectrumObserver(observer);
-  }
-
-  stopDirectCdnStreaming(): number {
-    AgoraEnv.cdnEventHandlers = [];
-    return super.stopDirectCdnStreaming();
   }
 
   getScreenCaptureSources(

@@ -174,8 +174,6 @@ export const AgoraEnv: AgoraEnvType = {
   mpkVideoFrameObservers: [],
   mpkAudioSpectrumObservers: [],
   mediaRecorderObservers: new Map<string, IMediaRecorderObserver>(),
-  metadataObservers: [],
-  cdnEventHandlers: [],
 };
 
 //@ts-ignore

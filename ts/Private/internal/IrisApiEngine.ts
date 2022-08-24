@@ -2,7 +2,11 @@ import { AgoraElectronBridge, Result } from '../../Types';
 import { AgoraEnv, logDebug, logError, parseJSON } from '../../Utils';
 import { AudioFrame, VideoFrame } from '../AgoraMediaBase';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
-import { IDirectCdnStreamingEventHandler } from '../IAgoraRtcEngine';
+import {
+  IDirectCdnStreamingEventHandler,
+  IMetadataObserver,
+  IRtcEngineEventHandler,
+} from '../IAgoraRtcEngine';
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
@@ -90,7 +94,11 @@ export const handlerRTCEvent = function (
       }
 
       try {
-        processIRtcEngineEventHandler(value, event, parseData);
+        processIRtcEngineEventHandler(
+          value as IRtcEngineEventHandler,
+          event,
+          parseData
+        );
       } catch (error) {
         logError('rtcEventHandlers::processIRtcEngineEventHandler', error);
       }
@@ -111,8 +119,8 @@ export const handlerRTCEvent = function (
 
   if (isMetadata) {
     event = event.replace(MetadataSplitString, '');
-    AgoraEnv.metadataObservers.forEach((value) => {
-      processIMetadataObserver(value, event, parseData);
+    AgoraEnv.rtcEventHandlers.forEach((value) => {
+      processIMetadataObserver(value as IMetadataObserver, event, parseData);
     });
   }
 };
@@ -163,7 +171,7 @@ export const handlerObserverEvent = function (
 ) {
   if (data == '') return;
 
-  let object = parseJSON(data);
+  let object: any = parseJSON(data);
   if (event.startsWith('AudioFrameObserver_')) {
     event = event.replace('AudioFrameObserver_', '');
     if (object.audioFrame) {
@@ -296,15 +304,7 @@ export const sendMsg = (
     irisReturnValue
   );
 
-  const result = parseJSON(irisReturnValue.callApiResult);
-  return result;
-};
-
-const ResultOk = {
-  result: 0,
-};
-const ResultFail = {
-  result: 0,
+  return parseJSON(irisReturnValue.callApiResult);
 };
 
 export function callIrisApi(

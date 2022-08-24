@@ -75,7 +75,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
 
   release() {
     AgoraEnv.rtcAudioFrameObservers = [];
-    AgoraEnv.mpkVideoFrameObservers = [];
+    AgoraEnv.rtcVideoFrameObservers = [];
     AgoraEnv.rtcVideoEncodedFrameObservers = [];
     super.release();
   }

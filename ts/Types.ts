@@ -28,7 +28,11 @@ export interface AgoraEnvType {
   enableLogging: boolean;
   enableDebugLogging: boolean;
   isInitializeEngine: boolean;
-  rtcEventHandlers: IRtcEngineEventHandler[];
+  rtcEventHandlers: (
+    | IRtcEngineEventHandler
+    | IMetadataObserver
+    | IDirectCdnStreamingEventHandler
+  )[];
   mpkEventHandlers: {
     mpk: IMediaPlayerImpl;
     handler: IMediaPlayerSourceObserver;
@@ -45,13 +49,11 @@ export interface AgoraEnvType {
     mpk: IMediaPlayerImpl;
     handler: IAudioSpectrumObserver;
   }[];
-  metadataObservers: IMetadataObserver[];
   rtcVideoFrameObservers: IVideoFrameObserver[];
   rtcVideoEncodedFrameObservers: IVideoEncodedFrameObserver[];
   rtcAudioFrameObservers: IAudioFrameObserver[];
   rtcAudioSpectrumObservers: IAudioSpectrumObserver[];
   rtcAudioEncodedFrameObservers: IAudioEncodedFrameObserver[];
-  cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   mediaRecorderObservers: Map<string, IMediaRecorderObserver>;
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;

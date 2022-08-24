@@ -206,6 +206,7 @@ export default class LocalSpatialAudioEngine
         <AgoraView>
           {position.map((value, index) => (
             <AgoraTextInput
+              key={`position-${index}`}
               style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
@@ -223,9 +224,11 @@ export default class LocalSpatialAudioEngine
             />
           ))}
         </AgoraView>
+        <AgoraDivider />
         <AgoraView>
           {axisForward.map((value, index) => (
             <AgoraTextInput
+              key={`axisForward-${index}`}
               style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
@@ -243,9 +246,11 @@ export default class LocalSpatialAudioEngine
             />
           ))}
         </AgoraView>
+        <AgoraDivider />
         <AgoraView>
           {axisRight.map((value, index) => (
             <AgoraTextInput
+              key={`axisRight-${index}`}
               style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
@@ -263,9 +268,11 @@ export default class LocalSpatialAudioEngine
             />
           ))}
         </AgoraView>
+        <AgoraDivider />
         <AgoraView>
           {axisUp.map((value, index) => (
             <AgoraTextInput
+              key={`axisUp-${index}`}
               style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;

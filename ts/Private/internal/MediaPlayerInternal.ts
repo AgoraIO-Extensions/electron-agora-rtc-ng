@@ -9,7 +9,6 @@ import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
-  static _observers: IMediaPlayerSourceObserver[] = [];
   _mediaPlayerId: number;
 
   constructor(mediaPlayerId: number) {
