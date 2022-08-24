@@ -157,7 +157,7 @@ export default class PushVideoFrame
     return (
       <>
         <AgoraDropdown
-          title="Sources"
+          title={'targetSource'}
           items={sources.map((value) => {
             return {
               value: value.sourceId,

@@ -1,399 +1,510 @@
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
+  ChannelProfileType,
   ClientRoleType,
+  createAgoraRtcEngine,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
+  LocalVideoStreamError,
+  LocalVideoStreamState,
+  RtcConnection,
+  RtcStats,
+  ScreenCaptureSourceInfo,
+  UserOfflineReasonType,
   VideoSourceType,
 } from 'electron-agora-rtc-ng';
-import { Card, message, Switch } from 'antd';
-import { Component } from 'react';
-import ChooseFilterWindowModal from '../../component/ChooseFilterWindowModal';
-import DropDownButton from '../../component/DropDownButton';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import { FpsMap, ResolutionMap } from '../../config';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
-import { configMapToOptions, getRandomInt } from '../../../utils';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import screenStyle from './ScreenShare.scss';
+import { SketchPicker } from 'react-color';
+
+import Config from '../../../config/agora.config';
+
+import {
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraImage,
+  AgoraSlider,
+  AgoraSwitch,
+  AgoraTextInput,
+  AgoraView,
+} from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
 
-const localScreenUid1 = getRandomInt(1, 9999999);
-const localScreenUid2 = getRandomInt(1, 9999999);
-
-interface State {
-  currentFps: number;
-  currentResolution: { width: number; height: number };
-  captureInfoList: any[];
-  currentWindowSourceId?: number;
-  currentScreenSourceId?: number;
-  channelId: string;
-  isShared: boolean;
+interface State extends BaseVideoComponentState {
+  token2: string;
+  uid2: number;
+  sources: ScreenCaptureSourceInfo[];
+  targetSource?: ScreenCaptureSourceInfo;
+  width: number;
+  height: number;
+  frameRate: number;
+  bitrate: number;
   captureMouseCursor: boolean;
+  windowFocus: boolean;
+  highLightWidth: number;
+  highLightColor: number;
+  enableHighLight: boolean;
+  startScreenCapture?: boolean;
+  publishScreenCapture?: boolean;
 }
 
-export default class ScreenShare extends Component<{}, State, any> {
-  rtcEngine?: IRtcEngineEx;
+export default class ScreenShare
+  extends BaseComponent<{}, State>
+  implements IRtcEngineEventHandler
+{
+  // @ts-ignore
+  protected engine?: IRtcEngineEx;
 
-  state: State = {
-    captureInfoList: [],
-    channelId: '',
-    isShared: false,
-    currentResolution: ResolutionMap['1920x1080'],
-    currentFps: FpsMap['7fps'],
-    captureMouseCursor: false,
-  };
-
-  componentDidMount = async () => {
-    this.getScreenCaptureInfo();
-  };
-
-  componentWillUnmount() {
-    this.onPressStopSharing();
-    this.getRtcEngine().release();
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      token2: '',
+      uid2: 0,
+      sources: [],
+      targetSource: undefined,
+      width: 1920,
+      height: 1080,
+      frameRate: 15,
+      bitrate: 0,
+      captureMouseCursor: true,
+      windowFocus: false,
+      highLightWidth: 0,
+      highLightColor: 0xff8cbf26,
+      enableHighLight: false,
+      startScreenCapture: false,
+      publishScreenCapture: false,
+    };
   }
 
-  getScreenCaptureInfo = async () => {
-    const list = this.getRtcEngine().getScreenCaptureSources(
-      { width: 500, height: 500 },
-      { width: 500, height: 500 },
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
+    }
+
+    this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+
+    // Start preview before joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
+
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
       true
     );
-
-    const imageList = list.map((item) =>
-      rgbImageBufferToBase64(item.thumbImage)
-    );
-
-    const formatList = list.map(
-      ({ sourceName, sourceTitle, sourceId, type }, index) => ({
-        isScreen: type === 1,
-        image: imageList[index],
-        sourceId,
-        sourceName,
-        sourceTitle:
-          sourceTitle.length < 20
-            ? sourceTitle
-            : sourceTitle.replace(/\s+/g, '').substr(0, 20) + '...',
-      })
-    );
-    this.setState({ captureInfoList: formatList });
-  };
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({ appId: config.appId });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
-    }
-
-    return this.rtcEngine;
+    this.setState({
+      sources,
+      targetSource: sources[0],
+    });
   }
 
-  startWindowCapture = (channelId: string) => {
-    const { currentWindowSourceId, currentFps, currentResolution } = this.state;
-
-    const rtcEngine = this.getRtcEngine();
-    rtcEngine.startPrimaryScreenCapture({
-      isCaptureWindow: true,
-      screenRect: { width: 0, height: 0, x: 0, y: 0 },
-      windowId: currentWindowSourceId,
-      params: {
-        dimensions: currentResolution,
-        frameRate: currentFps,
-        captureMouseCursor: false,
-        windowFocus: false,
-        excludeWindowList: [],
-        excludeWindowCount: 0,
-      },
-
-      regionRect: { x: 0, y: 0, width: 0, height: 0 },
-    });
-    rtcEngine.joinChannelEx(
-      '',
-      {
-        localUid: localScreenUid1,
-        channelId,
-      },
-      {
-        publishCameraTrack: false,
-        publishMicrophoneTrack: false,
-        publishScreenTrack: true,
-        publishCustomAudioTrack: false,
-        publishCustomVideoTrack: false,
-        publishEncodedVideoTrack: false,
-        publishMediaPlayerAudioTrack: false,
-        publishMediaPlayerVideoTrack: false,
-        autoSubscribeAudio: false,
-        autoSubscribeVideo: false,
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      }
-    );
-  };
-
-  startScreenCapture = (channelId: string, excludeWindows: number[]) => {
-    const { currentScreenSourceId, currentFps, currentResolution } = this.state;
-
-    const rtcEngine = this.getRtcEngine();
-    rtcEngine.startSecondaryScreenCapture({
-      isCaptureWindow: false,
-      screenRect: { width: 0, height: 0, x: 0, y: 0 },
-      windowId: currentScreenSourceId,
-      displayId: currentScreenSourceId,
-      params: {
-        dimensions: currentResolution,
-        frameRate: currentFps,
-        captureMouseCursor: false,
-        windowFocus: false,
-        excludeWindowList: excludeWindows,
-        excludeWindowCount: excludeWindows.length,
-      },
-
-      regionRect: { x: 0, y: 0, width: 0, height: 0 },
-    });
-
-    rtcEngine.joinChannelEx(
-      '',
-      {
-        localUid: localScreenUid2,
-        channelId,
-      },
-      {
-        publishCameraTrack: false,
-        publishMicrophoneTrack: false,
-        publishScreenTrack: false,
-        publishSecondaryScreenTrack: true,
-        publishCustomAudioTrack: false,
-        publishCustomVideoTrack: false,
-        publishEncodedVideoTrack: false,
-        publishMediaPlayerAudioTrack: false,
-        publishMediaPlayerVideoTrack: false,
-        autoSubscribeAudio: false,
-        autoSubscribeVideo: false,
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      }
-    );
-  };
-
-  onPressStartShare = async (channelId: string) => {
-    const { currentScreenSourceId, currentWindowSourceId } = this.state;
-    if (
-      currentScreenSourceId === undefined ||
-      currentWindowSourceId === undefined
-    ) {
-      message.error(
-        `Must select window:${currentWindowSourceId} and screen:${currentScreenSourceId} to share`
-      );
-      return true;
-    }
-    const { captureInfoList } = this.state;
-
-    const windowIds = captureInfoList
-      .filter((obj) => !obj.isScreen)
-      .map((obj) => obj.sourceId);
-
-    let excludeWindows: number[] = [];
-    //@ts-ignore
-    const isCancel = !(await this.modal.showModal(windowIds, (res) => {
-      excludeWindows = (res && res.map((windowId) => parseInt(windowId))) || [];
-    }));
-    if (isCancel) {
-      return true;
-    }
-
-    this.setState({ channelId, isShared: true });
-    await this.startWindowCapture(channelId);
-    await this.startScreenCapture(channelId, excludeWindows);
-
-    return false;
-  };
-
-  onPressStopSharing = () => {
-    this.setState({ isShared: false });
-    const rtcEngine = this.getRtcEngine();
-    rtcEngine.stopPrimaryScreenCapture();
-    rtcEngine.stopSecondaryScreenCapture();
-    const { channelId } = this.state;
-    rtcEngine.leaveChannelEx({ channelId, localUid: localScreenUid1 });
-    rtcEngine.leaveChannelEx({ channelId, localUid: localScreenUid2 });
-  };
-
-  renderPopup = (item: { image: string }) => {
-    return (
-      <div>
-        <img
-          src={item.image}
-          alt="preview img"
-          className={screenStyle.previewShotBig}
-        />
-      </div>
-    );
-  };
-
-  updateScreenCaptureParameters = () => {
-    const { currentFps, currentResolution, captureMouseCursor } = this.state;
-
-    if (!currentFps || !currentResolution) {
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
       return;
     }
-    const res = this.getRtcEngine().updateScreenCaptureParameters({
-      dimensions: currentResolution,
-      frameRate: currentFps,
-      captureMouseCursor: captureMouseCursor,
-      windowFocus: false,
-      excludeWindowList: [],
-      excludeWindowCount: 0,
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannelWithOptions(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
-    console.log(
-      'updateScreenCaptureParameters',
-      currentFps,
-      currentResolution,
-      res
+  }
+
+  /**
+   * Step 3-1: startScreenCapture
+   */
+  startScreenCapture = () => {
+    const {
+      targetSource,
+      width,
+      height,
+      frameRate,
+      bitrate,
+      captureMouseCursor,
+      windowFocus,
+      highLightWidth,
+      highLightColor,
+      enableHighLight,
+    } = this.state;
+
+    if (!targetSource) {
+      this.error('targetSource is invalid');
+      return;
+    }
+
+    console.log('test', targetSource);
+    this.engine?.startPrimaryScreenCapture({
+      isCaptureWindow:
+        targetSource.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
+      ...(targetSource.type ===
+      ScreenCaptureSourceType.ScreencapturesourcetypeWindow
+        ? {
+            windowId: targetSource.sourceId,
+          }
+        : {
+            displayId: targetSource.sourceId,
+          }),
+      params: {
+        dimensions: { width, height },
+        frameRate,
+        bitrate,
+        captureMouseCursor,
+        windowFocus,
+        highLightWidth,
+        highLightColor,
+        enableHighLight,
+      },
+    });
+  };
+
+  /**
+   * Step 3-2: publishScreenCapture
+   */
+  publishScreenCapture = () => {
+    const { channelId, token2, uid2 } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid2 <= 0) {
+      this.error('uid2 is invalid');
+      return;
+    }
+
+    // publish media player stream
+    this.engine?.joinChannelEx(
+      token2,
+      { channelId, localUid: uid2 },
+      {
+        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+        publishScreenTrack: true,
+      }
     );
   };
 
-  renderRightBar = () => {
-    const { captureInfoList, isShared } = this.state;
+  /**
+   * Step 3-3: stopScreenCapture
+   */
+  stopScreenCapture = () => {
+    this.engine?.stopPrimaryScreenCapture();
+  };
 
-    const screenList = captureInfoList
-      .filter((obj) => obj.isScreen)
-      .map((obj) => ({
-        dropId: obj,
-        dropText: obj.sourceName,
-      }));
-    const windowList = captureInfoList
-      .filter((obj) => !obj.isScreen)
-      .map((obj) => ({
-        dropId: obj,
-        dropText: obj.sourceTitle,
-      }));
+  /**
+   * Step 3-4: unpublishScreenCapture
+   */
+  unpublishScreenCapture = () => {
+    const { channelId, uid2 } = this.state;
+    this.engine?.leaveChannelEx({ channelId, localUid: uid2 });
+  };
 
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.unregisterEventHandler(this);
+    this.engine?.release();
+  }
+
+  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
+    const { uid2 } = this.state;
+    if (connection.localUid === uid2) {
+      this.info(
+        'onJoinChannelSuccess',
+        'connection',
+        connection,
+        'elapsed',
+        elapsed
+      );
+      this.setState({ publishScreenCapture: true });
+      return;
+    }
+    super.onJoinChannelSuccess(connection, elapsed);
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    const { uid2 } = this.state;
+    if (connection.localUid === uid2) {
+      this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+      this.setState({ publishScreenCapture: false });
+      return;
+    }
+    super.onLeaveChannel(connection, stats);
+  }
+
+  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
+    const { uid2 } = this.state;
+    if (connection.localUid === uid2 || remoteUid === uid2) return;
+    super.onUserJoined(connection, remoteUid, elapsed);
+  }
+
+  onUserOffline(
+    connection: RtcConnection,
+    remoteUid: number,
+    reason: UserOfflineReasonType
+  ) {
+    const { uid2 } = this.state;
+    if (connection.localUid === uid2 || remoteUid === uid2) return;
+    super.onUserOffline(connection, remoteUid, reason);
+  }
+
+  onLocalVideoStateChanged(
+    source: VideoSourceType,
+    state: LocalVideoStreamState,
+    error: LocalVideoStreamError
+  ) {
+    this.info(
+      'onLocalVideoStateChanged',
+      'source',
+      source,
+      'state',
+      state,
+      'error',
+      error
+    );
+    if (source === VideoSourceType.VideoSourceScreen) {
+      switch (state) {
+        case LocalVideoStreamState.LocalVideoStreamStateStopped:
+        case LocalVideoStreamState.LocalVideoStreamStateFailed:
+          this.setState({
+            startScreenCapture: false,
+          });
+          break;
+        case LocalVideoStreamState.LocalVideoStreamStateCapturing:
+        case LocalVideoStreamState.LocalVideoStreamStateEncoding:
+          this.setState({ startScreenCapture: true });
+          break;
+      }
+    }
+  }
+
+  protected renderUsers(): React.ReactNode {
+    const { startScreenCapture } = this.state;
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <div>Please Select a window/scrren to share</div>
-          <DropDownButton
-            defaultIndex={0}
-            title="Screen Share"
-            options={screenList}
-            PopContent={this.renderPopup}
-            PopContentTitle="Preview"
-            onPress={(res) => {
-              console.log('Screen Share choose', res.dropId.sourceId);
-              const sourceId = res.dropId.sourceId;
-              if (sourceId === undefined) {
-                return;
-              }
-              this.setState({ currentScreenSourceId: sourceId });
+      <>
+        {super.renderUsers()}
+        {startScreenCapture ? (
+          <RtcSurfaceView
+            canvas={{
+              uid: 0,
+              sourceType: VideoSourceType.VideoSourceScreen,
             }}
           />
-          <DropDownButton
-            defaultIndex={0}
-            title="Windows Share"
-            options={windowList}
-            PopContent={this.renderPopup}
-            PopContentTitle="Preview"
-            onPress={(res) => {
-              console.log('Windows Share choose', res.dropId.sourceId);
-              const sourceId = res.dropId.sourceId;
-              if (sourceId === undefined) {
-                return;
-              }
-              this.setState({ currentWindowSourceId: sourceId });
-            }}
-          />
-          {isShared && (
-            <>
-              <DropDownButton
-                title="Resolution"
-                options={configMapToOptions(ResolutionMap)}
-                defaultIndex={configMapToOptions(ResolutionMap).length - 1}
-                onPress={(res) => {
-                  this.setState(
-                    { currentResolution: res.dropId },
-                    this.updateScreenCaptureParameters
-                  );
-                }}
-              />
-              <DropDownButton
-                title="FPS"
-                options={configMapToOptions(FpsMap)}
-                onPress={(res) => {
-                  this.setState(
-                    { currentFps: res.dropId },
-                    this.updateScreenCaptureParameters
-                  );
-                }}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'CaptureMouseCursor'}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={false}
-                  onChange={(enable) => {
-                    this.setState(
-                      { captureMouseCursor: enable },
-                      this.updateScreenCaptureParameters
-                    );
-                  }}
-                />
-              </div>
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          buttonTitle="Start Share"
-          buttonTitleDisable="Stop Share"
-          onPressJoin={this.onPressStartShare}
-          onPressLeave={this.onPressStopSharing}
-        />
-        <ChooseFilterWindowModal
-          cRef={(ref) => {
-            //@ts-ignore
-            this.modal = ref;
+        ) : undefined}
+      </>
+    );
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const {
+      sources,
+      targetSource,
+      uid2,
+      width,
+      height,
+      frameRate,
+      bitrate,
+      captureMouseCursor,
+      windowFocus,
+      highLightWidth,
+      highLightColor,
+      enableHighLight,
+      publishScreenCapture,
+    } = this.state;
+    return (
+      <>
+        <AgoraDropdown
+          title={'targetSource'}
+          items={sources.map((value) => {
+            return {
+              value: value.sourceId,
+              label: value.sourceName,
+            };
+          })}
+          value={targetSource?.sourceId}
+          onValueChange={(value, index) => {
+            this.setState({ targetSource: sources[index] });
           }}
         />
-      </div>
+        {targetSource ? (
+          <AgoraImage
+            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+          />
+        ) : undefined}
+        <AgoraTextInput
+          editable={!publishScreenCapture}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ uid2: +text });
+          }}
+          placeholder={`uid2 (must > 0)`}
+          value={uid2 > 0 ? uid2.toString() : ''}
+        />
+        <AgoraView>
+          <AgoraTextInput
+            onChangeText={(text) => {
+              if (isNaN(+text)) return;
+              this.setState({ width: +text });
+            }}
+            placeholder={`width (defaults: ${this.createState().width})`}
+            value={width === this.createState().width ? '' : width.toString()}
+          />
+          <AgoraTextInput
+            onChangeText={(text) => {
+              if (isNaN(+text)) return;
+              this.setState({ height: +text });
+            }}
+            placeholder={`height (defaults: ${this.createState().height})`}
+            value={
+              height === this.createState().height ? '' : height.toString()
+            }
+          />
+        </AgoraView>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ frameRate: +text });
+          }}
+          placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
+          value={
+            frameRate === this.createState().frameRate
+              ? ''
+              : frameRate.toString()
+          }
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({ bitrate: +text });
+          }}
+          placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
+          value={
+            bitrate === this.createState().bitrate ? '' : bitrate.toString()
+          }
+        />
+        <AgoraSwitch
+          title={`captureMouseCursor`}
+          value={captureMouseCursor}
+          onValueChange={(value) => {
+            this.setState({ captureMouseCursor: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSwitch
+          title={`windowFocus`}
+          value={windowFocus}
+          onValueChange={(value) => {
+            this.setState({ windowFocus: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSwitch
+          title={`enableHighLight`}
+          value={enableHighLight}
+          onValueChange={(value) => {
+            this.setState({ enableHighLight: value });
+          }}
+        />
+        {enableHighLight ? (
+          <>
+            <AgoraDivider />
+            <AgoraSlider
+              title={`highLightWidth ${highLightWidth}`}
+              minimumValue={0}
+              maximumValue={50}
+              step={1}
+              value={highLightWidth}
+              onSlidingComplete={(value) => {
+                this.setState({
+                  highLightWidth: value,
+                });
+              }}
+            />
+            <AgoraDivider />
+            <SketchPicker
+              onChangeComplete={({ hex }) => {
+                this.setState({
+                  highLightColor: +hex.replace('#', '0x'),
+                });
+              }}
+              color={`#${highLightColor?.toString(16)}`}
+            />
+          </>
+        ) : undefined}
+      </>
     );
-  };
+  }
 
-  render() {
-    const { isShared, channelId } = this.state;
+  protected renderAction(): React.ReactNode {
+    const { startScreenCapture, publishScreenCapture } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isShared && (
-            <>
-              <Card title="Local Share1" className={styles.card}>
-                <RtcSurfaceView
-                  canvas={{
-                    uid: localScreenUid1,
-                    sourceType: VideoSourceType.VideoSourceScreenPrimary,
-                  }}
-                  connection={{ channelId }}
-                />
-              </Card>
-              <Card title="Local Share2" className={styles.card}>
-                <RtcSurfaceView
-                  canvas={{
-                    uid: localScreenUid2,
-                    sourceType: VideoSourceType.VideoSourceScreenSecondary,
-                  }}
-                  connection={{ channelId }}
-                />
-              </Card>
-            </>
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+      <>
+        <AgoraButton
+          title={`${startScreenCapture ? 'stop' : 'start'} Screen Capture`}
+          onPress={
+            startScreenCapture
+              ? this.stopScreenCapture
+              : this.startScreenCapture
+          }
+        />
+        <AgoraButton
+          title={`${
+            publishScreenCapture ? 'unpublish' : 'publish'
+          } Screen Capture`}
+          onPress={
+            publishScreenCapture
+              ? this.unpublishScreenCapture
+              : this.publishScreenCapture
+          }
+        />
+      </>
     );
   }
 }
