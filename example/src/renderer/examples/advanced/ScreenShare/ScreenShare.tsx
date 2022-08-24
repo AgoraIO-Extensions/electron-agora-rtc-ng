@@ -172,30 +172,40 @@ export default class ScreenShare
       return;
     }
 
-    console.log('test', targetSource);
-    this.engine?.startPrimaryScreenCapture({
-      isCaptureWindow:
-        targetSource.type ===
-        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
-      ...(targetSource.type ===
-      ScreenCaptureSourceType.ScreencapturesourcetypeWindow
-        ? {
-            windowId: targetSource.sourceId,
-          }
-        : {
-            displayId: targetSource.sourceId,
-          }),
-      params: {
-        dimensions: { width, height },
-        frameRate,
-        bitrate,
-        captureMouseCursor,
-        windowFocus,
-        highLightWidth,
-        highLightColor,
-        enableHighLight,
-      },
-    });
+    if (
+      targetSource.type ===
+      ScreenCaptureSourceType.ScreencapturesourcetypeScreen
+    ) {
+      this.engine?.startScreenCaptureByDisplayId(
+        targetSource.sourceId,
+        {},
+        {
+          dimensions: { width, height },
+          frameRate,
+          bitrate,
+          captureMouseCursor,
+          windowFocus,
+          highLightWidth,
+          highLightColor,
+          enableHighLight,
+        }
+      );
+    } else {
+      this.engine?.startScreenCaptureByWindowId(
+        targetSource.sourceId,
+        {},
+        {
+          dimensions: { width, height },
+          frameRate,
+          bitrate,
+          captureMouseCursor,
+          windowFocus,
+          highLightWidth,
+          highLightColor,
+          enableHighLight,
+        }
+      );
+    }
   };
 
   /**
@@ -227,7 +237,7 @@ export default class ScreenShare
    * Step 3-3: stopScreenCapture
    */
   stopScreenCapture = () => {
-    this.engine?.stopPrimaryScreenCapture();
+    this.engine?.stopScreenCapture();
   };
 
   /**
