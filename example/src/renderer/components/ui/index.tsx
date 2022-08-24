@@ -197,7 +197,7 @@ export const AgoraDropdown = (
     title?: string;
     onValueChange?: (value: any, index: number) => void;
     items?: AgoraDropdownItem[];
-    value?: any;
+    value?: any | any[];
   }
 ) => {
   const { items, value, enabled, title, onValueChange, ...others } = props;
@@ -223,9 +223,25 @@ export const AgoraDropdown = (
               label,
               key: value,
             }))}
-            selectedKeys={[_value?.toString()]}
-            defaultSelectedKeys={[_value?.toString()]}
+            selectedKeys={
+              _value?.map
+                ? _value.map((v) => v.toString())
+                : [_value?.toString()]
+            }
             onSelect={(info) => {
+              let key;
+              if (typeof _value === 'number') {
+                key = +info.key;
+              } else {
+                key = info.key;
+              }
+              const index = _items.findIndex(({ value }) => {
+                return value === key;
+              });
+              setValue(key);
+              props.onValueChange?.call(this, key, index);
+            }}
+            onDeselect={(info) => {
               let key;
               if (typeof _value === 'number') {
                 key = +info.key;
@@ -242,11 +258,18 @@ export const AgoraDropdown = (
         }
       >
         <Button>
-          {
-            _items.find((item) => {
-              return _value === item.value;
-            })?.label
-          }
+          {_value?.map
+            ? _value
+                ?.map(
+                  (v) =>
+                    _items.find((item) => {
+                      return v === item.value;
+                    })?.label
+                )
+                ?.toString()
+            : _items.find((item) => {
+                return _value === item.value;
+              })?.label}
           <DownOutlined />
         </Button>
       </Dropdown>

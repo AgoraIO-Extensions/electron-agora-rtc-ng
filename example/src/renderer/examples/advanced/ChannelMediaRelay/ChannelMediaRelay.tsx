@@ -124,7 +124,34 @@ export default class ChannelMediaRelay
   };
 
   /**
-   * Step 3-2 (Optional): pauseAllChannelMediaRelay
+   * Step 3-2 (Optional): updateChannelMediaRelay
+   */
+  updateChannelMediaRelay = () => {
+    const { channelId, token, uid, destChannelNames } = this.state;
+    if (destChannelNames.length <= 0) {
+      this.error('destChannelNames is invalid');
+      return;
+    }
+
+    this.engine?.updateChannelMediaRelay({
+      // Configure src info
+      // Set channel name defaults to current
+      // Set uid defaults to local
+      srcInfo: { channelName: channelId, uid, token },
+      // Configure dest infos
+      destInfos: destChannelNames.map((value) => {
+        return {
+          channelName: value,
+          uid: 0,
+          token: '',
+        };
+      }),
+      destCount: destChannelNames.length,
+    });
+  };
+
+  /**
+   * Step 3-3 (Optional): pauseAllChannelMediaRelay
    */
   pauseAllChannelMediaRelay = () => {
     this.engine?.pauseAllChannelMediaRelay();
@@ -132,7 +159,7 @@ export default class ChannelMediaRelay
   };
 
   /**
-   * Step 3-3 (Optional): resumeAllChannelMediaRelay
+   * Step 3-4 (Optional): resumeAllChannelMediaRelay
    */
   resumeAllChannelMediaRelay = () => {
     this.engine?.resumeAllChannelMediaRelay();
@@ -140,7 +167,7 @@ export default class ChannelMediaRelay
   };
 
   /**
-   * Step 3-4: stopChannelMediaRelay
+   * Step 3-5: stopChannelMediaRelay
    */
   stopChannelMediaRelay = () => {
     this.engine?.stopChannelMediaRelay();
@@ -222,6 +249,11 @@ export default class ChannelMediaRelay
               ? this.stopChannelMediaRelay
               : this.startChannelMediaRelay
           }
+        />
+        <AgoraButton
+          disabled={!startChannelMediaRelay}
+          title={`updateChannelMediaRelay`}
+          onPress={this.updateChannelMediaRelay}
         />
         <AgoraButton
           disabled={!startChannelMediaRelay}

@@ -123,23 +123,7 @@ export default class DirectCdnStreaming
   }
 
   /**
-   * Step 3-1: startDirectCdnStreaming
-   */
-  startDirectCdnStreaming = () => {
-    const { url } = this.state;
-    if (!url) {
-      this.error('url is invalid');
-      return;
-    }
-
-    this.engine?.startDirectCdnStreaming(this, url, {
-      publishCameraTrack: true,
-      publishMicrophoneTrack: true,
-    });
-  };
-
-  /**
-   * Step 3-2 (Optional): setDirectCdnStreamingVideoConfiguration
+   * Step 3-1 (Optional): setDirectCdnStreamingVideoConfiguration
    */
   setDirectCdnStreamingVideoConfiguration = () => {
     const {
@@ -165,6 +149,22 @@ export default class DirectCdnStreaming
       orientationMode,
       degradationPreference,
       mirrorMode,
+    });
+  };
+
+  /**
+   * Step 3-2: startDirectCdnStreaming
+   */
+  startDirectCdnStreaming = () => {
+    const { url } = this.state;
+    if (!url) {
+      this.error('url is invalid');
+      return;
+    }
+
+    this.engine?.startDirectCdnStreaming(this, url, {
+      publishCameraTrack: true,
+      publishMicrophoneTrack: true,
     });
   };
 
@@ -242,7 +242,6 @@ export default class DirectCdnStreaming
       orientationMode,
       degradationPreference,
       mirrorMode,
-      startDirectCdnStreaming,
     } = this.state;
     return (
       <>
@@ -346,12 +345,6 @@ export default class DirectCdnStreaming
             this.setState({ mirrorMode: value });
           }}
         />
-        <AgoraDivider />
-        <AgoraButton
-          disabled={startDirectCdnStreaming}
-          title={`set Direct Cdn Streaming Video Configuration`}
-          onPress={this.setDirectCdnStreamingVideoConfiguration}
-        />
       </>
     );
   }
@@ -360,6 +353,11 @@ export default class DirectCdnStreaming
     const { startDirectCdnStreaming } = this.state;
     return (
       <>
+        <AgoraButton
+          disabled={startDirectCdnStreaming}
+          title={`set Direct Cdn Streaming Video Configuration`}
+          onPress={this.setDirectCdnStreamingVideoConfiguration}
+        />
         <AgoraButton
           title={`${
             startDirectCdnStreaming ? 'stop' : 'start'

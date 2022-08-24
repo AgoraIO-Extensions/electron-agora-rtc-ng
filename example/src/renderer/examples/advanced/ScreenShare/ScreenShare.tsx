@@ -46,6 +46,7 @@ interface State extends BaseVideoComponentState {
   bitrate: number;
   captureMouseCursor: boolean;
   windowFocus: boolean;
+  excludeWindowList: number[];
   highLightWidth: number;
   highLightColor: number;
   enableHighLight: boolean;
@@ -80,6 +81,7 @@ export default class ScreenShare
       bitrate: 0,
       captureMouseCursor: true,
       windowFocus: false,
+      excludeWindowList: [],
       highLightWidth: 0,
       highLightColor: 0xff8cbf26,
       enableHighLight: false,
@@ -143,7 +145,22 @@ export default class ScreenShare
   }
 
   /**
-   * Step 3-1: startScreenCapture
+   * Step 3-1: getScreenCaptureSources
+   */
+  getScreenCaptureSources = () => {
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
+      true
+    );
+    this.setState({
+      sources,
+      targetSource: sources[0],
+    });
+  };
+
+  /**
+   * Step 3-2: startScreenCapture
    */
   startScreenCapture = () => {
     const {
@@ -154,6 +171,7 @@ export default class ScreenShare
       bitrate,
       captureMouseCursor,
       windowFocus,
+      excludeWindowList,
       highLightWidth,
       highLightColor,
       enableHighLight,
@@ -176,7 +194,8 @@ export default class ScreenShare
           frameRate,
           bitrate,
           captureMouseCursor,
-          windowFocus,
+          excludeWindowList,
+          excludeWindowCount: excludeWindowList.length,
           highLightWidth,
           highLightColor,
           enableHighLight,
@@ -190,7 +209,6 @@ export default class ScreenShare
           dimensions: { width, height },
           frameRate,
           bitrate,
-          captureMouseCursor,
           windowFocus,
           highLightWidth,
           highLightColor,
@@ -201,22 +219,37 @@ export default class ScreenShare
   };
 
   /**
-   * Step 3-2: getScreenCaptureSources
+   * Step 3-2 (Optional): updateScreenCaptureParameters
    */
-  getScreenCaptureSources = () => {
-    const sources = this.engine?.getScreenCaptureSources(
-      { width: 1920, height: 1080 },
-      { width: 64, height: 64 },
-      true
-    );
-    this.setState({
-      sources,
-      targetSource: sources[0],
+  updateScreenCaptureParameters = () => {
+    const {
+      width,
+      height,
+      frameRate,
+      bitrate,
+      captureMouseCursor,
+      windowFocus,
+      excludeWindowList,
+      highLightWidth,
+      highLightColor,
+      enableHighLight,
+    } = this.state;
+    this.engine?.updateScreenCaptureParameters({
+      dimensions: { width, height },
+      frameRate,
+      bitrate,
+      captureMouseCursor,
+      windowFocus,
+      excludeWindowList,
+      excludeWindowCount: excludeWindowList.length,
+      highLightWidth,
+      highLightColor,
+      enableHighLight,
     });
   };
 
   /**
-   * Step 3-3: publishScreenCapture
+   * Step 3-4: publishScreenCapture
    */
   publishScreenCapture = () => {
     const { channelId, token2, uid2 } = this.state;
@@ -241,14 +274,14 @@ export default class ScreenShare
   };
 
   /**
-   * Step 3-4: stopScreenCapture
+   * Step 3-5: stopScreenCapture
    */
   stopScreenCapture = () => {
     this.engine?.stopScreenCapture();
   };
 
   /**
-   * Step 3-5: unpublishScreenCapture
+   * Step 3-6: unpublishScreenCapture
    */
   unpublishScreenCapture = () => {
     const { channelId, uid2 } = this.state;
@@ -373,6 +406,7 @@ export default class ScreenShare
       bitrate,
       captureMouseCursor,
       windowFocus,
+      excludeWindowList,
       highLightWidth,
       highLightColor,
       enableHighLight,
@@ -449,22 +483,67 @@ export default class ScreenShare
             bitrate === this.createState().bitrate ? '' : bitrate.toString()
           }
         />
-        <AgoraSwitch
-          title={`captureMouseCursor`}
-          value={captureMouseCursor}
-          onValueChange={(value) => {
-            this.setState({ captureMouseCursor: value });
-          }}
-        />
-        <AgoraDivider />
-        <AgoraSwitch
-          title={`windowFocus`}
-          value={windowFocus}
-          onValueChange={(value) => {
-            this.setState({ windowFocus: value });
-          }}
-        />
-        <AgoraDivider />
+        {targetSource?.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeScreen ? (
+          <>
+            <AgoraSwitch
+              title={`captureMouseCursor`}
+              value={captureMouseCursor}
+              onValueChange={(value) => {
+                this.setState({ captureMouseCursor: value });
+              }}
+            />
+            <AgoraDivider />
+          </>
+        ) : undefined}
+        {targetSource?.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeWindow ? (
+          <>
+            <AgoraSwitch
+              title={`windowFocus`}
+              value={windowFocus}
+              onValueChange={(value) => {
+                this.setState({ windowFocus: value });
+              }}
+            />
+            <AgoraDivider />
+          </>
+        ) : undefined}
+        {targetSource?.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeScreen ? (
+          <>
+            <AgoraDropdown
+              title={'excludeWindowList'}
+              items={sources
+                .filter(
+                  (value) =>
+                    value.type ===
+                    ScreenCaptureSourceType.ScreencapturesourcetypeWindow
+                )
+                .map((value) => {
+                  return {
+                    value: value.sourceId,
+                    label: value.sourceName,
+                  };
+                })}
+              value={excludeWindowList}
+              onValueChange={(value, index) => {
+                if (excludeWindowList.indexOf(+value) === -1) {
+                  this.setState({
+                    excludeWindowList: [...excludeWindowList, +value],
+                  });
+                } else {
+                  this.setState({
+                    excludeWindowList: excludeWindowList.filter(
+                      (v) => v !== +value
+                    ),
+                  });
+                }
+              }}
+            />
+            <AgoraDivider />
+          </>
+        ) : undefined}
         <AgoraSwitch
           title={`enableHighLight`}
           value={enableHighLight}
@@ -513,6 +592,11 @@ export default class ScreenShare
               ? this.stopScreenCapture
               : this.startScreenCapture
           }
+        />
+        <AgoraButton
+          disabled={!startScreenCapture}
+          title={'updateScreenCaptureParameters'}
+          onPress={this.updateScreenCaptureParameters}
         />
         <AgoraButton
           title={`${
