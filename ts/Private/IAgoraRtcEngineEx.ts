@@ -115,20 +115,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Initializes the video view of a remote user.
-   * This method initializes the video view of a remote stream on the local device. It affects only the video view that the local user sees. Call this method to bind the remote video stream to a video view and to set the rendering and mirror modes of the video view.
-   * The application specifies the uid of the remote video in the VideoCanvas method before the remote user joins the channel.
-   * If the remote uid is unknown to the application, set it after the application receives the onUserJoined callback. If the Video Recording function is enabled, the Video Recording Service joins the channel as a dummy client, causing other clients to also receive the onUserJoined callback. Do not bind the dummy client to the application view because the dummy client does not send any video streams.
-   * To unbind the remote user from the view, set the view parameter to NULL.
-   * Once the remote user leaves the channel, the SDK unbinds the remote user.
-   *
-   * @param connection The connection information. See RtcConnection .
-   *
-   * @param canvas The remote video view settings. See VideoCanvas .
-   *
-   * @returns
-   * 0: Success.
-   * < 0: Failure.
+   * @ignore
    */
   abstract setupRemoteVideoEx(
     canvas: VideoCanvas,
@@ -233,25 +220,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the 2D position (the position on the horizontal plane) of the remote user's voice.
-   * This method sets the voice position and volume of a remote user.
-   * When the local user calls this method to set the voice position of a remote user, the voice difference between the left and right channels allows the local user to track the real-time position of the remote user, creating a sense of space. This method applies to massive multiplayer online games, such as Battle Royale games. For the best voice positioning, Agora recommends using a wired headset.
-   * Call this method after joining a channel.
-   *
-   * @param connection The connection information. See RtcConnection .
-   *
-   * @param uid The user ID of the remote user.
-   *
-   * @param pan The voice position of the remote user. The value ranges from -1.0 to 1.0:
-   *  -1.0: The remote voice comes from the left.
-   *  0.0: (Default) The remote voice comes from the front.
-   *  1.0: The remote voice comes from the right.
-   *
-   * @param gain The volume of the remote user. The value ranges from 0.0 to 100.0. The default value is 100.0 (the original volume of the remote user). The smaller the value, the lower the volume.
-   *
-   * @returns
-   * 0: Success.
-   * < 0: Failure.
+   * @ignore
    */
   abstract setRemoteVoicePositionEx(
     uid: number,
@@ -471,17 +440,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Creates a data stream.
-   * Creates a data stream. Each user can create up to five data streams in a single channel.
-   * Compared with createDataStreamEx , this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
-   *
-   * @param connection The connection information. See RtcConnection .
-   *
-   * @param config The configurations for the data stream. See DataStreamConfig .
-   *
-   * @returns
-   * ID of the created data stream, if the method call succeeds.
-   * < 0: Failure.
+   * @ignore
    */
   abstract createDataStreamEx(
     config: DataStreamConfig,

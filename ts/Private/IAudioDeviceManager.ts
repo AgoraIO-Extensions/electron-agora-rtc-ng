@@ -129,18 +129,7 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDeviceMute(): boolean;
 
   /**
-   * Starts the audio playback device test.
-   * This method tests whether the audio playback device works properly. Once a user starts the test, the SDK plays an audio file specified by the user. If the user can hear the audio, the playback device works properly.
-   * After calling this method, the SDK triggers the onAudioVolumeIndication callback every 100 ms, reporting uid = 1 and the volume information of the playback device.
-   * Ensure that you call this method before joining a channel.
-   *
-   * @param testAudioFilePath The path of the audio file. The data format is string in UTF-8.
-   *  Supported file formats: wav, mp3, m4a, and aac.
-   *  Supported file sample rates: 8000, 16000, 32000, 44100, and 48000 Hz.
-   *
-   * @returns
-   * 0: Success.
-   * < 0: Failure.
+   * @ignore
    */
   abstract startPlaybackDeviceTest(testAudioFilePath: string): number;
 
@@ -156,13 +145,7 @@ export abstract class IAudioDeviceManager {
   abstract stopPlaybackDeviceTest(): number;
 
   /**
-   * Starts the audio recording device test.
-   * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.
-   * Ensure that you call this method before joining a channel.
-   *
-   * @returns
-   * 0: Success.
-   * < 0: Failure.
+   * @ignore
    */
   abstract startRecordingDeviceTest(indicationInterval: number): number;
 
@@ -178,15 +161,7 @@ export abstract class IAudioDeviceManager {
   abstract stopRecordingDeviceTest(): number;
 
   /**
-   * Starts an audio device loopback test.
-   * This method tests whether the local audio capture device and playback device are working properly. Once the test starts, the audio recording device records the local audio, and the audio playback device plays the captured audio. The SDK triggers two independent onAudioVolumeIndication callbacks at the time interval set in this method, which reports the volume information of the capture device (uid = 0) and the volume information of the playback device (uid = 1) respectively. Ensure that you call this method before joining a channel.
-   * This method tests local audio devices and does not report the network conditions.
-   *
-   * @param indicationInterval The time interval (ms) at which the SDK triggers the onAudioVolumeIndication callback. Agora recommends setting a value greater than 200 ms. This value must not be less than 10 ms; otherwise, you can not receive the onAudioVolumeIndication callback.
-   *
-   * @returns
-   * 0: Success.
-   * < 0: Failure.
+   * @ignore
    */
   abstract startAudioDeviceLoopbackTest(indicationInterval: number): number;
 

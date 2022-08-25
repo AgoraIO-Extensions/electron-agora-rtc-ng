@@ -63,24 +63,19 @@ export enum LogFilterType {
 }
 
 /**
- * Configuration of Agora SDK log files.
+ * @ignore
  */
 export class LogConfig {
   /**
-   * The complete path of the log files. Ensure that the path for the log file exists and is writable. You can use this parameter to rename the log files.
-   * The default file path is:
-   * macOS
-   * If Sandbox is enabled: App~/Library/Logs/agorasdk.log. For example, /Users/<username>/Library/Containers/<AppBundleIdentifier>/Data/Library/Logs/agorasdk.log.
-   * If Sandbox is disabled: ~/Library/Logs/agorasdk.log. Windows：C:\Users\<user_name>\AppData\Local\Agora\<process_name>\agorasdk.log。
+   * @ignore
    */
   filePath?: string;
   /**
-   * The size (KB) of an agorasdk.log file. The value range is [128,1024]. The default value is 1,024 KB. If you set fileSizeInKByte to a value lower than 128 KB, the SDK adjusts it to 128 KB. If you set fileSizeInKBytes to a value higher than 1,024 KB, the SDK adjusts it to 1,024 KB.
+   * @ignore
    */
   fileSizeInKB?: number;
   /**
-   * The output level of the SDK log file. See LogLevel .
-   * For example, if you set the log level to WARN, the SDK outputs the logs within levels FATAL, ERROR, and WARN.
+   * @ignore
    */
   level?: LogLevel;
 }

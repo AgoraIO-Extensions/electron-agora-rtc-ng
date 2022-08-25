@@ -689,7 +689,7 @@ export class AudioParams {
 /**
  * @ignore
  */
-export abstract class IAudioFrameObserverBase {
+export interface IAudioFrameObserverBase {
   /**
    * @ignore
    */
@@ -709,7 +709,7 @@ export abstract class IAudioFrameObserverBase {
 /**
  * @ignore
  */
-export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
+export interface IAudioFrameObserver extends IAudioFrameObserverBase {
   /**
    * @ignore
    */
@@ -751,7 +751,7 @@ export class UserAudioSpectrumInfo {
 /**
  * @ignore
  */
-export abstract class IAudioSpectrumObserver {
+export interface IAudioSpectrumObserver {
   /**
    * @ignore
    */
@@ -769,7 +769,7 @@ export abstract class IAudioSpectrumObserver {
 /**
  * @ignore
  */
-export abstract class IVideoEncodedFrameObserver {
+export interface IVideoEncodedFrameObserver {
   /**
    * @ignore
    */
@@ -798,7 +798,7 @@ export enum VideoFrameProcessMode {
 /**
  * @ignore
  */
-export abstract class IVideoFrameObserver {
+export interface IVideoFrameObserver {
   /**
    * @ignore
    */
@@ -995,7 +995,7 @@ export class RecorderInfo {
 /**
  * @ignore
  */
-export abstract class IMediaRecorderObserver {
+export interface IMediaRecorderObserver {
   /**
    * @ignore
    */

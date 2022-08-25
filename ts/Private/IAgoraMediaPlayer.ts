@@ -513,7 +513,7 @@ export abstract class IMediaPlayerCacheManager {
 /**
  * @ignore
  */
-export abstract class IMediaPlayerAudioFrameObserver {
+export interface IMediaPlayerAudioFrameObserver {
   /**
    * @ignore
    */
@@ -523,7 +523,7 @@ export abstract class IMediaPlayerAudioFrameObserver {
 /**
  * @ignore
  */
-export abstract class IMediaPlayerVideoFrameObserver {
+export interface IMediaPlayerVideoFrameObserver {
   /**
    * @ignore
    */

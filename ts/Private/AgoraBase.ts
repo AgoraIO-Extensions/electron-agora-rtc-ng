@@ -1,23 +1,23 @@
 import { MediaSourceType, RenderModeType } from './AgoraMediaBase';
 
 /**
- * The channel profile.
+ * @ignore
  */
 export enum ChannelProfileType {
   /**
-   * 0: Communication. Use this profile when there are only two users in the channel.
+   * @ignore
    */
   ChannelProfileCommunication = 0,
   /**
-   * 1: Live streaming. Live streaming. Use this profile when there are more than two users in the channel.
+   * @ignore
    */
   ChannelProfileLiveBroadcasting = 1,
   /**
-   * 2: Gaming. This profile is deprecated.
+   * @ignore
    */
   ChannelProfileGame = 2,
   /**
-   * Cloud gaming. The scenario is optimized for latency. Use this profile if the use case requires frequent interactions between users.
+   * @ignore
    */
   ChannelProfileCloudGaming = 3,
   /**
@@ -654,31 +654,31 @@ export enum FrameHeight {
 }
 
 /**
- * The video frame type.
+ * @ignore
  */
 export enum VideoFrameType {
   /**
-   * 0: A black frame.
+   * @ignore
    */
   VideoFrameTypeBlankFrame = 0,
   /**
-   * 3: Keyframe.
+   * @ignore
    */
   VideoFrameTypeKeyFrame = 3,
   /**
-   * 4: Delta frame.
+   * @ignore
    */
   VideoFrameTypeDeltaFrame = 4,
   /**
-   * 5:The B frame.
+   * @ignore
    */
   VideoFrameTypeBFrame = 5,
   /**
-   * 6: A discarded frame.
+   * @ignore
    */
   VideoFrameTypeDroppableFrame = 6,
   /**
-   * Unknown frame.
+   * @ignore
    */
   VideoFrameTypeUnknow = 7,
 }
@@ -1244,27 +1244,27 @@ export class WatermarkRatio {
 }
 
 /**
- * Configurations of the watermark image.
+ * @ignore
  */
 export class WatermarkOptions {
   /**
-   * Reserved for future use.
+   * @ignore
    */
   visibleInPreview?: boolean;
   /**
-   * When the adaptation mode of the watermark isFIT_MODE_COVER_POSITION, it is used to set the area of the watermark image in landscape mode. See Rectangle .
+   * @ignore
    */
   positionInLandscapeMode?: Rectangle;
   /**
-   * When the adaptation mode of the watermark isFIT_MODE_COVER_POSITION , it is used to set the area of the watermark image in portrait mode. See Rectangle .
+   * @ignore
    */
   positionInPortraitMode?: Rectangle;
   /**
-   * When the watermark adaptation mode is FIT_MODE_USE_IMAGE_RATIO, this parameter is used to set the watermark coordinates. See WatermarkRatio .
+   * @ignore
    */
   watermarkRatio?: WatermarkRatio;
   /**
-   * The adaptation mode of the watermark. See WATERMARK_FIT_MODE .
+   * @ignore
    */
   mode?: WatermarkFitMode;
 }
@@ -1687,15 +1687,15 @@ export enum AudioProfileType {
 }
 
 /**
- * The audio scenario.
+ * @ignore
  */
 export enum AudioScenarioType {
   /**
-   * 0: (Default) Automatic scenario, where the SDK chooses the appropriate audio quality according to the user role and audio route.
+   * @ignore
    */
   AudioScenarioDefault = 0,
   /**
-   * 3: High-quality audio scenario, where users mainly play music.
+   * @ignore
    */
   AudioScenarioGameStreaming = 3,
   /**
@@ -1703,7 +1703,7 @@ export enum AudioScenarioType {
    */
   AudioScenarioChatroom = 5,
   /**
-   * 7: Real-time chorus scenario, where users have good network conditions and require ultra-low latency.
+   * @ignore
    */
   AudioScenarioChorus = 7,
   /**
@@ -1711,25 +1711,25 @@ export enum AudioScenarioType {
    */
   AudioScenarioMeeting = 8,
   /**
-   * The number of enumerations.
+   * @ignore
    */
   AudioScenarioNum = 9,
 }
 
 /**
- * The format of the video frame.
+ * @ignore
  */
 export class VideoFormat {
   /**
-   * The width (px) of the video frame.
+   * @ignore
    */
   width?: number;
   /**
-   * The height (px) of the video frame.
+   * @ignore
    */
   height?: number;
   /**
-   * The video frame rate (fps).
+   * @ignore
    */
   fps?: number;
 }
@@ -3105,24 +3105,23 @@ export enum VideoViewSetupMode {
 }
 
 /**
- * Attributes of video canvas object.
+ * @ignore
  */
 export class VideoCanvas {
   /**
-   * Video display window.
+   * @ignore
    */
   view?: any;
   /**
-   * The rendering mode of the video. See RenderModeType .
+   * @ignore
    */
   renderMode?: RenderModeType;
   /**
-   * The mirror mode of the view. See VideoMirrorModeType . For the mirror mode of the local video view: If you use a front camera, the SDK enables the mirror mode by default; if you use a rear camera, the SDK disables the mirror mode by default.
-   * For the remote user: The mirror mode is disabled by default.
+   * @ignore
    */
   mirrorMode?: VideoMirrorModeType;
   /**
-   * The user ID.
+   * @ignore
    */
   uid?: number;
   /**
@@ -3138,7 +3137,7 @@ export class VideoCanvas {
    */
   priv_size?: number;
   /**
-   * The type of the video source, see VideoSourceType .
+   * @ignore
    */
   sourceType?: VideoSourceType;
   /**
@@ -3698,33 +3697,27 @@ export enum AudioEncodedFrameObserverPosition {
 }
 
 /**
- * Recording configuration.
+ * @ignore
  */
 export class AudioRecordingConfiguration {
   /**
-   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4. Ensure that the path for the recording file exists and is writable.
+   * @ignore
    */
   filePath?: string;
   /**
-   * Whether to encode the audio data: true
-   * : Encode audio data in AAC.
-   * false
-   * : (Default) Do not encode audio data, but save the recorded audio data directly.
+   * @ignore
    */
   encode?: boolean;
   /**
-   * Recording sample rate (Hz). 16000
-   * (Default) 32000
-   * 44100
-   * 48000 If you set this parameter to 44100 or 48000, Agora recommends recording WAV files, or AAC files with quality to be AgoraAudioRecordingQualityMedium or AgoraAudioRecordingQualityHigh for better recording quality.
+   * @ignore
    */
   sampleRate?: number;
   /**
-   *
+   * @ignore
    */
   fileRecordingType?: AudioFileRecordingType;
   /**
-   * Recording quality. See AudioRecordingQualityType . This parameter applies to AAC files only.
+   * @ignore
    */
   quality?: AudioRecordingQualityType;
   /**
@@ -3750,7 +3743,7 @@ export class AudioEncodedFrameObserverConfig {
 /**
  * @ignore
  */
-export abstract class IAudioEncodedFrameObserver {
+export interface IAudioEncodedFrameObserver {
   /**
    * @ignore
    */
