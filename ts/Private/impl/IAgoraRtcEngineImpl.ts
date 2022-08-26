@@ -5953,44 +5953,10 @@ export class IRtcEngineImpl implements IRtcEngine {
   joinChannel(
     token: string,
     channelId: string,
-    info: string,
-    uid: number
-  ): number {
-    const apiType = this.getApiTypeFromJoinChannel(token, channelId, info, uid);
-    const jsonParams = {
-      token: token,
-      channelId: channelId,
-      info: info,
-      uid: uid,
-      toJSON: () => {
-        return {
-          token: token,
-          channelId: channelId,
-          info: info,
-          uid: uid,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromJoinChannel(
-    token: string,
-    channelId: string,
-    info: string,
-    uid: number
-  ): string {
-    return 'RtcEngine_joinChannel';
-  }
-
-  joinChannelWithOptions(
-    token: string,
-    channelId: string,
     uid: number,
     options: ChannelMediaOptions
   ): number {
-    const apiType = this.getApiTypeFromJoinChannelWithOptions(
+    const apiType = this.getApiTypeFromJoinChannel(
       token,
       channelId,
       uid,
@@ -6014,13 +5980,13 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromJoinChannelWithOptions(
+  protected getApiTypeFromJoinChannel(
     token: string,
     channelId: string,
     uid: number,
     options: ChannelMediaOptions
   ): string {
-    return 'RtcEngine_joinChannelWithOptions';
+    return 'RtcEngine_joinChannel';
   }
 
   leaveChannel(options?: LeaveChannelOptions): number {

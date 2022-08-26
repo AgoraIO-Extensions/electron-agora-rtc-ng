@@ -3622,16 +3622,6 @@ export abstract class IRtcEngine {
   abstract joinChannel(
     token: string,
     channelId: string,
-    info: string,
-    uid: number
-  ): number;
-
-  /**
-   * @ignore
-   */
-  abstract joinChannelWithOptions(
-    token: string,
-    channelId: string,
     uid: number,
     options: ChannelMediaOptions
   ): number;

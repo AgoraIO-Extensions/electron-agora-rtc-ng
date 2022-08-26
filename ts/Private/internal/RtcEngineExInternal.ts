@@ -210,7 +210,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterMediaMetadataObserver(observer, type);
   }
 
-  protected getApiTypeFromJoinChannelWithOptions(
+  protected getApiTypeFromJoinChannel(
     token: string,
     channelId: string,
     uid: number,

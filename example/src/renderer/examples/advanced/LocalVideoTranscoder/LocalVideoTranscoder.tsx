@@ -240,7 +240,7 @@ export default class LocalVideoTranscoder
       'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       0
     );
-    this.getRtcEngine().joinChannelWithOptions('', channelId, localUid1, {
+    this.getRtcEngine().joinChannel('', channelId, localUid1, {
       publishCameraTrack: false,
       publishScreenTrack: false,
       publishTrancodedVideoTrack: true,
