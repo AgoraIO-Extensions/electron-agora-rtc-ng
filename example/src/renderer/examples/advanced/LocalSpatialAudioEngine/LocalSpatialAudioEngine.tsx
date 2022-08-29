@@ -186,7 +186,6 @@ export default class LocalSpatialAudioEngine
             this.setState({ range: +text });
           }}
           placeholder={`range (defaults: ${this.createState().range})`}
-          value={range === this.createState().range ? '' : range.toString()}
         />
         <AgoraButton
           disabled={!joinChannelSuccess}
@@ -216,11 +215,6 @@ export default class LocalSpatialAudioEngine
               placeholder={`position (defaults: ${
                 this.createState().position[index]
               })`}
-              value={
-                position[index] === this.createState().position[index]
-                  ? ''
-                  : position[index].toString()
-              }
             />
           ))}
         </AgoraView>
@@ -238,11 +232,6 @@ export default class LocalSpatialAudioEngine
               placeholder={`axisForward (defaults: ${
                 this.createState().axisForward[index]
               })`}
-              value={
-                axisForward[index] === this.createState().axisForward[index]
-                  ? ''
-                  : axisForward[index].toString()
-              }
             />
           ))}
         </AgoraView>
@@ -260,11 +249,6 @@ export default class LocalSpatialAudioEngine
               placeholder={`axisRight (defaults: ${
                 this.createState().axisRight[index]
               })`}
-              value={
-                axisRight[index] === this.createState().axisRight[index]
-                  ? ''
-                  : axisRight[index].toString()
-              }
             />
           ))}
         </AgoraView>
@@ -282,11 +266,6 @@ export default class LocalSpatialAudioEngine
               placeholder={`axisUp (defaults: ${
                 this.createState().axisUp[index]
               })`}
-              value={
-                axisUp[index] === this.createState().axisUp[index]
-                  ? ''
-                  : axisUp[index].toString()
-              }
             />
           ))}
         </AgoraView>

@@ -219,7 +219,6 @@ export default class AudioMixing
             this.setState({ cycle: +text });
           }}
           placeholder={`cycle (defaults: ${this.createState().cycle})`}
-          value={cycle === this.createState().cycle ? '' : cycle.toString()}
         />
         <AgoraTextInput
           onChangeText={(text) => {
@@ -227,9 +226,6 @@ export default class AudioMixing
             this.setState({ startPos: +text });
           }}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
-          value={
-            startPos === this.createState().startPos ? '' : startPos.toString()
-          }
         />
       </>
     );

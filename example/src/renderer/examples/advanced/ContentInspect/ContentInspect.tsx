@@ -152,15 +152,15 @@ export default class ContentInspect
     const { modules, type, interval } = this.state;
     return (
       <>
+        <AgoraDropdown
+          title={'type'}
+          items={enumToItems(ContentInspectType)}
+          value={type}
+          onValueChange={(value) => {
+            this.setState({ type: value });
+          }}
+        />
         <AgoraView>
-          <AgoraDropdown
-            title={'type'}
-            items={enumToItems(ContentInspectType)}
-            value={type}
-            onValueChange={(value) => {
-              this.setState({ type: value });
-            }}
-          />
           <AgoraButton
             title={'Add'}
             onPress={() => {
@@ -192,9 +192,6 @@ export default class ContentInspect
             this.setState({ interval: +text });
           }}
           placeholder={`interval (defaults: ${this.createState().interval})`}
-          value={
-            interval === this.createState().interval ? '' : interval.toString()
-          }
         />
       </>
     );

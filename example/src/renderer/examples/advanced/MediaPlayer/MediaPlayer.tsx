@@ -327,11 +327,6 @@ export default class MediaPlayer
             this.setState({ loopCount: +text });
           }}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
-          value={
-            loopCount === this.createState().loopCount
-              ? ''
-              : loopCount.toString()
-          }
         />
         <AgoraButton
           disabled={!open}

@@ -223,11 +223,6 @@ export default class MediaRecorder
           placeholder={`maxDurationMs (defaults: ${
             this.createState().maxDurationMs
           })`}
-          value={
-            maxDurationMs === this.createState().maxDurationMs
-              ? ''
-              : maxDurationMs.toString()
-          }
         />
         <AgoraSlider
           title={'recorderInfoUpdateInterval'}

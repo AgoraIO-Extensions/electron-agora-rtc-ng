@@ -208,9 +208,6 @@ export default class PlayEffect
             this.setState({ soundId: +text });
           }}
           placeholder={`soundId (defaults: ${this.createState().soundId})`}
-          value={
-            soundId === this.createState().soundId ? '' : soundId.toString()
-          }
         />
         <AgoraTextInput
           onChangeText={(text) => {
@@ -225,11 +222,6 @@ export default class PlayEffect
             this.setState({ loopCount: +text });
           }}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
-          value={
-            loopCount === this.createState().loopCount
-              ? ''
-              : loopCount.toString()
-          }
         />
         <AgoraSlider
           title={`pitch`}
@@ -278,9 +270,6 @@ export default class PlayEffect
             this.setState({ startPos: +text });
           }}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
-          value={
-            startPos === this.createState().startPos ? '' : startPos.toString()
-          }
         />
       </>
     );

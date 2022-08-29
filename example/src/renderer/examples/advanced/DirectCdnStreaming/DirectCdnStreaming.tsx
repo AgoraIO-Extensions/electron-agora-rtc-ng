@@ -269,7 +269,6 @@ export default class DirectCdnStreaming
               this.setState({ width: +text });
             }}
             placeholder={`width (defaults: ${this.createState().width})`}
-            value={width === this.createState().width ? '' : width.toString()}
           />
           <AgoraTextInput
             style={AgoraStyle.fullSize}
@@ -278,9 +277,6 @@ export default class DirectCdnStreaming
               this.setState({ height: +text });
             }}
             placeholder={`height (defaults: ${this.createState().height})`}
-            value={
-              height === this.createState().height ? '' : height.toString()
-            }
           />
         </AgoraView>
         <AgoraTextInput
@@ -289,11 +285,6 @@ export default class DirectCdnStreaming
             this.setState({ frameRate: +text });
           }}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
-          value={
-            frameRate === this.createState().frameRate
-              ? ''
-              : frameRate.toString()
-          }
         />
         <AgoraTextInput
           onChangeText={(text) => {
@@ -301,9 +292,6 @@ export default class DirectCdnStreaming
             this.setState({ bitrate: +text });
           }}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
-          value={
-            bitrate === this.createState().bitrate ? '' : bitrate.toString()
-          }
         />
         <AgoraTextInput
           onChangeText={(text) => {
@@ -313,11 +301,6 @@ export default class DirectCdnStreaming
           placeholder={`minBitrate (defaults: ${
             this.createState().minBitrate
           })`}
-          value={
-            minBitrate === this.createState().minBitrate
-              ? ''
-              : minBitrate.toString()
-          }
         />
         <AgoraDropdown
           title={'orientationMode'}
