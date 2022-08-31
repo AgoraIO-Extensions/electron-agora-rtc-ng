@@ -1,3 +1,4 @@
+import './extension/IAgoraMediaEngineExtension';
 import {
   IAudioFrameObserver,
   IVideoFrameObserver,
@@ -8,7 +9,6 @@ import {
   ExternalVideoFrame,
 } from './AgoraMediaBase';
 import { SenderOptions, EncodedVideoFrameInfo } from './AgoraBase';
-
 /**
  * @ignore
  */

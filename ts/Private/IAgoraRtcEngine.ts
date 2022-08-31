@@ -1,3 +1,4 @@
+import './extension/IAgoraRtcEngineExtension';
 import {
   QualityAdaptIndication,
   VideoCodecType,
@@ -106,7 +107,6 @@ import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine';
 import { IAudioDeviceManager } from './IAudioDeviceManager';
 import { IMediaRecorder } from './IAgoraMediaRecorder';
 import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio';
-
 /**
  * Media device types.
  */

@@ -1,5 +1,5 @@
+import './extension/IAgoraSpatialAudioExtension';
 import { RtcConnection } from './IAgoraRtcEngineEx';
-
 /**
  * @ignore
  */

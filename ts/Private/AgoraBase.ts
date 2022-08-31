@@ -1,5 +1,5 @@
+import './extension/AgoraBaseExtension';
 import { MediaSourceType, RenderModeType } from './AgoraMediaBase';
-
 /**
  * @ignore
  */

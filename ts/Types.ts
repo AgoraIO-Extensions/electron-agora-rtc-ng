@@ -1,26 +1,5 @@
-import {
-  IMediaPlayerAudioFrameObserver,
-  IMediaPlayerVideoFrameObserver,
-} from './AgoraSdk';
-import {
-  IAudioEncodedFrameObserver,
-  VideoSourceType,
-} from './Private/AgoraBase';
-import {
-  IAudioFrameObserver,
-  IAudioSpectrumObserver,
-  IMediaRecorderObserver,
-  IVideoEncodedFrameObserver,
-  IVideoFrameObserver,
-  RenderModeType,
-} from './Private/AgoraMediaBase';
-import { IMediaPlayerSourceObserver } from './Private/IAgoraMediaPlayerSource';
-import {
-  IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
-  IRtcEngineEventHandler,
-} from './Private/IAgoraRtcEngine';
-import { IMediaPlayerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
+import { VideoSourceType } from './Private/AgoraBase';
+import { RenderModeType } from './Private/AgoraMediaBase';
 import { IRenderer } from './Renderer/IRenderer';
 import { RendererManager } from './Renderer/RendererManager';
 
@@ -28,33 +7,6 @@ export interface AgoraEnvType {
   enableLogging: boolean;
   enableDebugLogging: boolean;
   isInitializeEngine: boolean;
-  rtcEventHandlers: (
-    | IRtcEngineEventHandler
-    | IMetadataObserver
-    | IDirectCdnStreamingEventHandler
-  )[];
-  mpkEventHandlers: {
-    mpk: IMediaPlayerImpl;
-    handler: IMediaPlayerSourceObserver;
-  }[];
-  mpkAudioFrameObservers: {
-    mpk: IMediaPlayerImpl;
-    handler: IMediaPlayerAudioFrameObserver;
-  }[];
-  mpkVideoFrameObservers: {
-    mpk: IMediaPlayerImpl;
-    handler: IMediaPlayerVideoFrameObserver;
-  }[];
-  mpkAudioSpectrumObservers: {
-    mpk: IMediaPlayerImpl;
-    handler: IAudioSpectrumObserver;
-  }[];
-  rtcVideoFrameObservers: IVideoFrameObserver[];
-  rtcVideoEncodedFrameObservers: IVideoEncodedFrameObserver[];
-  rtcAudioFrameObservers: IAudioFrameObserver[];
-  rtcAudioSpectrumObservers: IAudioSpectrumObserver[];
-  rtcAudioEncodedFrameObservers: IAudioEncodedFrameObserver[];
-  mediaRecorderObservers: Map<string, IMediaRecorderObserver>;
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
 }
