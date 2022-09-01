@@ -1,3 +1,4 @@
+import './extension/IAgoraLogExtension';
 /**
  * The output log level of the SDK.
  */

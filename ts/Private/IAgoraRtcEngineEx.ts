@@ -1,3 +1,4 @@
+import './extension/IAgoraRtcEngineExExtension';
 import { IRtcEngine, ChannelMediaOptions } from './IAgoraRtcEngine';
 import {
   VideoEncoderConfiguration,
@@ -16,7 +17,6 @@ import {
   DataStreamConfig,
 } from './AgoraBase';
 import { RenderModeType } from './AgoraMediaBase';
-
 /**
  * Contains connection information.
  */

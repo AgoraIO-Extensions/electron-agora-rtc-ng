@@ -1,5 +1,5 @@
-import { AgoraEnv, logDebug } from '../../Utils';
 import { EncodedVideoFrameInfo, ErrorCodeType } from '../AgoraBase';
+import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
 import {
   AudioFrame,
   ExternalVideoFrame,
@@ -8,57 +8,70 @@ import {
   IVideoFrameObserver,
   MediaSourceType,
 } from '../AgoraMediaBase';
-import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
-import { callIrisApi } from './IrisApiEngine';
+import { IMediaEngineEvent } from '../extension/IAgoraMediaEngineExtension';
+import {
+  processIAudioFrameObserver,
+  processIVideoEncodedFrameObserver,
+  processIVideoFrameObserver,
+} from '../impl/AgoraMediaBaseImpl';
+import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
-  constructor() {
-    super();
-    logDebug('MediaEngineImplInternal constructor()');
-  }
+  static _audio_frame_observers: IAudioFrameObserver[] = [];
+  static _video_frame_observers: IVideoFrameObserver[] = [];
+  static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
+  private _events: Map<
+    any,
+    { eventType: string; listener: (...args: any[]) => any }
+  > = new Map<any, { eventType: string; listener: (...args: any[]) => any }>();
 
   registerAudioFrameObserver(observer: IAudioFrameObserver): number {
-    const res = AgoraEnv.rtcAudioFrameObservers.filter(
-      (value) => value === observer
-    );
-    if (res && res.length == 0) {
-      AgoraEnv.rtcAudioFrameObservers.push(observer);
+    if (
+      !MediaEngineInternal._audio_frame_observers.find(
+        (value) => value === observer
+      )
+    ) {
+      MediaEngineInternal._audio_frame_observers.push(observer);
     }
     return super.registerAudioFrameObserver(observer);
   }
 
   unregisterAudioFrameObserver(observer: IAudioFrameObserver): number {
-    AgoraEnv.rtcAudioFrameObservers = AgoraEnv.rtcAudioFrameObservers.filter(
-      (value) => value !== observer
-    );
+    MediaEngineInternal._audio_frame_observers =
+      MediaEngineInternal._audio_frame_observers.filter(
+        (value) => value !== observer
+      );
     return super.unregisterAudioFrameObserver(observer);
   }
 
   registerVideoFrameObserver(observer: IVideoFrameObserver): number {
-    const res = AgoraEnv.rtcVideoFrameObservers.filter(
-      (value) => value === observer
-    );
-    if (res && res.length == 0) {
-      AgoraEnv.rtcVideoFrameObservers.push(observer);
+    if (
+      !MediaEngineInternal._video_frame_observers.find(
+        (value) => value === observer
+      )
+    ) {
+      MediaEngineInternal._video_frame_observers.push(observer);
     }
     return super.registerVideoFrameObserver(observer);
   }
 
   unregisterVideoFrameObserver(observer: IVideoFrameObserver): number {
-    AgoraEnv.rtcVideoFrameObservers = AgoraEnv.rtcVideoFrameObservers.filter(
-      (value) => value !== observer
-    );
+    MediaEngineInternal._video_frame_observers =
+      MediaEngineInternal._video_frame_observers.filter(
+        (value) => value !== observer
+      );
     return super.unregisterVideoFrameObserver(observer);
   }
 
   registerVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number {
-    const res = AgoraEnv.rtcVideoEncodedFrameObservers.filter(
-      (value) => value === observer
-    );
-    if (res && res.length == 0) {
-      AgoraEnv.rtcVideoEncodedFrameObservers.push(observer);
+    if (
+      !MediaEngineInternal._video_encoded_frame_observers.find(
+        (value) => value === observer
+      )
+    ) {
+      MediaEngineInternal._video_encoded_frame_observers.push(observer);
     }
     return super.registerVideoEncodedFrameObserver(observer);
   }
@@ -66,18 +79,59 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   unregisterVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number {
-    AgoraEnv.rtcVideoEncodedFrameObservers =
-      AgoraEnv.rtcVideoEncodedFrameObservers.filter(
+    MediaEngineInternal._video_encoded_frame_observers =
+      MediaEngineInternal._video_encoded_frame_observers.filter(
         (value) => value !== observer
       );
     return super.unregisterVideoEncodedFrameObserver(observer);
   }
 
   release() {
-    AgoraEnv.rtcAudioFrameObservers = [];
-    AgoraEnv.rtcVideoFrameObservers = [];
-    AgoraEnv.rtcVideoEncodedFrameObservers = [];
+    MediaEngineInternal._audio_frame_observers = [];
+    MediaEngineInternal._video_frame_observers = [];
+    MediaEngineInternal._video_encoded_frame_observers = [];
+    this._events.forEach((value) => {
+      DeviceEventEmitter.removeListener(value.eventType, value.listener);
+    });
+    this._events.clear();
     super.release();
+  }
+
+  addListener<EventType extends keyof IMediaEngineEvent>(
+    eventType: EventType,
+    listener: IMediaEngineEvent[EventType]
+  ): void {
+    const callback = (...data: any[]) => {
+      if (data[0] !== EVENT_TYPE.IMediaEngine) {
+        return;
+      }
+      processIAudioFrameObserver({ [eventType]: listener }, eventType, data[1]);
+      processIVideoFrameObserver({ [eventType]: listener }, eventType, data[1]);
+      processIVideoEncodedFrameObserver(
+        { [eventType]: listener },
+        eventType,
+        data[1]
+      );
+    };
+    this._events.set(listener, { eventType, listener: callback });
+    DeviceEventEmitter.addListener(eventType, callback);
+  }
+
+  removeListener<EventType extends keyof IMediaEngineEvent>(
+    eventType: EventType,
+    listener: IMediaEngineEvent[EventType]
+  ) {
+    if (!this._events.has(listener)) return;
+    DeviceEventEmitter.removeListener(
+      eventType,
+      this._events.get(listener)!.listener
+    );
+  }
+
+  removeAllListeners<EventType extends keyof IMediaEngineEvent>(
+    eventType?: EventType
+  ) {
+    DeviceEventEmitter.removeAllListeners(eventType);
   }
 
   pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0): number {

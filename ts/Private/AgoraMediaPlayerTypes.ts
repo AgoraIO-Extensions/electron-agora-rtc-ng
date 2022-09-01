@@ -1,3 +1,4 @@
+import './extension/AgoraMediaPlayerTypesExtension';
 /**
  * The playback state.
  */

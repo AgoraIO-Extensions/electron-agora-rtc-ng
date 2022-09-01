@@ -1,8 +1,5 @@
 import { VideoSourceType } from './Private/AgoraBase';
-import {
-  IMediaRecorderObserver,
-  RenderModeType,
-} from './Private/AgoraMediaBase';
+import { RenderModeType } from './Private/AgoraMediaBase';
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
@@ -163,17 +160,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   isInitializeEngine: false,
-  rtcEventHandlers: [],
-  rtcVideoFrameObservers: [],
-  rtcVideoEncodedFrameObservers: [],
-  rtcAudioFrameObservers: [],
-  rtcAudioSpectrumObservers: [],
-  rtcAudioEncodedFrameObservers: [],
-  mpkEventHandlers: [],
-  mpkAudioFrameObservers: [],
-  mpkVideoFrameObservers: [],
-  mpkAudioSpectrumObservers: [],
-  mediaRecorderObservers: new Map<string, IMediaRecorderObserver>(),
 };
 
 //@ts-ignore

@@ -1,5 +1,5 @@
+import './extension/AgoraMediaBaseExtension';
 import { EncodedVideoFrameInfo } from './AgoraBase';
-
 /**
  * The type of the audio route.
  */

@@ -1,3 +1,4 @@
+import './extension/IAgoraMediaPlayerExtension';
 import {
   MediaSource,
   PlayerStreamInfo,
@@ -12,7 +13,6 @@ import {
 } from './AgoraMediaBase';
 import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource';
 import { SpatialAudioParams } from './AgoraBase';
-
 /**
  * This class provides media player functions and supports multiple instances.
  */

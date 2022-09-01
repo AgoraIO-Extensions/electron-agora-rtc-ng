@@ -1,19 +1,105 @@
 import { AgoraEnv, logWarn } from '../../Utils';
-import { VideoSourceType } from '../AgoraBase';
+import { ErrorCodeType, VideoSourceType } from '../AgoraBase';
 import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
+import {
+  IMediaPlayerImpl,
+  processIMediaPlayerAudioFrameObserver,
+  processIMediaPlayerVideoFrameObserver,
+} from '../impl/IAgoraMediaPlayerImpl';
 import {
   IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
-import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
+import { DeviceEventEmitter } from './IrisApiEngine';
+import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
+import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
+import { processIAudioSpectrumObserver } from '../impl/AgoraMediaBaseImpl';
+import { EVENT_TYPE } from './IrisApiEngine';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
-  _mediaPlayerId: number;
+  static _source_observers: Map<number, IMediaPlayerSourceObserver[]> = new Map<
+    number,
+    IMediaPlayerSourceObserver[]
+  >();
+  static _audio_frame_observers: Map<number, IMediaPlayerAudioFrameObserver[]> =
+    new Map<number, IMediaPlayerAudioFrameObserver[]>();
+  static _video_frame_observers: Map<number, IMediaPlayerVideoFrameObserver[]> =
+    new Map<number, IMediaPlayerVideoFrameObserver[]>();
+  static _audio_spectrum_observers: Map<number, IAudioSpectrumObserver[]> =
+    new Map<number, IAudioSpectrumObserver[]>();
+  private readonly _mediaPlayerId: number;
+  private _events: Map<
+    any,
+    { eventType: string; listener: (...args: any[]) => any }
+  > = new Map<any, { eventType: string; listener: (...args: any[]) => any }>();
 
   constructor(mediaPlayerId: number) {
     super();
     this._mediaPlayerId = mediaPlayerId;
+  }
+
+  release() {
+    MediaPlayerInternal._source_observers.delete(this._mediaPlayerId);
+    MediaPlayerInternal._audio_frame_observers.delete(this._mediaPlayerId);
+    MediaPlayerInternal._video_frame_observers.delete(this._mediaPlayerId);
+    MediaPlayerInternal._audio_spectrum_observers.delete(this._mediaPlayerId);
+    this._events.forEach((value) => {
+      DeviceEventEmitter.removeListener(value.eventType, value.listener);
+    });
+    this._events.clear();
+  }
+
+  addListener<EventType extends keyof IMediaPlayerEvent>(
+    eventType: EventType,
+    listener: IMediaPlayerEvent[EventType]
+  ): void {
+    const callback = (...data: any[]) => {
+      if (data[0] !== EVENT_TYPE.IMediaPlayer) {
+        return;
+      }
+      if (data[1].playerId === this._mediaPlayerId) {
+        processIMediaPlayerSourceObserver(
+          { [eventType]: listener },
+          eventType,
+          data[1]
+        );
+        processIMediaPlayerAudioFrameObserver(
+          { [eventType]: listener },
+          eventType,
+          data[1]
+        );
+        processIMediaPlayerVideoFrameObserver(
+          { [eventType]: listener },
+          eventType,
+          data[1]
+        );
+        processIAudioSpectrumObserver(
+          { [eventType]: listener },
+          eventType,
+          data[1]
+        );
+      }
+    };
+    this._events.set(listener, { eventType, listener: callback });
+    DeviceEventEmitter.addListener(eventType, callback);
+  }
+
+  removeListener<EventType extends keyof IMediaPlayerEvent>(
+    eventType: EventType,
+    listener: IMediaPlayerEvent[EventType]
+  ) {
+    if (!this._events.has(listener)) return;
+    DeviceEventEmitter.removeListener(
+      eventType,
+      this._events.get(listener)!.listener
+    );
+  }
+
+  removeAllListeners<EventType extends keyof IMediaPlayerEvent>(
+    eventType?: EventType
+  ) {
+    DeviceEventEmitter.removeAllListeners(eventType);
   }
 
   getMediaPlayerId(): number {
@@ -21,26 +107,44 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mpkEventHandlers.push({ mpk: this, handler: observer });
-    return 0;
+    let observers = MediaPlayerInternal._source_observers.get(
+      this._mediaPlayerId
+    );
+    if (observers === undefined) {
+      observers = [];
+      MediaPlayerInternal._source_observers.set(this._mediaPlayerId, observers);
+    }
+    if (!observers.find((value) => value === observer)) {
+      observers.push(observer);
+    }
+    return super.registerPlayerSourceObserver(observer);
   }
 
   unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mpkEventHandlers = AgoraEnv.mpkEventHandlers.filter(
-      (value) => value.handler !== observer
+    let observers = MediaPlayerInternal._source_observers.get(
+      this._mediaPlayerId
     );
-    return 0;
+    if (observers === undefined) return -ErrorCodeType.ErrFailed;
+    MediaPlayerInternal._source_observers.set(
+      this._mediaPlayerId,
+      observers.filter((value) => value !== observer)
+    );
+    return super.unregisterPlayerSourceObserver(observer);
   }
 
   registerAudioFrameObserver(observer: IMediaPlayerAudioFrameObserver): number {
-    const res = AgoraEnv.mpkAudioFrameObservers.filter(
-      (value) => value === observer
+    let observers = MediaPlayerInternal._audio_frame_observers.get(
+      this._mediaPlayerId
     );
-    if (res && res.length == 0) {
-      AgoraEnv.mpkAudioFrameObservers.push({
-        mpk: this,
-        handler: observer,
-      });
+    if (observers === undefined) {
+      observers = [];
+      MediaPlayerInternal._audio_frame_observers.set(
+        this._mediaPlayerId,
+        observers
+      );
+    }
+    if (!observers.find((value) => value === observer)) {
+      observers.push(observer);
     }
     return super.registerAudioFrameObserver(observer);
   }
@@ -48,21 +152,30 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterAudioFrameObserver(
     observer: IMediaPlayerAudioFrameObserver
   ): number {
-    AgoraEnv.mpkAudioFrameObservers = AgoraEnv.mpkAudioFrameObservers.filter(
-      (value) => value !== observer
+    let observers = MediaPlayerInternal._audio_frame_observers.get(
+      this._mediaPlayerId
+    );
+    if (observers === undefined) return -ErrorCodeType.ErrFailed;
+    MediaPlayerInternal._audio_frame_observers.set(
+      this._mediaPlayerId,
+      observers.filter((value) => value !== observer)
     );
     return super.unregisterAudioFrameObserver(observer);
   }
 
   registerVideoFrameObserver(observer: IMediaPlayerVideoFrameObserver): number {
-    const res = AgoraEnv.mpkVideoFrameObservers.filter(
-      (value) => value === observer
+    let observers = MediaPlayerInternal._video_frame_observers.get(
+      this._mediaPlayerId
     );
-    if (res && res.length == 0) {
-      AgoraEnv.mpkVideoFrameObservers.push({
-        mpk: this,
-        handler: observer,
-      });
+    if (observers === undefined) {
+      observers = [];
+      MediaPlayerInternal._video_frame_observers.set(
+        this._mediaPlayerId,
+        observers
+      );
+    }
+    if (!observers.find((value) => value === observer)) {
+      observers.push(observer);
     }
     return super.registerVideoFrameObserver(observer);
   }
@@ -70,8 +183,13 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): number {
-    AgoraEnv.mpkVideoFrameObservers = AgoraEnv.mpkVideoFrameObservers.filter(
-      (value) => value !== observer
+    let observers = MediaPlayerInternal._video_frame_observers.get(
+      this._mediaPlayerId
+    );
+    if (observers === undefined) return -ErrorCodeType.ErrFailed;
+    MediaPlayerInternal._video_frame_observers.set(
+      this._mediaPlayerId,
+      observers.filter((value) => value !== observer)
     );
     return super.unregisterVideoFrameObserver(observer);
   }
@@ -80,11 +198,18 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     observer: IAudioSpectrumObserver,
     intervalInMS: number
   ): number {
-    const res = AgoraEnv.mpkAudioSpectrumObservers.filter(
-      (value) => value === observer
+    let observers = MediaPlayerInternal._audio_spectrum_observers.get(
+      this._mediaPlayerId
     );
-    if (res && res.length == 0) {
-      AgoraEnv.mpkAudioSpectrumObservers.push({ mpk: this, handler: observer });
+    if (observers === undefined) {
+      observers = [];
+      MediaPlayerInternal._audio_spectrum_observers.set(
+        this._mediaPlayerId,
+        observers
+      );
+    }
+    if (!observers.find((value) => value === observer)) {
+      observers.push(observer);
     }
     return super.registerMediaPlayerAudioSpectrumObserver(
       observer,
@@ -95,8 +220,14 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver
   ): number {
-    AgoraEnv.mpkAudioSpectrumObservers =
-      AgoraEnv.mpkAudioSpectrumObservers.filter((value) => value !== observer);
+    let observers = MediaPlayerInternal._audio_spectrum_observers.get(
+      this._mediaPlayerId
+    );
+    if (observers === undefined) return -ErrorCodeType.ErrFailed;
+    MediaPlayerInternal._audio_spectrum_observers.set(
+      this._mediaPlayerId,
+      observers.filter((value) => value !== observer)
+    );
     return super.unregisterMediaPlayerAudioSpectrumObserver(observer);
   }
 

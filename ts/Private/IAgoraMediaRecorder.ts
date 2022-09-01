@@ -1,9 +1,9 @@
+import './extension/IAgoraMediaRecorderExtension';
 import { RtcConnection } from './IAgoraRtcEngineEx';
 import {
   IMediaRecorderObserver,
   MediaRecorderConfiguration,
 } from './AgoraMediaBase';
-
 /**
  * @ignore
  */
