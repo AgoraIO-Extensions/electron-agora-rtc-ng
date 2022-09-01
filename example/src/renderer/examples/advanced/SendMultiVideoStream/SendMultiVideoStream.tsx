@@ -149,7 +149,6 @@ export default class SendMultiVideoStream
    */
   destroyMediaPlayer = () => {
     if (!this.player) {
-      this.error('player is invalid');
       return;
     }
 

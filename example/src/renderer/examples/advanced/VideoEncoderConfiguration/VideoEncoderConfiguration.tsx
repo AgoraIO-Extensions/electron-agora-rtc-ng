@@ -161,17 +161,8 @@ export default class VideoEncoderConfiguration
   }
 
   protected renderConfiguration(): React.ReactNode {
-    const {
-      codecType,
-      width,
-      height,
-      frameRate,
-      bitrate,
-      minBitrate,
-      orientationMode,
-      degradationPreference,
-      mirrorMode,
-    } = this.state;
+    const { codecType, orientationMode, degradationPreference, mirrorMode } =
+      this.state;
     return (
       <>
         <AgoraDropdown

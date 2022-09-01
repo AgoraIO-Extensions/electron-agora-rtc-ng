@@ -238,7 +238,7 @@ export default class JoinChannelAudio
     return (
       <>
         <AgoraSlider
-          title={`recordingSignalVolume`}
+          title={`recordingSignalVolume ${recordingSignalVolume}`}
           minimumValue={0}
           maximumValue={400}
           step={1}
@@ -253,7 +253,7 @@ export default class JoinChannelAudio
         />
         <AgoraDivider />
         <AgoraSlider
-          title={`playbackSignalVolume`}
+          title={`playbackSignalVolume ${playbackSignalVolume}`}
           minimumValue={0}
           maximumValue={400}
           step={1}

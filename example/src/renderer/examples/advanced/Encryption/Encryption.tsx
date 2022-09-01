@@ -47,7 +47,7 @@ export default class Encryption
       startPreview: false,
       encryptionMode: EncryptionMode.Aes128Xts,
       encryptionKey: '',
-      encryptionKdfSalt: [],
+      encryptionKdfSalt: new Array(32).fill(1, 0, 32),
       enableEncryption: false,
     };
   }
@@ -141,7 +141,7 @@ export default class Encryption
   }
 
   onEncryptionError(connection: RtcConnection, errorType: EncryptionErrorType) {
-    this.error(
+    this.info(
       'onEncryptionError',
       'connection',
       connection,

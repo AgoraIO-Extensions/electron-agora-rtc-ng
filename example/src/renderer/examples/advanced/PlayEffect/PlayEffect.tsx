@@ -190,16 +190,7 @@ export default class PlayEffect
   }
 
   protected renderConfiguration(): React.ReactNode {
-    const {
-      soundId,
-      filePath,
-      loopCount,
-      pitch,
-      pan,
-      gain,
-      publish,
-      startPos,
-    } = this.state;
+    const { filePath, pitch, pan, gain, publish } = this.state;
     return (
       <>
         <AgoraTextInput
@@ -224,7 +215,7 @@ export default class PlayEffect
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
         <AgoraSlider
-          title={`pitch`}
+          title={`pitch ${pitch}`}
           minimumValue={0.5}
           maximumValue={2.0}
           step={0.1}
@@ -235,7 +226,7 @@ export default class PlayEffect
         />
         <AgoraDivider />
         <AgoraSlider
-          title={`pan`}
+          title={`pan ${pan}`}
           minimumValue={-1.0}
           maximumValue={1.0}
           step={0.1}
@@ -246,7 +237,7 @@ export default class PlayEffect
         />
         <AgoraDivider />
         <AgoraSlider
-          title={`gain`}
+          title={`gain ${gain}`}
           minimumValue={0}
           maximumValue={100}
           step={0.1}

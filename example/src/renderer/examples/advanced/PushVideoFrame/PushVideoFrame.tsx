@@ -165,7 +165,7 @@ export default class PushVideoFrame
     const state = this.createState();
     delete state.sources;
     delete state.targetSource;
-    this.setState(this.createState());
+    this.setState(state);
   }
 
   protected renderConfiguration(): React.ReactNode {

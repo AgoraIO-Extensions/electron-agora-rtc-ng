@@ -171,7 +171,6 @@ export default class LocalSpatialAudioEngine
     const {
       joinChannelSuccess,
       remoteUsers,
-      range,
       targetUid,
       position,
       axisForward,

@@ -329,7 +329,7 @@ export default class ScreenShare
     const state = this.createState();
     delete state.sources;
     delete state.targetSource;
-    this.setState(this.createState());
+    this.setState(state);
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
@@ -400,10 +400,6 @@ export default class ScreenShare
       sources,
       targetSource,
       uid2,
-      width,
-      height,
-      frameRate,
-      bitrate,
       captureMouseCursor,
       windowFocus,
       excludeWindowList,

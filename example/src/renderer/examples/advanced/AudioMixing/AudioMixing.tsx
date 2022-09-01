@@ -195,7 +195,7 @@ export default class AudioMixing
   }
 
   protected renderConfiguration(): React.ReactNode {
-    const { filePath, loopback, cycle, startPos } = this.state;
+    const { filePath, loopback } = this.state;
     return (
       <>
         <AgoraTextInput

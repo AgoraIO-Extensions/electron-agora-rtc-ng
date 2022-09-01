@@ -234,11 +234,6 @@ export default class DirectCdnStreaming
     const {
       url,
       codecType,
-      width,
-      height,
-      frameRate,
-      bitrate,
-      minBitrate,
       orientationMode,
       degradationPreference,
       mirrorMode,
