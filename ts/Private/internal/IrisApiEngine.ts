@@ -360,6 +360,12 @@ export function callIrisApi(
     params.toJSON = function () {
       return { ...json, playerId: params.mediaPlayerId };
     };
+  } else if (funcName === 'RtcEngine_destroyMediaPlayer') {
+    // @ts-ignore
+    params.mediaPlayerId = params.media_player.getMediaPlayerId();
+    params.toJSON = function () {
+      return { playerId: params.mediaPlayerId };
+    };
   }
   return sendMsg(funcName, params, buffer, bufferCount);
 }
