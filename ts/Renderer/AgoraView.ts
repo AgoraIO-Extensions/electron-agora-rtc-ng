@@ -23,7 +23,7 @@ declare global {
    */
   interface AgoraView {
     /**
-     * @ignore
+     * The type of the video source. See VideoSourceType .
      */
     'video-source-type': VideoSourceType;
     /**
@@ -31,15 +31,20 @@ declare global {
      */
     'uid': number;
     /**
-     * @ignore
+     * The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
+     * All lowercase English letters: a to z.
+     * All uppercase English letters: A to Z.
+     * All numeric characters: 0 to 9.
+     * Space
+     * "!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
      */
     'channel-id': string;
     /**
-     * @ignore
+     * The video display mode.
      */
     'renderer-content-mode': RenderModeType;
     /**
-     * @ignore
+     * Whether to enable mirror mode when rendering video:true: Enable mirror mode.false: Do not enable mirror mode.
      */
     'renderer-mirror': boolean;
     /**
@@ -52,6 +57,9 @@ declare global {
      * The custom HTML elements defined by Agora.
      */
     interface IntrinsicElements {
+      /**
+       * The name of the custom element, which supports rendering an AgoraView orHTMLElement object.
+       */
       'agora-view': AgoraView | HTMLElement;
     }
   }
