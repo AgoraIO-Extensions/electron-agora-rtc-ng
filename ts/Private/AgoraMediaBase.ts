@@ -5,11 +5,11 @@ import { EncodedVideoFrameInfo } from './AgoraBase';
  */
 export enum AudioRoute {
   /**
-   * -1: Default audio route.
+   * -1: The default audio route.
    */
   RouteDefault = -1,
   /**
-   * Audio output routing is a headset with microphone.
+   * 0: Audio output routing is a headset with microphone.
    */
   RouteHeadset = 0,
   /**
@@ -25,7 +25,7 @@ export enum AudioRoute {
    */
   RouteSpeakerphone = 3,
   /**
-   * 4: The audio route is an external speaker. (macOS only)
+   * 4: The audio route is an external speaker.(macOS only)
    */
   RouteLoudspeaker = 4,
   /**
@@ -33,19 +33,19 @@ export enum AudioRoute {
    */
   RouteHeadsetbluetooth = 5,
   /**
-   * 6: (macOS only) The audio route is a USB peripheral device.
+   * 7: The audio route is a USB peripheral device.(For macOS only)
    */
   RouteUsb = 6,
   /**
-   * 7: (macOS only) The audio route is an HDMI peripheral device.
+   * 6: The audio route is an HDMI peripheral device.(For macOS only)
    */
   RouteHdmi = 7,
   /**
-   * @ignore
+   * 8: The audio route is a DisplayPort peripheral device.(For macOS only)
    */
   RouteDisplayport = 8,
   /**
-   * @ignore
+   * 9: The audio route is Apple AirPlay.(For macOS only)
    */
   RouteAirplay = 9,
 }
@@ -83,11 +83,11 @@ export class AudioParameters {
  */
 export enum RawAudioFrameOpModeType {
   /**
-   * 0: Read-only mode: Users only read the data returned by the SDK without modifying anything. For example, when users acquire the data with the Agora SDK, then start the media push.
+   * 0: Read-only mode,Users only read the data returned by the SDK without modifying anything.For example, when users acquire the data with the Agora SDK, then start the media push.
    */
   RawAudioFrameOpModeReadOnly = 0,
   /**
-   * 2: Read and write mode: Users read the data returned by the SDK, modify it, and then play it. For example, when users have their own audio-effect processing module and perform some voice pre-processing, such as a voice change.
+   * 2: Read and write mode,Users read the data returned by the SDK, modify it, and then play it.For example, when users have their own audio-effect processing module and perform some voice preprocessing, such as a voice change.
    */
   RawAudioFrameOpModeReadWrite = 2,
 }
@@ -105,11 +105,11 @@ export enum MediaSourceType {
    */
   AudioRecordingSource = 1,
   /**
-   * @ignore
+   * 2: The primary camera.
    */
   PrimaryCameraSource = 2,
   /**
-   * @ignore
+   * 3: The secondary camera.
    */
   SecondaryCameraSource = 3,
   /**
@@ -149,39 +149,39 @@ export enum MediaSourceType {
    */
   TranscodedVideoSource = 12,
   /**
-   * @ignore
+   * 100: Unknown media source.
    */
   UnknownMediaSource = 100,
 }
 
 /**
- * @ignore
+ * Content moderation results.
  */
 export enum ContentInspectResult {
   /**
-   * @ignore
+   * 1: The image does not contain inappropriate elements.
    */
   ContentInspectNeutral = 1,
   /**
-   * @ignore
+   * 2: The image is sexually suggestive.
    */
   ContentInspectSexy = 2,
   /**
-   * @ignore
+   * 3: The image is pornographic.
    */
   ContentInspectPorn = 3,
 }
 
 /**
- * @ignore
+ * The type of video content moderation module.
  */
 export enum ContentInspectType {
   /**
-   * @ignore
+   * 0: (Default) This module has no actual function. Do not settype to this value.
    */
   ContentInspectInvalid = 0,
   /**
-   * @ignore
+   * 1: Video content moderation. SDK takes screenshots, inspects video content of the video stream in the channel, and uploads the screenshots and moderation results.
    */
   ContentInspectModeration = 1,
   /**
@@ -191,33 +191,33 @@ export enum ContentInspectType {
 }
 
 /**
- * @ignore
+ * ContentInspectModuleStructure to configure the type and frequency of the video content moderation module.
  */
 export class ContentInspectModule {
   /**
-   * @ignore
+   * The type of video content moderation module. See ContentInspectType .
    */
   type?: ContentInspectType;
   /**
-   * @ignore
+   * The frequency (in seconds) of video content moderation. The value should be set as larger than 0. If set as 0 (default), the video content is not inspected. Agora recommends that you set the value as 10; you can also adjust it according to your business needs.
    */
   interval?: number;
 }
 
 /**
- * @ignore
+ * Configuration of video content moderation.
  */
 export class ContentInspectConfig {
   /**
-   * @ignore
+   * Additional information for video content moderation, with a maximum length of 1024 bytes.The SDK sends the screenshots and additional information on the video content to the Agora content moderation server. Once the content moderation process is completed, the Agora content moderation server sends the additional information and the content moderation results to your server.
    */
   extraInfo?: string;
   /**
-   * @ignore
+   * Video content moderation module. See ContentInspectModule .A maximum of 32ContentInspectModule instances can be configured, and the value range ofMAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32].A video content moderation module can only be configured with one instance at most.
    */
   modules?: ContentInspectModule[];
   /**
-   * @ignore
+   * The number of video content moderation modules, that is, the number of configuredContentInspectModule instances, must be the same as the number of instances configured inmodules. The maximum number is 32.
    */
   moduleCount?: number;
 }
@@ -251,31 +251,31 @@ export class AudioEncodedFrameInfo {
 }
 
 /**
- * @ignore
+ * The parameters of the audio frame in PCM format.
  */
 export class AudioPcmFrame {
   /**
-   * @ignore
+   * The timestamp (ms) of the audio frame.
    */
   capture_timestamp?: number;
   /**
-   * @ignore
+   * The number of samples per channel in the audio frame.
    */
   samples_per_channel_?: number;
   /**
-   * @ignore
+   * Audio sample rate (Hz).
    */
   sample_rate_hz_?: number;
   /**
-   * @ignore
+   * The number of audio channels.
    */
   num_channels_?: number;
   /**
-   * @ignore
+   * The number of bytes per sample.
    */
   bytes_per_sample?: BytesPerSample;
   /**
-   * @ignore
+   * The video frame.
    */
   data_?: number[];
 }
@@ -303,15 +303,15 @@ export enum AudioDualMonoMode {
 }
 
 /**
- * @ignore
+ * The video pixel format.
  */
 export enum VideoPixelFormat {
   /**
-   * @ignore
+   * 0: Raw video pixel format.
    */
   VideoPixelDefault = 0,
   /**
-   * @ignore
+   * 1: The format is I420.
    */
   VideoPixelI420 = 1,
   /**
@@ -323,11 +323,11 @@ export enum VideoPixelFormat {
    */
   VideoPixelNv21 = 3,
   /**
-   * @ignore
+   * 4: The format is RGBA.
    */
   VideoPixelRgba = 4,
   /**
-   * @ignore
+   * 8: The format is NV12.
    */
   VideoPixelNv12 = 8,
   /**
@@ -351,7 +351,7 @@ export enum VideoPixelFormat {
    */
   VideoCvpixelBgra = 14,
   /**
-   * @ignore
+   * 16: The format is I422.
    */
   VideoPixelI422 = 16,
 }
@@ -361,11 +361,11 @@ export enum VideoPixelFormat {
  */
 export enum RenderModeType {
   /**
-   * 1: Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). The window is filled. One dimension of the video might have clipped contents.
+   * 1: Hidden mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). One dimension of the video may have clipped contents.
    */
   RenderModeHidden = 1,
   /**
-   * 2: Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Priority is to ensuring that all video content is displayed. Areas that are not filled due to disparity in the aspect ratio are filled with black.
+   * 2: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to disparity in the aspect ratio are filled with black.
    */
   RenderModeFit = 2,
   /**
@@ -397,155 +397,156 @@ export enum VideoBufferType {
    */
   VideoBufferRawData = 1,
   /**
-   * @ignore
+   * 2: The video buffer in the format of raw data.
    */
   VideoBufferArray = 2,
   /**
-   * @ignore
+   * 3: The video buffer in the format ofTexture.
    */
   VideoBufferTexture = 3,
 }
 
 /**
- * @ignore
+ * The external video frame.
  */
 export class ExternalVideoFrame {
   /**
-   * @ignore
+   * The video type. See VideoBufferType .
    */
   type?: VideoBufferType;
   /**
-   * @ignore
+   * The pixel format. See VideoPixelFormat .
    */
   format?: VideoPixelFormat;
   /**
-   * @ignore
+   * Video frame buffer.
    */
   buffer?: Uint8Array;
   /**
-   * @ignore
+   * Line spacing of the incoming video frame, which must be in pixels instead of bytes. For textures, it is the width of the texture.
    */
   stride?: number;
   /**
-   * @ignore
+   * Height of the incoming video frame.
    */
   height?: number;
   /**
-   * @ignore
+   * Raw data related parameter. The number of pixels trimmed from the left. The default value is 0.
    */
   cropLeft?: number;
   /**
-   * @ignore
+   * Raw data related parameter. The number of pixels trimmed from the top. The default value is 0.
    */
   cropTop?: number;
   /**
-   * @ignore
+   * Raw data related parameter. The number of pixels trimmed from the right. The default value is 0.
    */
   cropRight?: number;
   /**
-   * @ignore
+   * Raw data related parameter. The number of pixels trimmed from the bottom. The default value is 0.
    */
   cropBottom?: number;
   /**
-   * @ignore
+   * Raw data related parameter. The clockwise rotation of the video frame. You can set the rotation angle as 0, 90, 180, or 270. The default value is 0.
    */
   rotation?: number;
   /**
-   * @ignore
+   * Timestamp (ms) of the incoming video frame. An incorrect timestamp results in frame loss or unsynchronized audio and video.
    */
   timestamp?: number;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. Texture ID of the frame.
    */
   eglType?: EglContextType;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. Incoming 4 x 4 transformational matrix. The typical value is a unit matrix.
    */
   textureId?: number;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. Incoming 4 x 4 transformational matrix. The typical value is a unit matrix.
    */
   matrix?: number[];
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value isNULL.
    */
   metadata_buffer?: Uint8Array;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. The MetaData size. The default value is0.
    */
   metadata_size?: number;
 }
 
 /**
- * @ignore
+ * Configurations of the video frame.
+ * The video data format is YUV420. Note that the buffer provides a pointer to a pointer. This interface cannot modify the pointer of the buffer but can modify the content of the buffer.
  */
 export class VideoFrame {
   /**
-   * @ignore
+   *
    */
   type?: VideoPixelFormat;
   /**
-   * @ignore
+   * The width of the video in pixels.
    */
   width?: number;
   /**
-   * @ignore
+   * The height of the video in pixels.
    */
   height?: number;
   /**
-   * @ignore
+   * For YUV data, the line span of the Y buffer; for RGBA data, the total data length.
    */
   yStride?: number;
   /**
-   * @ignore
+   * For YUV data, the line span of the U buffer; for RGBA data, the value is 0.
    */
   uStride?: number;
   /**
-   * @ignore
+   * For YUV data, the line span of the V buffer; for RGBA data, the value is 0.
    */
   vStride?: number;
   /**
-   * @ignore
+   * For YUV data, the pointer to the Y buffer; for RGBA data, the data buffer.
    */
   yBuffer?: Uint8Array;
   /**
-   * @ignore
+   * For YUV data, the pointer to the U buffer; for RGBA data, the value is 0.
    */
   uBuffer?: Uint8Array;
   /**
-   * @ignore
+   * For YUV data, the pointer to the V buffer; for RGBA data, the value is 0.
    */
   vBuffer?: Uint8Array;
   /**
-   * @ignore
+   * The clockwise rotation of the video frame before rendering. Supported values include 0, 90, 180, and 270 degrees.
    */
   rotation?: number;
   /**
-   * @ignore
+   * The Unix timestamp (ms) when the video frame is rendered. This timestamp can be used to guide the rendering of the video frame. It is required.
    */
   renderTimeMs?: number;
   /**
-   * @ignore
+   * Reserved for future use.
    */
   avsync_type?: number;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value isNULL.
    */
   metadata_buffer?: Uint8Array;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. The MetaData size. The default value is0.
    */
   metadata_size?: number;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. Texture ID.
    */
   textureId?: number;
   /**
-   * @ignore
+   * This parameter only applies to video data in Texture format. Incoming 4 x 4 transformational matrix. The typical value is a unit matrix.
    */
   matrix?: number[];
   /**
-   * @ignore
+   * Indicates the output data of the portrait segmentation algorithm, which is consistent with the size of the video frame. The value range of each pixel is [0,255], where 0 represents the background; 255 represents the foreground (portrait).In the costom video renderer scenario, you can use this parameter to render the video background into various effects, such as: transparent, solid color, picture, video and so on.To use this parameter, contact.
    */
   alphaBuffer?: Uint8Array;
 }
@@ -569,19 +570,19 @@ export enum MediaPlayerSourceType {
 }
 
 /**
- * @ignore
+ * The frame position of the video observer.
  */
 export enum VideoModulePosition {
   /**
-   * @ignore
+   * 1: The post-capturer position, which corresponds to the video data in theonCaptureVideoFrame callback.
    */
   PositionPostCapturer = 1 << 0,
   /**
-   * @ignore
+   * 2: The pre-renderer position, which corresponds to the video data in theonRenderVideoFrame callback.
    */
   PositionPreRenderer = 1 << 1,
   /**
-   * @ignore
+   * 4: The pre-encoder position, which corresponds to the video data in theonPreEncodeVideoFrame callback.
    */
   PositionPreEncoder = 1 << 2,
   /**
@@ -601,39 +602,39 @@ export enum AudioFrameType {
 }
 
 /**
- * @ignore
+ * Raw audio data.
  */
 export class AudioFrame {
   /**
-   * @ignore
+   * The type of the audio frame. See AudioFrameType .
    */
   type?: AudioFrameType;
   /**
-   * @ignore
+   * The number of samples per channel in the audio frame.
    */
   samplesPerChannel?: number;
   /**
-   * @ignore
+   * The number of bytes per audio sample, which is usually 16-bit (2 bytes).
    */
   bytesPerSample?: BytesPerSample;
   /**
-   * @ignore
+   * The number of audio channels (the data are interleaved if it is stereo).1: Mono.2: Stereo.
    */
   channels?: number;
   /**
-   * @ignore
+   * The number of samples per channel in the audio frame.
    */
   samplesPerSec?: number;
   /**
-   * @ignore
+   * The data buffer of the audio frame. When the audio frame uses a stereo channel, the data buffer is interleaved.The size of the data buffer is as follows:buffer =samples ×channels ×bytesPerSample.
    */
   buffer?: Uint8Array;
   /**
-   * @ignore
+   * The timestamp (ms) of the external audio frame.You can use this timestamp to restore the order of the captured audio frame, and synchronize audio and video frames in video scenarios, including scenarios where external video sources are used.
    */
   renderTimeMs?: number;
   /**
-   * @ignore
+   * Reserved for future use.
    */
   avsync_type?: number;
 }
@@ -665,53 +666,86 @@ export enum AudioFramePosition {
 }
 
 /**
- * @ignore
+ * Audio data format.
+ * The SDK sets changes the audio data format according toAudioParams: onRecordAudioFrame onPlaybackAudioFrame onMixedAudioFrame The SDK calculates the sampling interval through thesamplesPerCall,sampleRate, andchannel parameters inAudioParams, and triggers theonRecordAudioFrame,onPlaybackAudioFrame, andonMixedAudioFrame callbacks according to the sampling interval.Sample interval =samplePerCall/(sampleRate ×channel).Ensure that the sample interval ≥ 0.01 (s).
  */
 export class AudioParams {
   /**
-   * @ignore
+   * The audio sample rate (Hz), which can be set as one of the following values:8000.(Default) 16000.32000.4410048000
    */
   sample_rate?: number;
   /**
-   * @ignore
+   * The number of audio channels, which can be set as either of the following values:1: (Default) Mono.2: Stereo.
    */
   channels?: number;
   /**
-   * @ignore
+   * The use mode of the audio data. See RawAudioFrameOpModeType .
    */
   mode?: RawAudioFrameOpModeType;
   /**
-   * @ignore
+   * The number of samples, such as 1024 for the media push.
    */
   samples_per_call?: number;
 }
 
 /**
- * @ignore
+ * The audio frame observer.
  */
 export interface IAudioFrameObserverBase {
   /**
-   * @ignore
+   * Gets the captured audio frame.
+   *
+   * @param audioFrame The raw audio data. See AudioFrame .
+   *
+   * @param channelId The channel ID.
+   *
+   * @returns
+   * Reserved for future use.
    */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 
   /**
-   * @ignore
+   * Gets the audio frame for playback.
+   * If you want to set the format of the audio frame for playback, Agora recommends that you call the registerAudioFrameObserver method to set the format of the audio frame after calling the setPlaybackAudioFrameParameters method to register an audio frame observer.
+   *
+   * @param audioFrame The raw audio data. See AudioFrame .
+   *
+   * @param channelId The channel ID.
+   *
+   * @returns
+   * Reserved for future use.
    */
   onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 
   /**
-   * @ignore
+   * Retrieves the mixed captured and playback audio frame.
+   * This callback only returns the single-channel data.If you want to set the format of the mixed captured and playback audio frame, Agora recommends you call the registerAudioFrameObserver method to set the format of the audio frames after calling the setMixedAudioFrameParameters method to register an audio frame observer.
+   *
+   * @param audioFrame The raw audio data. See AudioFrame .
+   *
+   * @param channelId The channel ID.
+   *
+   * @returns
+   * Reserved for future use.
    */
   onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 }
 
 /**
- * @ignore
+ * The audio frame observer.
  */
 export interface IAudioFrameObserver extends IAudioFrameObserverBase {
   /**
-   * @ignore
+   * Retrieves the unmixed audio frame of a specified user.
+   *
+   * @param channelId The channel ID.
+   *
+   * @param uid The user ID of the specified user.
+   *
+   * @param audioFrame The audio frame. See AudioFrame .
+   *
+   * @returns
+   * Reserved for future use.
    */
   onPlaybackAudioFrameBeforeMixing?(
     channelId: string,
@@ -721,44 +755,58 @@ export interface IAudioFrameObserver extends IAudioFrameObserverBase {
 }
 
 /**
- * @ignore
+ * The audio spectrum data.
  */
 export class AudioSpectrumData {
   /**
-   * @ignore
+   * The audio spectrum data. Agora divides the audio frequency into 256 frequency domains, and reports the energy value of each frequency domain through this parameter. The value range of each energy type is [-300, 1] and the unit is dBFS.
    */
   audioSpectrumData?: number[];
   /**
-   * @ignore
+   * The audio spectrum data length is 256.
    */
   dataLength?: number;
 }
 
 /**
- * @ignore
+ * Audio spectrum information of the remote user.
  */
 export class UserAudioSpectrumInfo {
   /**
-   * @ignore
+   * The user ID of the remote user.
    */
   uid?: number;
   /**
-   * @ignore
+   * Audio spectrum information of the remote user.See AudioSpectrumData .
    */
   spectrumData?: AudioSpectrumData;
 }
 
 /**
- * @ignore
+ * The audio spectrum observer.
  */
 export interface IAudioSpectrumObserver {
   /**
-   * @ignore
+   * Gets the statistics of a local audio spectrum.
+   * After successfully calling registerAudioSpectrumObserver to implement theonLocalAudioSpectrum callback in IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
+   *
+   * @param data The audio spectrum data of the local user. See AudioSpectrumData .
+   *
+   * @returns
+   * Whether you have received the spectrum data:true: Spectrum data is received.false: No spectrum data is received.
    */
   onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
 
   /**
-   * @ignore
+   * Gets the remote audio spectrum.
+   * After successfully calling registerAudioSpectrumObserver to implement theonRemoteAudioSpectrum callback in the IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
+   *
+   * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo . The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
+   *
+   * @param spectrumNumber The number of remote users.
+   *
+   * @returns
+   * Whether you have received the spectrum data:true: Spectrum data is received.false: No spectrum data is received.
    */
   onRemoteAudioSpectrum?(
     spectrums: UserAudioSpectrumInfo[],
@@ -767,11 +815,22 @@ export interface IAudioSpectrumObserver {
 }
 
 /**
- * @ignore
+ * Receives encoded video images.
  */
 export interface IVideoEncodedFrameObserver {
   /**
-   * @ignore
+   * Occurs each time the SDK receives an encoded video image.
+   *
+   * @param uid The user ID of the remote user.
+   *
+   * @param imageBuffer The encoded video image buffer.
+   *
+   * @param length The data length of the video image.
+   *
+   * @param videoEncodedFrameInfo For the information of the encoded video frame, see EncodedVideoFrameInfo .
+   *
+   * @returns
+   * Reserved for future use.
    */
   onEncodedVideoFrameReceived?(
     uid: number,
@@ -782,30 +841,42 @@ export interface IVideoEncodedFrameObserver {
 }
 
 /**
- * @ignore
+ * The process mode of the video frame:
  */
 export enum VideoFrameProcessMode {
   /**
-   * @ignore
+   * Read-only mode.In this mode, you do not modify the video frame. The video frame observer is a renderer.
    */
   ProcessModeReadOnly = 0,
   /**
-   * @ignore
+   * Read and write mode.In this mode, you modify the video frame. The video frame observer is a video filter.
    */
   ProcessModeReadWrite = 1,
 }
 
 /**
- * @ignore
+ * The IVideoFrameObserver class.
  */
 export interface IVideoFrameObserver {
   /**
-   * @ignore
+   * Occurs each time the SDK receives a video frame captured by the local camera.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured by the local camera. You can then pre-process the data according to your scenarios.After pre-processing, you can send the processed video data back to the SDK through this callback.The video data that this callback gets has not been pre-processed, and is not watermarked, cropped, rotated or beautified.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * When the video processing mode isProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode isProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Occurs each time the SDK receives a video frame before encoding.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * When the video processing mode isProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode isProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onPreEncodeVideoFrame?(videoFrame: VideoFrame): boolean;
 
@@ -815,22 +886,52 @@ export interface IVideoFrameObserver {
   onSecondaryCameraCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Gets the video data captured from the second camera before encoding.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the second camera before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onSecondaryPreEncodeCameraVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Occurs each time the SDK receives a video frame captured by the screen.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data for screen sharing. You can then pre-process the data according to your scenarios.After pre-processing, you can send the processed video data back to the SDK through this callback.This callback does not support sending processed RGBA video data back to the SDK.The video data that this callback gets has not been pre-processed, and is not watermarked, cropped, rotated or beautified.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Gets the video data captured from the screen before encoding.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the screen before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.This callback does not support sending processed RGBA video data back to the SDK.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * When the video processing mode isProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode isProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Gets the video data of the media player.
+   * After you successfully register the video frame observer and calling the createMediaPlayer method, the SDK triggers this callback each time when it receives a video frame. In this callback, you can get the video data of the media player. You can then process the data according to your particular scenarios.After pre-processing, you can send the processed video data back to the SDK by this callback.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @param mediaPlayerId The ID of the media player.
+   *
+   * @returns
+   * When the video processing mode is ProcessModeReadOnly:
+   * true:The SDK ignores this return value.
+   * false:The SDK ignores this return value. When the video processing mode is ProcessModeReadWrite:
+   * true: Sets the SDK to receive the video frame.
+   * false: Sets the SDK to discard the video frame.
    */
   onMediaPlayerVideoFrame?(
     videoFrame: VideoFrame,
@@ -843,12 +944,28 @@ export interface IVideoFrameObserver {
   onSecondaryScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Gets the video data captured from the second screen before encoding.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the second screen before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @returns
+   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onSecondaryPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
-   * @ignore
+   * Occurs each time the SDK receives a video frame sent by the remote user.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding. You can then process the data according to your particular scenarios.This function only applies to the scenarios where the video processing mode isProcessModeReadOnly.
+   *
+   * @param videoFrame The video frame. See VideoFrame .
+   *
+   * @param remoteUid The ID of the remote user who sends the current video frame.
+   *
+   * @param channelId The channel ID.
+   *
+   * @returns
+   * true:The SDK ignores this return value.false:The SDK ignores this return value.
    */
   onRenderVideoFrame?(
     channelId: string,
@@ -877,132 +994,140 @@ export enum ExternalVideoSourceType {
 }
 
 /**
- * @ignore
+ * The format of the recording file.
  */
 export enum MediaRecorderContainerFormat {
   /**
-   * @ignore
+   * 1: (Default) MP4.
    */
   FormatMp4 = 1,
 }
 
 /**
- * @ignore
+ * The recording content.
  */
 export enum MediaRecorderStreamType {
   /**
-   * @ignore
+   * Only audio.
    */
   StreamTypeAudio = 0x01,
   /**
-   * @ignore
+   * Only video.
    */
   StreamTypeVideo = 0x02,
   /**
-   * @ignore
+   * (Default) Audio and video.
    */
   StreamTypeBoth = 0x01 | 0x02,
 }
 
 /**
- * @ignore
+ * The current recording state.
  */
 export enum RecorderState {
   /**
-   * @ignore
+   * -1: An error occurs during the recording. See RecorderErrorCode for the reason.
    */
   RecorderStateError = -1,
   /**
-   * @ignore
+   * 2: The audio and video recording starts.
    */
   RecorderStateStart = 2,
   /**
-   * @ignore
+   * 3: The audio and video recording stops.
    */
   RecorderStateStop = 3,
 }
 
 /**
- * @ignore
+ * The reason for the state change.
  */
 export enum RecorderErrorCode {
   /**
-   * @ignore
+   * 0: No error.
    */
   RecorderErrorNone = 0,
   /**
-   * @ignore
+   * 1: The SDK fails to write the recorded data to a file.
    */
   RecorderErrorWriteFailed = 1,
   /**
-   * @ignore
+   * 2: The SDK does not detect any audio and video streams, or audio and video streams are interrupted for more than five seconds during recording.
    */
   RecorderErrorNoStream = 2,
   /**
-   * @ignore
+   * 3: The recording duration exceeds the upper limit.
    */
   RecorderErrorOverMaxDuration = 3,
   /**
-   * @ignore
+   * 4: The recording configuration changes.
    */
   RecorderErrorConfigChanged = 4,
 }
 
 /**
- * @ignore
+ * Configurations for the local audio and video recording.
  */
 export class MediaRecorderConfiguration {
   /**
-   * @ignore
+   * The absolute path (including the filename extensions) of the recording file. For example:Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.mp4iOS: /AppSandbox/Library/Caches/example.mp4macOS:～/Library/Logs/example.mp4Android: /storage/emulated/0/Android/data/<package name>/files/agorasdk.mp4Ensure that the directory for the log files exists and is writable.
    */
   storagePath?: string;
   /**
-   * @ignore
+   * The format of the recording file. See MediaRecorderContainerFormat .
    */
   containerFormat?: MediaRecorderContainerFormat;
   /**
-   * @ignore
+   * The recording content. See MediaRecorderStreamType .
    */
   streamType?: MediaRecorderStreamType;
   /**
-   * @ignore
+   * The maximum recording duration, in milliseconds. The default value is 120000.
    */
   maxDurationMs?: number;
   /**
-   * @ignore
+   * The interval (ms) of updating the recording information. The value range is [1000,10000]. Based on the value you set in this parameter, the SDK triggers the onRecorderInfoUpdated callback to report the updated recording information.
    */
   recorderInfoUpdateInterval?: number;
 }
 
 /**
- * @ignore
+ * The information about the file that is recorded.
  */
 export class RecorderInfo {
   /**
-   * @ignore
+   * The absolute path of the recording file.
    */
   fileName?: string;
   /**
-   * @ignore
+   * The recording duration (ms).
    */
   durationMs?: number;
   /**
-   * @ignore
+   * The size (bytes) of the recording file.
    */
   fileSize?: number;
 }
 
 /**
- * @ignore
+ * TheIMediaRecorderObserver class.
  */
 export interface IMediaRecorderObserver {
   /**
-   * @ignore
+   * Occurs when the recording state changes.
+   * When the local audio or video recording state changes, the SDK triggers this callback to report the current recording state and the reason for the change.
+   *
+   * @param state The current recording state. See RecorderState .
+   *
+   * @param error The reason for the state change. See RecorderErrorCode .
    */
   onRecorderStateChanged?(state: RecorderState, error: RecorderErrorCode): void;
 
   /**
-   * @ignore
+   * Occurs when the recording information is updated.
+   * After you successfully enable the local audio and video recording, the SDK periodically triggers this callback based on the value ofrecorderInfoUpdateInterval set in MediaRecorderConfiguration . This callback reports the file name, duration, and size of the current recording file.
+   *
+   * @param info The information about the file that is recorded. See RecorderInfo .
    */
   onRecorderInfoUpdated?(info: RecorderInfo): void;
 }

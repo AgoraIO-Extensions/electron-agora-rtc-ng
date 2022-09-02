@@ -1,23 +1,23 @@
 import './extension/AgoraBaseExtension';
 import { MediaSourceType, RenderModeType } from './AgoraMediaBase';
 /**
- * @ignore
+ * The channel profile.
  */
 export enum ChannelProfileType {
   /**
-   * @ignore
+   * 0: Communication. Use this profile when there are only two users in the channel.
    */
   ChannelProfileCommunication = 0,
   /**
-   * @ignore
+   * 1: Live streaming. Live streaming. Use this profile when there are more than two users in the channel.
    */
   ChannelProfileLiveBroadcasting = 1,
   /**
-   * @ignore
+   * 2: Gaming. This profile is deprecated.
    */
   ChannelProfileGame = 2,
   /**
-   * @ignore
+   * Cloud gaming. The scenario is optimized for latency. Use this profile if the use case requires frequent interactions between users.
    */
   ChannelProfileCloudGaming = 3,
   /**
@@ -157,39 +157,40 @@ export enum WarnCodeType {
 }
 
 /**
- * @ignore
+ * Error codes.
+ * An error code indicates that the SDK encountered an unrecoverable error that requires application intervention. For example, an error is returned when the camera fails to open, and the app needs to inform the user that the camera cannot be used.
  */
 export enum ErrorCodeType {
   /**
-   * @ignore
+   * 0: No error.
    */
   ErrOk = 0,
   /**
-   * @ignore
+   * 1: General error with no classified reason. Try calling the method again.
    */
   ErrFailed = 1,
   /**
-   * @ignore
+   * 2: An invalid parameter is used. For example, the specified channel name includes illegal characters. Reset the parameter.
    */
   ErrInvalidArgument = 2,
   /**
-   * @ignore
+   * 3: The SDK is not ready. Possible reasons include the following:The initialization of IRtcEngine fails. Reinitialize theIRtcEngine.No user has joined the channel when the method is called. Check the code logic.The user has not left the channel when the rate or complain method is called. Check the code logic.The audio module is disabled.The program is not complete.
    */
   ErrNotReady = 3,
   /**
-   * @ignore
+   * 4:IRtcEngine does not support the request. Possible reasons include the following:The built-in encryption mode is incorrect, or the SDK fails to load the external encryption library. Check the encryption mode setting, or reload the external encryption library.
    */
   ErrNotSupported = 4,
   /**
-   * @ignore
+   * 5: The request is rejected. Possible reasons include the following:The IRtcEngine initialization fails. Reinitialize theIRtcEngine.The channel name is set as the empty string"" when joining the channel. Reset the channel name.When the joinChannelEx method is called to join multiple channels, the specified channel name is already in use. Reset the channel name.
    */
   ErrRefused = 5,
   /**
-   * @ignore
+   * 6: The buffer size is insufficient to store the returned data.
    */
   ErrBufferTooSmall = 6,
   /**
-   * @ignore
+   * 7: A method is called before the initialization ofIRtcEngine. Ensure that theIRtcEngine object is initialized before using this method.
    */
   ErrNotInitialized = 7,
   /**
@@ -197,11 +198,11 @@ export enum ErrorCodeType {
    */
   ErrInvalidState = 8,
   /**
-   * @ignore
+   * 9: Permission to access is not granted. Check whether your app has access to the audio and video device.
    */
   ErrNoPermission = 9,
   /**
-   * @ignore
+   * 10: A timeout occurs. Some API calls require the SDK to return the execution result. This error occurs if the SDK takes too long (more than 10 seconds) to return the result.
    */
   ErrTimedout = 10,
   /**
@@ -221,95 +222,95 @@ export enum ErrorCodeType {
    */
   ErrNetDown = 14,
   /**
-   * @ignore
+   * 17: The request to join the channel is rejected. Possible reasons include the following:The user is already in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. Do not call this method to join the channel unless you receive theConnectionStateDisconnected(1) state.After calling startEchoTest for the call test, the user tries to join the channel without calling stopEchoTest to end the current test. To join a channel, the call test must be ended by callingstopEchoTest.
    */
   ErrJoinChannelRejected = 17,
   /**
-   * @ignore
+   * 18: Fails to leave the channel. Possible reasons include the following:The user has left the channel before calling the leaveChannel [1/2] method. Stop calling this method to clear this error.The user calls theleaveChannel [1/2] method to leave the channel before joining the channel. In this case, no extra operation is needed.
    */
   ErrLeaveChannelRejected = 18,
   /**
-   * @ignore
+   * 19: Resources are already in use.
    */
   ErrAlreadyInUse = 19,
   /**
-   * @ignore
+   * 20: The request is abandoned by the SDK, possibly because the request has been sent too frequently.
    */
   ErrAborted = 20,
   /**
-   * @ignore
+   * 21: TheIRtcEngine fails to initialize and has crashed because of specific Windows firewall settings.
    */
   ErrInitNetEngine = 21,
   /**
-   * @ignore
+   * 22: The SDK fails to allocate resources because your app uses too many system resources or system resources are insufficient.
    */
   ErrResourceLimited = 22,
   /**
-   * @ignore
+   * 101: The specified App ID is invalid. Rejoin the channel with a valid App ID.
    */
   ErrInvalidAppId = 101,
   /**
-   * @ignore
+   * 102: The specified channel name is invalid. A possible reason is that the parameter's data type is incorrect. Rejoin the channel with a valid channel name.
    */
   ErrInvalidChannelName = 102,
   /**
-   * @ignore
+   * 103: Fails to get server resources in the specified region. Try another region when initializingIRtcEngine.
    */
   ErrNoServerResources = 103,
   /**
-   * @ignore
+   * 109: The current token has expired. Apply for a new token on the server and call renewToken .Deprecated:This enumerator is deprecated. UseConnectionChangedTokenExpired(9) in the onConnectionStateChanged callback instead.
    */
   ErrTokenExpired = 109,
   /**
-   * @ignore
+   * 110: Invalid token Typical reasons include the following:App Certificate is enabled in Agora Console, but the code still uses App ID for authentication. Once App Certificate is enabled for a project, you must use token-based authentication.Theuid used to generate the token is not the same as theuid used to join the channel.Deprecated:This enumerator is deprecated. UseConnectionChangedInvalidToken(8) in the onConnectionStateChanged callback instead.
    */
   ErrInvalidToken = 110,
   /**
-   * @ignore
+   * 111: The network connection is interrupted. The SDK triggers this callback when it loses connection with the server for more than four seconds after the connection is established.
    */
   ErrConnectionInterrupted = 111,
   /**
-   * @ignore
+   * 112: The network connection is lost. Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds after its connection to the server is interrupted.
    */
   ErrConnectionLost = 112,
   /**
-   * @ignore
+   * 113: The user is not in the channel when calling the sendStreamMessage method.
    */
   ErrNotInChannel = 113,
   /**
-   * @ignore
+   * 114: The data size exceeds 1 KB when calling thesendStreamMessage method.
    */
   ErrSizeTooLarge = 114,
   /**
-   * @ignore
+   * 115: The data bitrate exceeds 6 KB/s when calling thesendStreamMessage method.
    */
   ErrBitrateLimit = 115,
   /**
-   * @ignore
+   * 116: More than five data streams are created when calling the createDataStream method.
    */
   ErrTooManyDataStreams = 116,
   /**
-   * @ignore
+   * 117: The data stream transmission times out.
    */
   ErrStreamMessageTimeout = 117,
   /**
-   * @ignore
+   * 119: Switching roles fails, try rejoining the channel.
    */
   ErrSetClientRoleNotAuthorized = 119,
   /**
-   * @ignore
+   * 120: Decryption fails. The user might have entered an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
    */
   ErrDecryptionFailed = 120,
   /**
-   * @ignore
+   * 121: The user ID is invalid.
    */
   ErrInvalidUserId = 121,
   /**
-   * @ignore
+   * 123: The user is banned from the server.
    */
   ErrClientIsBannedByServer = 123,
   /**
-   * @ignore
+   * 130: The SDK does not support pushing encrypted streams to CDN.
    */
   ErrEncryptedStreamNotAllowedPublish = 130,
   /**
@@ -317,7 +318,7 @@ export enum ErrorCodeType {
    */
   ErrLicenseCredentialInvalid = 131,
   /**
-   * @ignore
+   * 134: The user account is invalid, possibly because it contains invalid parameters.
    */
   ErrInvalidUserAccount = 134,
   /**
@@ -325,7 +326,7 @@ export enum ErrorCodeType {
    */
   ErrModuleNotFound = 157,
   /**
-   * @ignore
+   * 1001: The SDK fails to load the media engine.
    */
   ErrCertRaw = 157,
   /**
@@ -389,35 +390,35 @@ export enum ErrorCodeType {
    */
   ErrLoadMediaEngine = 1001,
   /**
-   * @ignore
+   * 1005: A general error occurs (no specified reason). Check whether the audio device is already in use by another app, or try rejoining the channel.
    */
   ErrAdmGeneralError = 1005,
   /**
-   * @ignore
+   * 1008: An error occurs when initializing the playback device. Check whether the playback device is already in use by another app, or try rejoining the channel.
    */
   ErrAdmInitPlayout = 1008,
   /**
-   * @ignore
+   * 1009: An error occurs when starting the playback device. Check the playback device.
    */
   ErrAdmStartPlayout = 1009,
   /**
-   * @ignore
+   * 1010: An error occurs when stopping the playback device.
    */
   ErrAdmStopPlayout = 1010,
   /**
-   * @ignore
+   * 1011: An error occurs when initializing the recording device. Check the recording device, or try rejoining the channel.
    */
   ErrAdmInitRecording = 1011,
   /**
-   * @ignore
+   * 1012: An error occurs when starting the recording device. Check the recording device.
    */
   ErrAdmStartRecording = 1012,
   /**
-   * @ignore
+   * 1013: An error occurs when stopping the recording device.
    */
   ErrAdmStopRecording = 1013,
   /**
-   * @ignore
+   * 1501: Permission to access the camera is not granted. Check whether permission to access the camera permission is granted.
    */
   ErrVdmCameraNotAuthorized = 1501,
 }
@@ -457,7 +458,7 @@ export enum UserOfflineReasonType {
    */
   UserOfflineQuit = 0,
   /**
-   * 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time. If the user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline.
+   * 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time.If the user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline.
    */
   UserOfflineDropped = 1,
   /**
@@ -467,15 +468,15 @@ export enum UserOfflineReasonType {
 }
 
 /**
- * @ignore
+ * The interface class.
  */
 export enum InterfaceIdType {
   /**
-   * @ignore
+   * The IAudioDeviceManager interface class.
    */
   AgoraIidAudioDeviceManager = 1,
   /**
-   * @ignore
+   * The IVideoDeviceManager interface class.
    */
   AgoraIidVideoDeviceManager = 2,
   /**
@@ -483,7 +484,7 @@ export enum InterfaceIdType {
    */
   AgoraIidParameterEngine = 3,
   /**
-   * @ignore
+   * The IMediaEngine interface class.
    */
   AgoraIidMediaEngine = 4,
   /**
@@ -499,7 +500,7 @@ export enum InterfaceIdType {
    */
   AgoraIidRtcConnection = 7,
   /**
-   * @ignore
+   *
    */
   AgoraIidSignalingEngine = 8,
   /**
@@ -515,7 +516,7 @@ export enum InterfaceIdType {
    */
   AgoraIidLocalSpatialAudio = 11,
   /**
-   * @ignore
+   * The IMediaRecorder interface class.
    */
   AgoraIidMediaRecorder = 12,
 }
@@ -603,32 +604,31 @@ export enum VideoOrientation {
  */
 export enum FrameRate {
   /**
-   * 1:1 fps
+   * 1: 1 fps
    */
   FrameRateFps1 = 1,
   /**
-   * 7:7fps
+   * 7: 7 fps
    */
   FrameRateFps7 = 7,
   /**
-   * 10: 10fps
+   * 10: 10 fps
    */
   FrameRateFps10 = 10,
   /**
-   * 15: 15fps
+   * 15: 15 fps
    */
   FrameRateFps15 = 15,
   /**
-   * 24: 24fps
+   * 24: 24 fps
    */
   FrameRateFps24 = 24,
   /**
-   * 30: 30fps
+   * 30: 30 fps
    */
   FrameRateFps30 = 30,
   /**
-   * 60: 60fps
-   * For Windows and macOS only.
+   * 60: 60 fpsFor Windows and macOS only.
    */
   FrameRateFps60 = 60,
 }
@@ -654,31 +654,31 @@ export enum FrameHeight {
 }
 
 /**
- * @ignore
+ * The video frame type.
  */
 export enum VideoFrameType {
   /**
-   * @ignore
+   * 0: A black frame.
    */
   VideoFrameTypeBlankFrame = 0,
   /**
-   * @ignore
+   * 3: Key frame.
    */
   VideoFrameTypeKeyFrame = 3,
   /**
-   * @ignore
+   * 4: Delta frame.
    */
   VideoFrameTypeDeltaFrame = 4,
   /**
-   * @ignore
+   * 5: The B frame.
    */
   VideoFrameTypeBFrame = 5,
   /**
-   * @ignore
+   * 6: A discarded frame.
    */
   VideoFrameTypeDroppableFrame = 6,
   /**
-   * @ignore
+   * Unknown frame.
    */
   VideoFrameTypeUnknow = 7,
 }
@@ -688,9 +688,7 @@ export enum VideoFrameType {
  */
 export enum OrientationMode {
   /**
-   * 0: (Default) The output video always follows the orientation of the captured video.
-   * The receiver takes the rotational information passed on from the video encoder. This mode applies to scenarios where video orientation can be adjusted on the receiver. If the captured video is in landscape mode, the output video is in landscape mode.
-   * If the captured video is in portrait mode, the output video is in portrait mode.
+   * 0: (Default) The output video always follows the orientation of the captured video. The receiver takes the rotational information passed on from the video encoder. This mode applies to scenarios where video orientation can be adjusted on the receiver.If the captured video is in landscape mode, the output video is in landscape mode.If the captured video is in portrait mode, the output video is in portrait mode.
    */
   OrientationModeAdaptive = 0,
   /**
@@ -708,8 +706,7 @@ export enum OrientationMode {
  */
 export enum DegradationPreference {
   /**
-   * 0: (Default) Prefers to reduce the video frame rate while maintaining video quality during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized.
-   * In the COMMUNICATION channel profile, the resolution of the video sent may change, so remote users need to handle this issue. See onVideoSizeChanged .
+   * 0: (Default) Prefers to reduce the video frame rate while maintaining video quality during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized.In the COMMUNICATION channel profile, the resolution of the video sent may change, so remote users need to handle this issue. See onVideoSizeChanged .
    */
   MaintainQuality = 0,
   /**
@@ -717,11 +714,11 @@ export enum DegradationPreference {
    */
   MaintainFramerate = 1,
   /**
-   *
+   * 2: Reduces the video frame rate and video quality simultaneously during video encoding under limited bandwidth. TheMaintainBalanced has a lower reduction thanMaintainQuality andMaintainFramerate, and this preference is suitable for scenarios where both smoothness and video quality are a priority.The resolution of the video sent may change, so remote users need to handle this issue. See onVideoSizeChanged .
    */
   MaintainBalanced = 2,
   /**
-   * @ignore
+   * 3: When the bandwidth is limited, the video frame rate is preferentially reduced during video encoding.
    */
   MaintainResolution = 3,
   /**
@@ -765,8 +762,7 @@ export enum VideoCodecType {
    */
   VideoCodecH265 = 3,
   /**
-   * 6: Generic.
-   * This type is used for transmitting raw video data, such as encrypted video frames. The SDK returns this type of video frames in callbacks, and you need to decode and render the frames yourself.
+   * 6: Generic.This type is used for transmitting raw video data, such as encrypted video frames. The SDK returns this type of video frames in callbacks, and you need to decode and render the frames yourself.
    */
   VideoCodecGeneric = 6,
   /**
@@ -916,11 +912,11 @@ export enum AudioEncodingType {
  */
 export enum WatermarkFitMode {
   /**
-   * @ignore
+   * Use thepositionInLandscapeMode andpositionInPortraitMode values you set in WatermarkOptions . The settings in WatermarkRatio are invalid.
    */
   FitModeCoverPosition = 0,
   /**
-   * @ignore
+   * Use the value you set in WatermarkRatio . The settings inpositionInLandscapeMode andpositionInPortraitMode in WatermarkOptions are invalid.
    */
   FitModeUseImageRatio = 1,
 }
@@ -944,7 +940,7 @@ export class EncodedAudioFrameAdvancedSettings {
  */
 export class EncodedAudioFrameInfo {
   /**
-   * Audio Codec type: AudioCodecType .
+   * Audio Codec type: AudioCodecType
    */
   codec?: AudioCodecType;
   /**
@@ -956,15 +952,15 @@ export class EncodedAudioFrameInfo {
    */
   samplesPerChannel?: number;
   /**
-   * The number of audio channels.
+   * @ignore
    */
   numberOfChannels?: number;
   /**
-   * This function is not currently supported.
+   * This function is currently not supported.
    */
   advancedSettings?: EncodedAudioFrameAdvancedSettings;
   /**
-   * @ignore
+   * The Unix timestamp (ms) for capturing the external encoded video frames.
    */
   captureTimeMs?: number;
 }
@@ -1024,46 +1020,45 @@ export enum VideoStreamType {
 }
 
 /**
- * @ignore
+ * Video subscription options.
  */
 export class VideoSubscriptionOptions {
   /**
-   * @ignore
+   * The video stream type that you want to subscribe to. The default value isVideoStreamHigh, meaning the high-quality video streams. See VideoStreamType .
    */
   type?: VideoStreamType;
   /**
-   * @ignore
+   * Whether to subscribe to encoded video frames only:true: Subscribe to encoded video frames only (structured data).false: (Default) Subscribe to raw video frames.
    */
   encodedFrameOnly?: boolean;
 }
 
 /**
- * The information about the external encoded video frame.
+ * Information about externally encoded video frames.
  */
 export class EncodedVideoFrameInfo {
   /**
-   * The codec type of the local video stream. See VideoCodecType . The default value is VideoCodecH264(2).
+   * The codec type of the local video stream. See VideoCodecType . The default value isVideoCodecH264(2).
    */
   codecType?: VideoCodecType;
   /**
-   * The width (pixel) of the video frame.
+   * Width (pixel) of the video frame.
    */
   width?: number;
   /**
-   * The height (pixel) of the video frame.
+   * Height (pixel) of the video frame.
    */
   height?: number;
   /**
-   * The number of video frames per second.
-   * When this parameter is not 0, you can use it to calculate the Unix timestamp of the external encoded video frames.
+   * The number of video frames per second.When this parameter is not0, you can use it to calculate the Unix timestamp of externally encoded video frames.
    */
   framesPerSecond?: number;
   /**
-   * The video frame type, see VideoFrameType .
+   * The video frame type. See VideoFrameType .
    */
   frameType?: VideoFrameType;
   /**
-   * The rotation information of the video frame, see VideoOrientation .
+   * The rotation information of the video frame. See VideoOrientation .
    */
   rotation?: VideoOrientation;
   /**
@@ -1071,15 +1066,15 @@ export class EncodedVideoFrameInfo {
    */
   trackId?: number;
   /**
-   * @ignore
+   * The Unix timestamp (ms) for capturing the external encoded video frames.
    */
   captureTimeMs?: number;
   /**
-   * The user ID to push the the external encoded video frame.
+   * The user ID to push the externally encoded video frame.
    */
   uid?: number;
   /**
-   * The type of video streams.
+   * The type of video streams.See VideoStreamType .
    */
   streamType?: VideoStreamType;
 }
@@ -1111,7 +1106,7 @@ export class VideoEncoderConfiguration {
    */
   codecType?: VideoCodecType;
   /**
-   * The dimensions of the encoded video (px). See VideoDimensions . This parameter measures the video encoding quality in the format of length × width. The default value is 640 × 360. You can set a custom value.
+   * The dimensions of the encoded video (px). This parameter measures the video encoding quality in the format of length × width.
    */
   dimensions?: VideoDimensions;
   /**
@@ -1119,13 +1114,11 @@ export class VideoEncoderConfiguration {
    */
   frameRate?: number;
   /**
-   * The encoding bitrate (Kbps) of the video.
+   * The encoding bitrate (Kbps) of the video.See
    */
   bitrate?: number;
   /**
-   * The minimum encoding bitrate (Kbps) of the video.
-   * The SDK automatically adjusts the encoding bitrate to adapt to the network conditions. Using a value greater than the default value forces the video encoder to output high-quality images but may cause more packet loss and sacrifice the smoothness of the video transmission. Unless you have special requirements for image quality, Agora does not recommend changing this value.
-   * This parameter only applies to the interactive streaming profile.
+   * The minimum encoding bitrate (Kbps) of the video.The SDK automatically adjusts the encoding bitrate to adapt to the network conditions. Using a value greater than the default value forces the video encoder to output high-quality images but may cause more packet loss and sacrifice the smoothness of the video transmission. Unless you have special requirements for image quality, Agora does not recommend changing this value.This parameter only applies to the interactive streaming profile.
    */
   minBitrate?: number;
   /**
@@ -1137,8 +1130,7 @@ export class VideoEncoderConfiguration {
    */
   degradationPreference?: DegradationPreference;
   /**
-   * Whether to enable mirroring mode when sending encoded video, only affects the video images seen by remote users. See VideoMirrorModeType .
-   * By default, the video is not mirrored.
+   * Sets the mirror mode of the published local video stream. It only affects the video that the remote user sees. See VideoMirrorModeType .By default, the video is not mirrored.
    */
   mirrorMode?: VideoMirrorModeType;
 }
@@ -1149,17 +1141,11 @@ export class VideoEncoderConfiguration {
  */
 export class DataStreamConfig {
   /**
-   * Whether to synchronize the data packet with the published audio packet.
-   * true: Synchronize the data packet with the audio packet.
-   * false: Do not synchronize the data packet with the audio packet.
-   * When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out. Do not set this parameter as true if you need the receiver to receive the data packet immediately. Agora recommends that you set this parameter to `true` only when you need to implement specific functions, for example, lyric synchronization.
+   * Whether to synchronize the data packet with the published audio packet.true: Synchronize the data packet with the audio packet.false: Do not synchronize the data packet with the audio packet.When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out. Do not set this parameter astrue if you need the receiver to receive the data packet immediately. Agora recommends that you set this parameter to true only when you need to implement specific functions, for example, lyric synchronization.
    */
   syncWithAudio?: boolean;
   /**
-   * Whether the SDK guarantees that the receiver receives the data in the sent order.
-   * true: Guarantee that the receiver receives the data in the sent order.
-   * false: Do not guarantee that the receiver receives the data in the sent order.
-   * Do not set this parameter as true if you need the receiver to receive the data packet immediately.
+   * Whether the SDK guarantees that the receiver receives the data in the sent order.true: Guarantee that the receiver receives the data in the sent order.false: Do not guarantee that the receiver receives the data in the sent order.Do not set this parameter astrue if you need the receiver to receive the data packet immediately.
    */
   ordered?: boolean;
 }
@@ -1187,7 +1173,7 @@ export enum SimulcastStreamMode {
  */
 export class SimulcastStreamConfig {
   /**
-   * The video dimension.  The default value is 160 × 120. VideoDimensions
+   * The video dimension.See VideoDimensions .The default value is 160 × 120.
    */
   dimensions?: VideoDimensions;
   /**
@@ -1205,11 +1191,11 @@ export class SimulcastStreamConfig {
  */
 export class Rectangle {
   /**
-   * x: The horizontal offset from the top-left corner.
+   * The horizontal offset from the top-left corner.
    */
   x?: number;
   /**
-   * y: The vertical offset from the top-left corner.
+   * The vertical offset from the top-left corner.
    */
   y?: number;
   /**
@@ -1224,13 +1210,11 @@ export class Rectangle {
 
 /**
  * The position and size of the watermark on the screen.
- * The position and size of the watermark on the screen are determined by xRatio, yRatio, and widthRatio:
- * (xRatio, yRatio) refers to the coordinates of the upper left corner of the watermark, which determines the distance from the upper left corner of the watermark to the upper left corner of the screen.
- * The widthRatio determines the width of the watermark.
+ * The position and size of the watermark on the screen are determined byxRatio,yRatio, andwidthRatio:(xRatio,yRatio) refers to the coordinates of the upper left corner of the watermark, which determines the distance from the upper left corner of the watermark to the upper left corner of the screen.ThewidthRatio determines the width of the watermark.
  */
 export class WatermarkRatio {
   /**
-   * The x-coordinate of the upper left corner of the watermark. The x-coordinate of the upper left corner of the watermark. The horizontal position relative to the origin, where the upper left corner of the screen is the origin, and the x-coordinate is the upper left corner of the watermark. The value range is [0.0,1.0], and the default value is 0.
+   * The x-coordinate of the upper left corner of the watermark. The horizontal position relative to the origin, where the upper left corner of the screen is the origin, and the x-coordinate is the upper left corner of the watermark. The value range is [0.0,1.0], and the default value is 0.
    */
   xRatio?: number;
   /**
@@ -1244,27 +1228,27 @@ export class WatermarkRatio {
 }
 
 /**
- * @ignore
+ * Configurations of the watermark image.
  */
 export class WatermarkOptions {
   /**
-   * @ignore
+   * Reserved for future use.
    */
   visibleInPreview?: boolean;
   /**
-   * @ignore
+   * When the adaptation mode of the watermark isFitModeCoverPosition, it is used to set the area of the watermark image in landscape mode. SeeFitModeCoverPosition for details.
    */
   positionInLandscapeMode?: Rectangle;
   /**
-   * @ignore
+   * When the adaptation mode of the watermark isFitModeCoverPosition, it is used to set the area of the watermark image in portrait mode. SeeFitModeCoverPosition for details.
    */
   positionInPortraitMode?: Rectangle;
   /**
-   * @ignore
+   * When the watermark adaptation mode isFitModeUseImageRatio, this parameter is used to set the watermark coordinates. See WatermarkRatio .
    */
   watermarkRatio?: WatermarkRatio;
   /**
-   * @ignore
+   * The adaptation mode of the watermark. See WatermarkFitMode .
    */
   mode?: WatermarkFitMode;
 }
@@ -1334,12 +1318,11 @@ export class RtcStats {
    */
   userCount?: number;
   /**
-   * Application CPU usage (%). The value of cpuTotalUsage is always reported as 0 in the onLeaveChannel callback.
+   * Application CPU usage (%).The value ofcpuTotalUsage is always reported as 0 in the onLeaveChannel callback.
    */
   cpuAppUsage?: number;
   /**
-   * The system CPU usage (%).
-   * For Windows, in the multi-kernel environment, this member represents the average CPU usage. The value = (100 - System Idle Progress in Task Manager)/100. The value of cpuTotalUsage is always reported as 0 in the onLeaveChannel callback.
+   * The system CPU usage (%).For Windows, in the multi-kernel environment, this member represents the average CPU usage. The value = (100 - System Idle Progress in Task Manager)/100.The value ofcpuTotalUsage is always reported as 0 in the onLeaveChannel callback.
    */
   cpuTotalUsage?: number;
   /**
@@ -1347,18 +1330,15 @@ export class RtcStats {
    */
   gatewayRtt?: number;
   /**
-   * The memory ratio occupied by the app (%).
-   * This value is for reference only. Due to system limitations, you may not get this value.
+   * The memory ratio occupied by the app (%).This value is for reference only. Due to system limitations, you may not get this value.
    */
   memoryAppUsageRatio?: number;
   /**
-   * The memory occupied by the system (%).
-   * This value is for reference only. Due to system limitations, you may not get this value.
+   * The memory occupied by the system (%).This value is for reference only. Due to system limitations, you may not get this value.
    */
   memoryTotalUsageRatio?: number;
   /**
-   * The memory size occupied by the app (KB).
-   * This value is for reference only. Due to system limitations, you may not get this value.
+   * The memory size occupied by the app (KB).This value is for reference only. Due to system limitations, you may not get this value.
    */
   memoryAppUsageInKbytes?: number;
   /**
@@ -1506,7 +1486,7 @@ export enum QualityAdaptIndication {
 }
 
 /**
- * The latency level of an audience member in interactive live streaming. This enum takes effect only when the user role is set to ClientRoleAudience .
+ * The latency level of an audience member in interactive live streaming. This enum takes effect only when the user role is set toClientRoleAudience .
  */
 export enum AudienceLatencyLevelType {
   /**
@@ -1524,7 +1504,7 @@ export enum AudienceLatencyLevelType {
  */
 export class ClientRoleOptions {
   /**
-   * The latency level of an audience member in interactive live streaming. See AudienceLatencyLevelType .
+   * The latency level of an audience member in interactive live streaming.See AudienceLatencyLevelType .
    */
   audienceLatencyLevel?: AudienceLatencyLevelType;
 }
@@ -1538,33 +1518,33 @@ export enum ExperienceQualityType {
    */
   ExperienceQualityGood = 0,
   /**
-   * 1: The QoE of the local user is poor
+   * 1: The QoE of the local user is poor.
    */
   ExperienceQualityBad = 1,
 }
 
 /**
- * @ignore
+ * Reasons why the QoE of the local user when receiving a remote audio stream is poor.
  */
 export enum ExperiencePoorReason {
   /**
-   * @ignore
+   * 0: No reason, indicating a good QoE of the local user.
    */
   ExperienceReasonNone = 0,
   /**
-   * @ignore
+   * 1: The remote user's network quality is poor.
    */
   RemoteNetworkQualityPoor = 1,
   /**
-   * @ignore
+   * 2: The local user's network quality is poor.
    */
   LocalNetworkQualityPoor = 2,
   /**
-   * @ignore
+   * 4: The local user's Wi-Fi or mobile network signal is weak.
    */
   WirelessSignalPoor = 4,
   /**
-   * @ignore
+   * 8: The local user enables both Wi-Fi and bluetooth, and their signals interfere with each other. As a result, audio transmission quality is undermined.
    */
   WifiBluetoothCoexist = 8,
 }
@@ -1578,7 +1558,7 @@ export class RemoteAudioStats {
    */
   uid?: number;
   /**
-   * The quality of the audio stream sent by the user.  QualityType
+   * The quality of the audio stream sent by the user.See QualityType .
    */
   quality?: number;
   /**
@@ -1586,7 +1566,7 @@ export class RemoteAudioStats {
    */
   networkTransportDelay?: number;
   /**
-   * The network delay (ms) from the audio receiver to the jitter buffer. When the receiving end is an audience member andaudienceLatencyLevel of ClientRoleOptions is 1, this parameter does not take effect.
+   * The network delay (ms) from the audio receiver to the jitter buffer.When the receiving end is an audience member andaudienceLatencyLevel of ClientRoleOptions is 1, this parameter does not take effect.
    */
   jitterBufferDelay?: number;
   /**
@@ -1614,20 +1594,11 @@ export class RemoteAudioStats {
    */
   frozenRate?: number;
   /**
-   * The quality of the remote audio stream in the reported interval. The quality is determined by the Agora real-time audio MOS (Mean Opinion Score) measurement method. The return value range is [0, 500]. Dividing the return value by 100 gets the MOS score, which ranges from 0 to 5. The higher the score, the better the audio quality.
-   * The subjective perception of audio quality corresponding to the Agora real-time audio MOS scores is as follows: MOS score
-   * Perception of audio quality Greater than 4
-   * Excellent. The audio sounds clear and smooth. From 3.5 to 4
-   * Good. The audio has some perceptible impairment but still sounds clear. From 3 to 3.5
-   * Fair. The audio freezes occasionally and requires attentive listening. From 2.5 to 3
-   * Poor. The audio sounds choppy and requires considerable effort to understand. From 2 to 2.5
-   * Bad. The audio has occasional noise. Consecutive audio dropouts occur, resulting in some information loss. The users can communicate only with difficulty. Less than 2
-   * Very bad. The audio has persistent noise. Consecutive audio dropouts are frequent, resulting in severe information loss. Communication is nearly impossible.
+   * The quality of the remote audio stream in the reported interval. The quality is determined by the Agora real-time audio MOS (Mean Opinion Score) measurement method. The return value range is [0, 500]. Dividing the return value by 100 gets the MOS score, which ranges from 0 to 5. The higher the score, the better the audio quality.The subjective perception of audio quality corresponding to the Agora real-time audio MOS scores is as follows:MOS scorePerception of audio qualityGreater than 4Excellent. The audio sounds clear and smooth.From 3.5 to 4Good. The audio has some perceptible impairment but still sounds clear.From 3 to 3.5Fair. The audio freezes occasionally and requires attentive listening.From 2.5 to 3Poor. The audio sounds choppy and requires considerable effort to understand.From 2 to 2.5Bad. The audio has occasional noise. Consecutive audio dropouts occur, resulting in some information loss. The users can communicate only with difficulty.Less than 2Very bad. The audio has persistent noise. Consecutive audio dropouts are frequent, resulting in severe information loss. Communication is nearly impossible.
    */
   mosValue?: number;
   /**
-   * The total active time (ms) between the start of the audio call and the callback of the remote user.
-   * The active time refers to the total duration of the remote user without the mute state.
+   * The total active time (ms) between the start of the audio call and the callback of the remote user.The active time refers to the total duration of the remote user without the mute state.
    */
   totalActiveTime?: number;
   /**
@@ -1635,11 +1606,11 @@ export class RemoteAudioStats {
    */
   publishDuration?: number;
   /**
-   * The Quality of Experience (QoE) of the local user when receiving a remote audio stream. See ExperienceQualityType .
+   * The Quality of Experience (QoE) of the local user when receiving a remote audio stream.
    */
   qoeQuality?: number;
   /**
-   * @ignore
+   * Reasons why the QoE of the local user when receiving a remote audio stream is poor.
    */
   qualityChangedReason?: number;
 }
@@ -1649,11 +1620,7 @@ export class RemoteAudioStats {
  */
 export enum AudioProfileType {
   /**
-   * 0: The default audio profile.
-   * For the interactive streaming profile: A sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 64 Kbps.
-   * For the communication profile:
-   * Windows: A sample rate of 16 kHz, audio encoding, mono, and a bitrate of up to 16 Kbps.
-   * macOS: A sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps.
+   * 0: The default audio profile.For the interactive streaming profile: A sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 64 Kbps.For the communication profile:Windows: A sample rate of 16 kHz, audio encoding, mono, and a bitrate of up to 16 Kbps.macOS: A sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps.
    */
   AudioProfileDefault = 0,
   /**
@@ -1665,7 +1632,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicStandard = 2,
   /**
-   * 3: A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 80 Kbps.To implement stereo audio, you also need to call setAdvancedAudioOptions and set audioProcessingChannels to AdvancedAudioOptions in AudioProcessingStereo.
+   * 3: A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 80 Kbps.To implement stereo audio, you also need to call setAdvancedAudioOptions and setaudioProcessingChannels toAudioProcessingStereo inAdvancedAudioOptions.
    */
   AudioProfileMusicStandardStereo = 3,
   /**
@@ -1673,63 +1640,63 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQuality = 4,
   /**
-   * 5: A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 128 Kbps.To implement stereo audio, you also need to call setAdvancedAudioOptions and set audioProcessingChannels to AdvancedAudioOptions in AudioProcessingStereo.
+   * 5: A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 128 Kbps.To implement stereo audio, you also need to call setAdvancedAudioOptions and setaudioProcessingChannels toAudioProcessingStereo inAdvancedAudioOptions.
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   *
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
    */
   AudioProfileIot = 6,
   /**
-   * @ignore
+   * Enumerator boundary.
    */
   AudioProfileNum = 7,
 }
 
 /**
- * @ignore
+ * The audio scenarios.
  */
 export enum AudioScenarioType {
   /**
-   * @ignore
+   * 0: (Default) Automatic scenario match, where the SDK chooses the appropriate audio quality according to the user role and audio route.
    */
   AudioScenarioDefault = 0,
   /**
-   * @ignore
+   * 3: High-quality audio scenario, where users mainly play music.
    */
   AudioScenarioGameStreaming = 3,
   /**
-   * @ignore
+   * 5: Chatroom scenario, where users need to frequently switch the user role or mute and unmute the microphone. In this scenario, audience members receive a pop-up window to request permission of using microphones.
    */
   AudioScenarioChatroom = 5,
   /**
-   * @ignore
+   * 7: Real-time chorus scenario, where users have good network conditions and require ultra-low latency.
    */
   AudioScenarioChorus = 7,
   /**
-   * @ignore
+   * 8: Meeting scenario that mainly contains the human voice.
    */
   AudioScenarioMeeting = 8,
   /**
-   * @ignore
+   * The number of enumerations.
    */
   AudioScenarioNum = 9,
 }
 
 /**
- * @ignore
+ * The format of the video frame.
  */
 export class VideoFormat {
   /**
-   * @ignore
+   * The width (px) of the video frame.
    */
   width?: number;
   /**
-   * @ignore
+   * The height (px) of the video frame.
    */
   height?: number;
   /**
-   * @ignore
+   * The video frame rate (fps).
    */
   fps?: number;
 }
@@ -1753,29 +1720,29 @@ export enum VideoContentHint {
 }
 
 /**
- * @ignore
+ * The screen sharing scenario.
  */
 export enum ScreenScenarioType {
   /**
-   * @ignore
+   * 1: (Default) Document. This scenario prioritizes the video quality of screen sharing and reduces the latency of the shared video for the receiver. If you share documents, slides, and tables, you can set this scenario.
    */
   ScreenScenarioDocument = 1,
   /**
-   * @ignore
+   * 2: Game. This scenario prioritizes the smoothness of screen sharing. If you share games, you can set this scenario.
    */
   ScreenScenarioGaming = 2,
   /**
-   * @ignore
+   * 3: Video. This scenario prioritizes the smoothness of screen sharing. If you share movies or live videos, you can set this scenario.
    */
   ScreenScenarioVideo = 3,
   /**
-   * @ignore
+   * 4: Remote control. This scenario prioritizes the video quality of screen sharing and reduces the latency of the shared video for the receiver. If you share the device desktop being remotely controlled, you can set this scenario.
    */
   ScreenScenarioRdc = 4,
 }
 
 /**
- * @ignore
+ * The brightness level of the video image captured by the local camera.
  */
 export enum CaptureBrightnessLevelType {
   /**
@@ -1801,15 +1768,15 @@ export enum CaptureBrightnessLevelType {
  */
 export enum LocalAudioStreamState {
   /**
-   * 0: The local audo is in the initial state.
+   * 0: The local audio is in the initial state.
    */
   LocalAudioStreamStateStopped = 0,
   /**
-   * 1: The local audo capturing device starts successfully.
+   * 1: The local audio capturing device starts successfully.
    */
   LocalAudioStreamStateRecording = 1,
   /**
-   * 2: The first audo frame encodes successfully.
+   * 2: The first audio frame encodes successfully.
    */
   LocalAudioStreamStateEncoding = 2,
   /**
@@ -1823,15 +1790,15 @@ export enum LocalAudioStreamState {
  */
 export enum LocalAudioStreamError {
   /**
-   * @ignore
+   * 0: The local audio is normal.
    */
   LocalAudioStreamErrorOk = 0,
   /**
-   * @ignore
+   * 1: No specified reason for the local audio failure. Remind your users to try to rejoin the channel.
    */
   LocalAudioStreamErrorFailure = 1,
   /**
-   * @ignore
+   * 2: No permission to use the local audio capturing device. Remind your users to grant permission.Deprecated:This enumerator is deprecated. Please use RecordAudio in the onPermissionError callback instead.
    */
   LocalAudioStreamErrorDeviceNoPermission = 2,
   /**
@@ -1839,19 +1806,19 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorDeviceBusy = 3,
   /**
-   * @ignore
+   * 4: The local audio capture fails.
    */
   LocalAudioStreamErrorRecordFailure = 4,
   /**
-   * @ignore
+   * 5: The local audio encoding fails.
    */
   LocalAudioStreamErrorEncodeFailure = 5,
   /**
-   * @ignore
+   * 6: (Windows only) The application cannot find the local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control plane of the device or if the microphone is working properly.
    */
   LocalAudioStreamErrorNoRecordingDevice = 6,
   /**
-   * @ignore
+   * 7: (Windows only) The application cannot find the local audio playback device. Remind your users to check whether the speaker is connected to the device properly in the control plane of the device or if the speaker is working properly.
    */
   LocalAudioStreamErrorNoPlayoutDevice = 7,
   /**
@@ -1859,11 +1826,11 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorInterrupted = 8,
   /**
-   * @ignore
+   * 9: (Windows only) The ID of the local audio-capture device is invalid. Check the audio capture device ID.
    */
   LocalAudioStreamErrorRecordInvalidId = 9,
   /**
-   * @ignore
+   * 10: (Windows only) The ID of the local audio-playback device is invalid. Check the audio playback device ID.
    */
   LocalAudioStreamErrorPlayoutInvalidId = 10,
 }
@@ -1891,7 +1858,7 @@ export enum LocalVideoStreamState {
 }
 
 /**
- * Local video state error code.
+ * Local video state error codes.
  */
 export enum LocalVideoStreamError {
   /**
@@ -1903,15 +1870,15 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorFailure = 1,
   /**
-   * 2: No permission to use the local video capturing device.
+   * 2: No permission to use the local video capturing device. Remind the user to grant permissions and rejoin the channel.Deprecated:This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
    */
   LocalVideoStreamErrorDeviceNoPermission = 2,
   /**
-   * 3: The local video capturing device is in use.
+   * 3: The local video capturing device is in use. Remind the user to check whether another application occupies the camera.
    */
   LocalVideoStreamErrorDeviceBusy = 3,
   /**
-   * 4: The local video capture fails. Check whether the capturing device is working properly.
+   * 4: The local video capture fails. Remind your user to check whether the video capture device is working properly, whether the camera is occupied by another application, or try to rejoin the channel.
    */
   LocalVideoStreamErrorCaptureFailure = 4,
   /**
@@ -1919,39 +1886,39 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorEncodeFailure = 5,
   /**
-   * 6: The local video capturing device not available due to app did enter background.
+   * @ignore
    */
   LocalVideoStreamErrorCaptureInbackground = 6,
   /**
-   * 7: The local video capturing device not available because the app is running in a multi-app layout (generally on the pad).
+   * @ignore
    */
   LocalVideoStreamErrorCaptureMultipleForegroundApps = 7,
   /**
-   * @ignore
+   * 8: Fails to find a local video capture device. Remind the user to check whether the camera is connected to the device properly or the camera is working properly, and then to rejoin the channel.
    */
   LocalVideoStreamErrorDeviceNotFound = 8,
   /**
-   * @ignore
+   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * @ignore
+   * 10:(macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
-   * @ignore
+   * 101: The current video capture device is unavailable due to excessive system pressure.
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * @ignore
+   * 11:(macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * @ignore
+   * 12:(macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing.Common scenarios for reporting this error code:When the local user closes the shared window, the SDK reports this error code.The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
-   * @ignore
+   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
    */
   LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
   /**
@@ -1965,7 +1932,7 @@ export enum LocalVideoStreamError {
  */
 export enum RemoteAudioState {
   /**
-   * 0: The remote audo is in the initial state. The SDK reports this state in the case of RemoteAudioStateReasonLocalMuted, RemoteAudioStateReasonRemoteMuted, or RemoteAudioStateReasonRemoteOffline.
+   * 0: The local audio is in the initial state. The SDK reports this state in the case ofRemoteAudioReasonLocalMuted,RemoteAudioReasonRemoteMuted orRemoteAudioReasonRemoteOffline.
    */
   RemoteAudioStateStopped = 0,
   /**
@@ -1973,15 +1940,15 @@ export enum RemoteAudioState {
    */
   RemoteAudioStateStarting = 1,
   /**
-   * 2: The remote audio stream is decoded and plays normally. The SDK reports this state in the case of RemoteAudioStateReasonNetworkRecovery, RemoteAudioStateReasonLocalUnmuted, or RemoteAudioStateReasonRemoteUnmuted.
+   * 2: The remote audio stream is decoded and plays normally. The SDK reports this state in the case ofRemoteAudioReasonNetworkRecovery,RemoteAudioReasonLocalUnmuted orRemoteAudioReasonRemoteUnmuted.
    */
   RemoteAudioStateDecoding = 2,
   /**
-   * 3: The remote audio is frozen. The SDK reports this state in the case of RemoteAudioStateReasonNetworkCongestion.
+   * 3: The remote audio is frozen. The SDK reports this state in the case ofRemoteAudioReasonNetworkCongestion.
    */
   RemoteAudioStateFrozen = 3,
   /**
-   * 4: The remote audio fails to start. The SDK reports this state in the case of RemoteAudioStateReasonInternal.
+   * 4: The remote audio fails to start. The SDK reports this state in the case ofRemoteAudioReasonInternal.
    */
   RemoteAudioStateFailed = 4,
 }
@@ -1991,35 +1958,35 @@ export enum RemoteAudioState {
  */
 export enum RemoteAudioStateReason {
   /**
-   * @ignore
+   * 0: The SDK reports this reason when the audio state changes.
    */
   RemoteAudioReasonInternal = 0,
   /**
-   * @ignore
+   * 1: Network congestion.
    */
   RemoteAudioReasonNetworkCongestion = 1,
   /**
-   * @ignore
+   * 2: Network recovery.
    */
   RemoteAudioReasonNetworkRecovery = 2,
   /**
-   * @ignore
+   * 3: The local user stops receiving the remote audio stream or disables the audio module.
    */
   RemoteAudioReasonLocalMuted = 3,
   /**
-   * @ignore
+   * 4: The local user resumes receiving the remote audio stream or enables the audio module.
    */
   RemoteAudioReasonLocalUnmuted = 4,
   /**
-   * @ignore
+   * 5: The remote user stops sending the audio stream or disables the audio module.
    */
   RemoteAudioReasonRemoteMuted = 5,
   /**
-   * @ignore
+   * 6: The remote user resumes sending the audio stream or enables the audio module.
    */
   RemoteAudioReasonRemoteUnmuted = 6,
   /**
-   * @ignore
+   * 7: The remote user leaves the channel.
    */
   RemoteAudioReasonRemoteOffline = 7,
 }
@@ -2029,33 +1996,33 @@ export enum RemoteAudioStateReason {
  */
 export enum RemoteVideoState {
   /**
-   * 0: The remote audo is in the initial state. The SDK reports this state in the case of RemoteVideoStateReasonLocalMuted, RemoteVideoStateReasonRemoteMuted, or RemoteVideoStateReasonRemoteOffline.
+   * 0: The remote video is in the initial state. The SDK reports this state in the case ofRemoteVideoStateReasonLocalMuted,RemoteVideoStateReasonRemoteMuted, orRemoteVideoStateReasonRemoteOffline.
    */
   RemoteVideoStateStopped = 0,
   /**
-   * 1: The first remote audio packet is received.
+   * 1: The first remote video packet is received.
    */
   RemoteVideoStateStarting = 1,
   /**
-   * 2: The remote audio stream is decoded and plays normally. The SDK reports this state in the case of RemoteVideoStateReasonNetworkRecovery, RemoteVideoStateReasonLocalUnmuted, or RemoteVideoStateReasonRemoteUnmuted.
+   * 2: The remote video stream is decoded and plays normally. The SDK reports this state in the case ofRemoteVideoStateReasonNetworkRecovery,RemoteVideoStateReasonLocalUnmuted, orRemoteVideoStateReasonRemoteUnmuted.
    */
   RemoteVideoStateDecoding = 2,
   /**
-   * 3: The remote video is frozen. The SDK reports this state in the case of RemoteVideoStateReasonNetworkCongestion.
+   * 3: The remote video is frozen. The SDK reports this state in the case ofRemoteVideoStateReasonNetworkCongestion.
    */
   RemoteVideoStateFrozen = 3,
   /**
-   * 4: The remote video fails to start. The SDK reports this state in the case of RemoteVideoStateReasonInternal.
+   * 4: The remote video fails to start. The SDK reports this state in the case ofRemoteVideoStateReasonInternal.
    */
   RemoteVideoStateFailed = 4,
 }
 
 /**
- * The reason for the remote audio state change.
+ * The reason for the remote video state change.
  */
 export enum RemoteVideoStateReason {
   /**
-   * 0: The SDK reports this reason when the audio state changes.
+   * 0: The SDK reports this reason when the video state changes.
    */
   RemoteVideoStateReasonInternal = 0,
   /**
@@ -2203,30 +2170,25 @@ export enum RemoteVideoDownscaleLevel {
  */
 export class AudioVolumeInfo {
   /**
-   * The user ID. In the local user's callback, uid = 0.
-   * In the remote users' callback, uid is the user ID of a remote user whose instantaneous volume is one of the three highest.
+   * The user ID.In the local user's callback,uid = 0.In the remote users' callback,uid is the user ID of a remote user whose instantaneous volume is one of the three highest.
    */
   uid?: number;
   /**
-   * The volume of the user. The value ranges between 0 (the lowest volume) and 255 (the highest volume).
+   * The volume of the user. The value ranges between 0 (lowest volume) and 255 (highest volume).
    */
   volume?: number;
   /**
-   * Voice activity status of the local user. 0: The local user is not speaking.
-   * 1: The local user is speaking.
-   * The vad parameter does not report the voice activity status of remote users. In a remote user's callback, the value of vad is always 1.
-   * To use this parameter, you must set reportVad to true when calling enableAudioVolumeIndication .
+   * Voice activity status of the local user.0: The local user is not speaking.1: The local user is speaking.Thevad parameter does not report the voice activity status of remote users. In a remote user's callback, the value ofvad is always 1.To use this parameter, you must setreportVad totrue when calling enableAudioVolumeIndication .
    */
   vad?: number;
   /**
-   * The voice pitch (Hz) of the local user. The value ranges between 0.0 and 4000.0.
-   * The voicePitch parameter does not report the voice pitch of remote users. In the remote users' callback, the value of voicePitch is always 0.0.
+   * The voice pitch of the local user. The value ranges between 0.0 and 4000.0.ThevoicePitch parameter does not report the voice pitch of remote users. In the remote users' callback, the value ofvoicePitch is always 0.0.
    */
   voicePitch?: number;
 }
 
 /**
- * @ignore
+ * The audio device information.
  */
 export class DeviceInfo {
   /**
@@ -2286,15 +2248,15 @@ export enum VideoCodecTypeForStream {
  */
 export enum VideoCodecProfileType {
   /**
-   * 66: Baseline video codec profile. Generally used for video calls on mobile phones.
+   * 66: Baseline video codec profile; generally used for video calls on mobile phones.
    */
   VideoCodecProfileBaseline = 66,
   /**
-   * 77: Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
+   * 77: Main video codec profile; generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
    */
   VideoCodecProfileMain = 77,
   /**
-   * 100: (Default) High video codec profile. Generally used in high-resolution live streaming or television.
+   * 100: (Default) High video codec profile; generally used in high-resolution live streaming or television.
    */
   VideoCodecProfileHigh = 100,
 }
@@ -2342,7 +2304,7 @@ export class LocalAudioStats {
    */
   txPacketLossRate?: number;
   /**
-   * @ignore
+   * The delay of the audio device module when playing or recording audio.
    */
   audioDeviceDelay?: number;
 }
@@ -2353,12 +2315,10 @@ export class LocalAudioStats {
 export enum RtmpStreamPublishState {
   /**
    * 0: The Media Push has not started or has ended.
-   * This state is also triggered after you remove a RTMP or RTMPS stream from the CDN by calling removePublishStreamUrl .
    */
   RtmpStreamPublishStateIdle = 0,
   /**
    * 1: The SDK is connecting to Agora's streaming server and the CDN server.
-   * This state is triggered after you call the addPublishStreamUrl method.
    */
   RtmpStreamPublishStateConnecting = 1,
   /**
@@ -2366,18 +2326,15 @@ export enum RtmpStreamPublishState {
    */
   RtmpStreamPublishStateRunning = 2,
   /**
-   * 3: The RTMP or RTMPS streaming is recovering.
-   * When exceptions occur to the CDN, or the streaming is interrupted, the SDK tries to resume RTMP or RTMPS streaming and returns this state. If the SDK successfully resumes the streaming, RtmpStreamPublishStateRunning(2) returns. If the streaming does not resume within 60 seconds or server errors occur, RtmpStreamPublishStateFailure(4) returns.
-   * You can also reconnect to the server by calling the removePublishStreamUrl and addPublishStreamUrl methods.
+   * 3: The RTMP or RTMPS streaming is recovering. When exceptions occur to the CDN, or the streaming is interrupted, the SDK tries to resume RTMP or RTMPS streaming and returns this state.If the SDK successfully resumes the streaming,RtmpStreamPublishStateRunning(2) returns.If the streaming does not resume within 60 seconds or server errors occur,RtmpStreamPublishStateFailure(4) returns. You can also reconnect to the server by calling the stopRtmpStream method.
    */
   RtmpStreamPublishStateRecovering = 3,
   /**
-   * 3: Fails to push streams to the CDN.
-   * See the errCode parameter for the detailed error information.You can also call the addPublishStreamUrl method to publish the RTMP or RTMPS streaming again.
+   * 4: The RTMP or RTMPS streaming fails. See the errCode parameter for the detailed error information.
    */
   RtmpStreamPublishStateFailure = 4,
   /**
-   * 5: The SDK is disconnecting from the Agora streaming server and CDN. When you call removePublishStreamUrl or stopRtmpStream to stop the streaming normally, the SDK reports the streaming state as RtmpStreamPublishStateDisconnecting and RtmpStreamPublishStateIdle in sequence.
+   * 5: The SDK is disconnecting from the Agora streaming server and CDN. When you call stopRtmpStream to stop the streaming normally, the SDK reports the streaming state asRtmpStreamPublishStateDisconnecting andRtmpStreamPublishStateIdle in sequence.
    */
   RtmpStreamPublishStateDisconnecting = 5,
 }
@@ -2391,7 +2348,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorOk = 0,
   /**
-   * 1: Invalid argument used. Check the parameter setting. For example, if you do not call setLiveTranscoding to set the transcoding parameters before calling addPublishStreamUrl , the SDK returns this error.
+   * 1: Invalid argument used. Check the parameter setting.
    */
   RtmpStreamPublishErrorInvalidArgument = 1,
   /**
@@ -2399,11 +2356,11 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorEncryptedStreamNotAllowed = 2,
   /**
-   * 3: Timeout for the RTMP or RTMPS streaming. Call the addPublishStreamUrl method to publish the streaming again.
+   * 3: Timeout for the RTMP or RTMPS streaming. Try to publish the streaming again.
    */
   RtmpStreamPublishErrorConnectionTimeout = 3,
   /**
-   * 4: An error occurs in Agora's streaming server. Call the addPublishStreamUrl method to publish the streaming again.
+   * 4: An error occurs in Agora's streaming server. Try to publish the streaming again.
    */
   RtmpStreamPublishErrorInternalServerError = 4,
   /**
@@ -2411,7 +2368,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorRtmpServerError = 5,
   /**
-   * 6: Reserved parameter
+   * 6: The RTMP or RTMPS streaming publishing requests are too frequent.
    */
   RtmpStreamPublishErrorTooOften = 6,
   /**
@@ -2435,7 +2392,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorNotBroadcaster = 11,
   /**
-   * 13: The updateRtmpTranscoding or setLiveTranscoding method is called to update the transcoding configuration in a scenario where there is streaming without transcoding. Check your app code logic.
+   * 13: The updateRtmpTranscoding or setLiveTranscoding method is called to update the transcoding configuration in a scenario where there is streaming without transcoding. Check your application code logic.
    */
   RtmpStreamPublishErrorTranscodingNoMixStream = 13,
   /**
@@ -2451,7 +2408,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorInvalidPrivilege = 16,
   /**
-   * 100: The streaming has been stopped normally. After you call removePublishStreamUrl to stop streaming, the SDK returns this value.
+   * 100: The streaming has been stopped normally. After you call stopRtmpStream to stop streaming, the SDK returns this value.
    */
   RtmpStreamUnpublishErrorOk = 100,
 }
@@ -2465,8 +2422,7 @@ export enum RtmpStreamingEvent {
    */
   RtmpStreamingEventFailedLoadImage = 1,
   /**
-   * 2: The streaming URL is already being used for CDN live streaming.
-   * If you want to start new streaming, use a new streaming URL.
+   * 2: The streaming URL is already being used for CDN live streaming. If you want to start new streaming, use a new streaming URL.
    */
   RtmpStreamingEventUrlAlreadyInUse = 2,
   /**
@@ -2505,20 +2461,18 @@ export class RtcImage {
    */
   height?: number;
   /**
-   * The layer index of the watermark or background image. When you use the watermark array to add a watermark or multiple watermarks, you must pass a value to zOrder in the range [1,255]; otherwise, the SDK reports an error. In other cases, zOrder can optionally be passed in the range [0,255], with 0 being the default value. 0 means the bottom layer and 255 means the top layer.
+   * The layer index of the watermark or background image. When you use the watermark array to add a watermark or multiple watermarks, you must pass a value tozOrder in the range [1,255]; otherwise, the SDK reports an error. In other cases,zOrder can optionally be passed in the range [0,255], with 0 being the default value. 0 means the bottom layer and 255 means the top layer.
    */
   zOrder?: number;
   /**
-   * The transparency of the watermark or background image. The value ranges between 0.0 and 1.0:
-   * 0.0: Completely transparent.
-   * 1.0: (Default) Opaque.
+   * The transparency of the watermark or background image. The value ranges between 0.0 and 1.0:0.0: Completely transparent.1.0: (Default) Opaque.
    */
   alpha?: number;
 }
 
 /**
  * The configuration for advanced features of the RTMP or RTMPS streaming with transcoding.
- * If you want to enable the advanced features of streaming with transcoding, contact .
+ * If you want to enable the advanced features of streaming with transcoding, contact.
  */
 export class LiveStreamAdvancedFeature {
   /**
@@ -2526,9 +2480,7 @@ export class LiveStreamAdvancedFeature {
    */
   featureName?: string;
   /**
-   * Whether to enable the advanced features of streaming with transcoding:
-   * true: Enable the advanced features.
-   * false: (Default) Do not enable the advanced features.
+   * Whether to enable the advanced features of streaming with transcoding:true: Enable the advanced features.false: (Default) Do not enable the advanced features.
    */
   opened?: boolean;
 }
@@ -2538,32 +2490,23 @@ export class LiveStreamAdvancedFeature {
  */
 export enum ConnectionStateType {
   /**
-   * 1: The SDK is disconnected from the Agora edge server. The state indicates the SDK is in one of the following phases:
-   * Theinitial state before calling the joinChannelWithOptions method.
-   * The app calls the leaveChannel method.
+   * 1: The SDK is disconnected from the Agora edge server. The state indicates the SDK is in one of the following phases:Theinitial state before calling thejoinChannel [2/2] method.The app calls the leaveChannel method.
    */
   ConnectionStateDisconnected = 1,
   /**
-   * 2: The SDK is connecting to the Agora edge server. This state indicates that the SDK is establishing a connection with the specified channel after the app calls joinChannelWithOptions.
-   * If the SDK successfully joins the channel, it triggers the onConnectionStateChanged callback and the connection state switches to ConnectionStateConnected.
-   * After the connection is established, the SDK also initializes the media and triggers onJoinChannelSuccess when everything is ready.
+   * 2: The SDK is connecting to the Agora edge server. This state indicates that the SDK is establishing a connection with the specified channel after the app callsjoinChannel [2/2].If the SDK successfully joins the channel, it triggers the onConnectionStateChanged callback and the connection state switches toConnectionStateConnected.After the connection is established, the SDK also initializes the media and triggers onJoinChannelSuccess when everything is ready.
    */
   ConnectionStateConnecting = 2,
   /**
-   * 3: The SDK is connected to the Agora edge server. This state also indicates that the user has joined a channel and can now publish or subscribe to a media stream in the channel. If the connection to the channel is lost because, for example, if the network is down or switched, the SDK automatically tries to reconnect and triggers:
-   * onConnectionStateChanged callback, notifying that the current network state becomes ConnectionStateReconnecting.
+   * 3: The SDK is connected to the Agora edge server. This state also indicates that the user has joined a channel and can now publish or subscribe to a media stream in the channel. If the connection to the channel is lost because, for example, if the network is down or switched, the SDK automatically tries to reconnect and triggers onConnectionStateChanged callback, notifying that the current network state becomesConnectionStateReconnecting.
    */
   ConnectionStateConnected = 3,
   /**
-   * 4: The SDK keeps reconnecting to the Agora edge server. The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
-   * If the SDK cannot rejoin the channel within 10 seconds, it triggers onConnectionLost , stays in the ConnectionStateReconnecting state, and keeps rejoining the channel.
-   * If the SDK fails to rejoin the channel 20 minutes after being disconnected from the Agora edge server, the SDK triggers the onConnectionStateChanged callback, switches to the ConnectionStateFailed state, and stops rejoining the channel.
+   * 4: The SDK keeps reconnecting to the Agora edge server. The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.If the SDK cannot rejoin the channel within 10 seconds, it triggers onConnectionLost , stays in theConnectionStateReconnecting state, and keeps rejoining the channel.If the SDK fails to rejoin the channel 20 minutes after being disconnected from the Agora edge server, the SDK triggers the onConnectionStateChanged callback, switches to theConnectionStateFailed state, and stops rejoining the channel.
    */
   ConnectionStateReconnecting = 4,
   /**
-   * 5: The SDK fails to connect to the Agora edge server or join the channel. This state indicates that the SDK stops trying to rejoin the channel. You must call leaveChannel to leave the channel.
-   * You can call joinChannelWithOptions to rejoin the channel.
-   * If the SDK is banned from joining the channel by the Agora edge server through the RESTful API, the SDK triggers the onConnectionStateChanged callback.
+   * 5: The SDK fails to connect to the Agora edge server or join the channel. This state indicates that the SDK stops trying to rejoin the channel. You must call leaveChannel to leave the channel.You can calljoinChannel [2/2] to rejoin the channel.If the SDK is banned from joining the channel by the Agora edge server through the RESTful API, the SDK triggers the onConnectionStateChanged callback.
    */
   ConnectionStateFailed = 5,
 }
@@ -2581,7 +2524,7 @@ export class TranscodingUser {
    */
   x?: number;
   /**
-   * The y coordinate (pixel) of the host's video on the output video frame (taking the upper left corner of the video frame as the origin). The value range is [0, height], where height is the height set in LiveTranscoding .
+   * The y coordinate (pixel) of the host's video on the output video frame (taking the upper left corner of the video frame as the origin). The value range is [0, height], where height is theheight set in LiveTranscoding .
    */
   y?: number;
   /**
@@ -2593,28 +2536,15 @@ export class TranscodingUser {
    */
   height?: number;
   /**
-   * The number of the layer to which the video for the video mixing on the local client belongs. The value range is [0,100].
-   * 0: (Default) The layer is at the bottom.
-   * 100: The layer is at the top.
-   * If the value is less than 0 or greater than 100, the error ERR_INVALID_ARGUMENT is returned.
-   * Starting from v2.3, setting zOrder to 0 is supported.
+   * The layer index number of the host's video. The value range is [0,100].0: (Default) The host's video is the bottom layer.100: The host's video is the top layer.If the value is less than 0 or greater than 100, the errorERR_INVALID_ARGUMENT is returned.Starting from v2.3, setting zOrder to 0 is supported.
    */
   zOrder?: number;
   /**
-   * The transparency of the video for the video mixing on the local client. The value range is [0.0,1.0].
-   * 0.0: Completely transparent.
-   * 1.0: (Default) Opaque.
+   * The transparency of the host's video. The value range is [0.0,1.0].0.0: Completely transparent.1.0: (Default) Opaque.
    */
   alpha?: number;
   /**
-   * The audio channel used by the host's audio in the output audio. The default value is 0, and the value range is [0, 5].
-   * 0: (Recommended) The defaut setting, which supports dual channels at most and depends on the upstream of the host.
-   * 1: The host's audio uses the FL audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.
-   * 2: The host's audio uses the FC audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.
-   * 3: The host's audio uses the FR audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.
-   * 4: The host's audio uses the BL audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.
-   * 5: The host's audio uses the BR audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.
-   * 0xFF or a value greater than 5: The host's audio is muted, and the Agora server removes the host's audio. If the value is not 0, a special player is required.
+   * The audio channel used by the host's audio in the output audio. The default value is 0, and the value range is [0, 5].0: (Recommended) The defaut setting, which supports dual channels at most and depends on the upstream of the host.1: The host's audio uses the FL audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.2: The host's audio uses the FC audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.3: The host's audio uses the FR audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.4: The host's audio uses the BL audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.5: The host's audio uses the BR audio channel. If the host's upstream uses multiple audio channels, the Agora server mixes them into mono first.0xFF or a value greater than5: The host's audio is muted, and the Agora server removes the host's audio.If the value is not0, a special player is required.
    */
   audioChannel?: number;
 }
@@ -2624,13 +2554,11 @@ export class TranscodingUser {
  */
 export class LiveTranscoding {
   /**
-   * The width of the video in pixels. The default value is 360. When pushing video streams to the CDN, the value range of width is [64,1920]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1920, Agora server automatically adjusts it to 1920.
-   * When pushing audio streams to the CDN, set width and height as 0.
+   * The width of the video in pixels. The default value is 360.When pushing video streams to the CDN, the value range ofwidth is [64,1920]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1920, Agora server automatically adjusts it to 1920.When pushing audio streams to the CDN, setwidth andheight as 0.
    */
   width?: number;
   /**
-   * The height of the video in pixels. The default value is 640. When pushing video streams to the CDN, the value range of height is [64,1080]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1080, Agora server automatically adjusts it to 1080.
-   * When pushing audio streams to the CDN, set width and height as 0.
+   * The height of the video in pixels. The default value is 640.When pushing video streams to the CDN, the value range ofheight is [64,1080]. If the value is less than 64, Agora server automatically adjusts it to 64; if the value is greater than 1080, Agora server automatically adjusts it to 1080.When pushing audio streams to the CDN, setwidth andheight as 0.
    */
   height?: number;
   /**
@@ -2638,14 +2566,11 @@ export class LiveTranscoding {
    */
   videoBitrate?: number;
   /**
-   * Frame rate (in fps) of the output video stream set for Media Push. The default value is 15 , and the value range is (0,30].
-   * The Agora server adjusts any value over 30 to 30.
+   * Frame rate (in fps) of the output video stream set for Media Push. The default value is 15 , and the value range is (0,30].The Agora server adjusts any value over 30 to 30.
    */
   videoFramerate?: number;
   /**
-   *  Deprecated
-   * This parameter is deprecated. Latency mode: true: Low latency with unassured quality.
-   * false: (Default) High latency with assured quality.
+   * DeprecatedThis parameter is deprecated.Latency mode:true: Low latency with unassured quality.false: (Default) High latency with assured quality.
    */
   lowLatency?: boolean;
   /**
@@ -2653,8 +2578,7 @@ export class LiveTranscoding {
    */
   videoGop?: number;
   /**
-   * Video codec profile type for Media Push. Set it as 66, 77, or 100 (default). See VideoCodecProfileType for details.
-   * If you set this parameter to any other value, Agora adjusts it to the default value.
+   * Video codec profile type for Media Push. Set it as 66, 77, or 100 (default). See VideoCodecProfileType for details.If you set this parameter to any other value, Agora adjusts it to the default value.
    */
   videoCodecProfile?: VideoCodecProfileType;
   /**
@@ -2674,30 +2598,27 @@ export class LiveTranscoding {
    */
   transcodingUsers?: TranscodingUser[];
   /**
-   * Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN client. Maximum length: 4096 bytes. For more information on SEI, see SEI-related questions.
+   * Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN client. Maximum length: 4096 bytes. For more information on SEI, seeSEI-related questions.
    */
   transcodingExtraInfo?: string;
   /**
-   *  Deprecated
-   * This parameter is deprecated. The metadata sent to the CDN client.
+   * DeprecatedThis parameter is deprecated.The metadata sent to the CDN client.
    */
   metadata?: string;
   /**
-   * The watermark on the live video. The image format needs to be PNG. See RtcImage .
-   * You can add one watermark, or add multiple watermarks using an array. This parameter is used with watermarkCount.
+   * The watermark on the live video. The image format needs to be PNG. See RtcImage .You can add one watermark, or add multiple watermarks using an array.This parameter is used withwatermarkCount.
    */
   watermark?: RtcImage[];
   /**
-   * The number of watermarks on the live video. The total number of watermarks and background images can range from 0 to 10. This parameter is used with watermark.
+   * The number of watermarks on the live video. The total number of watermarks and background images can range from 0 to 10. This parameter is used withwatermark.
    */
   watermarkCount?: number;
   /**
-   * The number of background images on the live video. The image format needs to be PNG. See RtcImage .
-   * You can add a background image or use an array to add multiple background images. This parameter is used with backgroundImageCount.
+   * The number of background images on the live video. The image format needs to be PNG. See RtcImage .You can add a background image or use an array to add multiple background images. This parameter is used withbackgroundImageCount.
    */
   backgroundImage?: RtcImage[];
   /**
-   * The number of background images on the live video. The total number of watermarks and background images can range from 0 to 10. This parameter is used with backgroundImage.
+   * The number of background images on the live video. The total number of watermarks and background images can range from 0 to 10. This parameter is used withbackgroundImage.
    */
   backgroundImageCount?: number;
   /**
@@ -2709,11 +2630,7 @@ export class LiveTranscoding {
    */
   audioBitrate?: number;
   /**
-   * The number of audio channels for Media Push. Agora recommends choosing 1 (mono), or 2 (stereo) audio channels. Special players are required if you choose 3, 4, or 5. 1: (Default) Mono.
-   * 2: Stereo.
-   * 3: Three audio channels.
-   * 4: Four audio channels.
-   * 5: Five audio channels.
+   * The number of audio channels for Media Push. Agora recommends choosing 1 (mono), or 2 (stereo) audio channels. Special players are required if you choose 3, 4, or 5.1: (Default) Mono.2: Stereo.3: Three audio channels.4: Four audio channels.5: Five audio channels.
    */
   audioChannels?: number;
   /**
@@ -2739,7 +2656,7 @@ export class TranscodingVideoStream {
    */
   sourceType?: MediaSourceType;
   /**
-   * The ID of the remote user.Use this parameter only when the source type of the video for the video mixingonthe local client is VideoSourceRemote.
+   * The ID of the remote user.Use this parameter only when the source type of the video for the video mixing on the local client isVideoSourceRemote.
    */
   remoteUserUid?: number;
   /**
@@ -2763,9 +2680,7 @@ export class TranscodingVideoStream {
    */
   height?: number;
   /**
-   * The number of the layer to which the video for the video mixing on the local client belongs. The value range is [0,100].
-   * 0: (Default) The layer is at the bottom.
-   * 100: The layer is at the top.
+   * The number of the layer to which the video for the video mixing on the local client belongs. The value range is [0,100].0: (Default) The layer is at the bottom.100: The layer is at the top.
    */
   zOrder?: number;
   /**
@@ -2773,9 +2688,7 @@ export class TranscodingVideoStream {
    */
   alpha?: number;
   /**
-   * Whether to mirror the video for the video mixing on the local client.
-   * true: Mirror the captured video.
-   * false: (Default) Do not mirror the captured video. The paramter only works for videos with the source type
+   * Whether to mirror the video for the video mixing on the local client.true: Mirror the captured video.false: (Default) Do not mirror the captured video.The paramter only works for videos with the source type
    */
   mirror?: boolean;
 }
@@ -2803,15 +2716,11 @@ export class LocalTranscoderConfiguration {
  */
 export class LastmileProbeConfig {
   /**
-   * Sets whether to test the uplink network. Some users, for example, the audience members in a LIVE_BROADCASTING channel, do not need such a test.
-   * true: Test.
-   * false: Not test.
+   * Sets whether to test the uplink network. Some users, for example, the audience members in a LIVE_BROADCASTING channel, do not need such a test.true: Test.false: Not test.
    */
   probeUplink?: boolean;
   /**
-   * Sets whether to test the downlink network:
-   * true: Test.
-   * false: Not test.
+   * Sets whether to test the downlink network:true: Test.false: Not test.
    */
   probeDownlink?: boolean;
   /**
@@ -2919,9 +2828,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedInvalidChannelName = 7,
   /**
-   * 8: The connection failed because the token is not valid. Typical reasons include:
-   * The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.
-   * Theuid specified when calling joinChannelWithOptions to join the channel is inconsistent with the uid passed in when generating the token.
+   * 8: The connection failed because the token is not valid. Typical reasons include:The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.The uid specified when callingjoinChannel [2/2] to join the channel is inconsistent with the uid passed in when generating the token.
    */
   ConnectionChangedInvalidToken = 8,
   /**
@@ -2929,9 +2836,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedTokenExpired = 9,
   /**
-   * 10: The connection is rejected by server. Typical reasons include:
-   * The user is already in the channel and still calls a method, for example,joinChannelWithOptions, to join the channel. Stop calling this method to clear this error.
-   * The user tries to join the channel when calling for a call test. The user needs to call the channel after the call test ends.
+   * 10: The connection is rejected by server. Typical reasons include:The user is already in the channel and still calls a method, for example,joinChannel [2/2], to join the channel. Stop calling this method to clear this error.The user tries to join the channel when conducting a pre-call test. The user needs to call the channel after the call test ends.
    */
   ConnectionChangedRejectedByServer = 10,
   /**
@@ -2951,15 +2856,15 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedKeepAliveTimeout = 14,
   /**
-   * @ignore
+   * 15: The SDK has rejoined the channel successfully.
    */
   ConnectionChangedRejoinSuccess = 15,
   /**
-   * @ignore
+   * 16: The connection between the SDK and the server is lost.
    */
   ConnectionChangedLost = 16,
   /**
-   * @ignore
+   * 17: The connection state changes due to the echo test.
    */
   ConnectionChangedEchoTest = 17,
   /**
@@ -2977,23 +2882,23 @@ export enum ConnectionChangedReasonType {
 }
 
 /**
- * @ignore
+ * The reason for a user role switch failure.
  */
 export enum ClientRoleChangeFailedReason {
   /**
-   * @ignore
+   * 1: The number of hosts in the channel is already at the upper limit.This enumerator is reported only when the support for 128 users is enabled. The maximum number of hosts is based on the actual number of hosts configured when you enable the 128-user feature.
    */
   ClientRoleChangeFailedTooManyBroadcasters = 1,
   /**
-   * @ignore
+   * 2: The request is rejected by the Agora server. Agora recommends you prompt the user to try to switch their user role again.
    */
   ClientRoleChangeFailedNotAuthorized = 2,
   /**
-   * @ignore
+   * 3: The request is timed out. Agora recommends you prompt the user to check the network connection and try to switch their user role again.
    */
   ClientRoleChangeFailedRequestTimeOut = 3,
   /**
-   * @ignore
+   * 4: The SDK connection fails. You can usereason reported in the onConnectionStateChanged callback to troubleshoot the failure.
    */
   ClientRoleChangeFailedConnectionFailed = 4,
 }
@@ -3053,11 +2958,11 @@ export class WlAccStats {
 }
 
 /**
- * Network types.
+ * Network type.
  */
 export enum NetworkType {
   /**
-   * -1: The network type is unknown.</pd>
+   * -1: The network type is unknown.
    */
   NetworkTypeUnknown = -1,
   /**
@@ -3105,23 +3010,23 @@ export enum VideoViewSetupMode {
 }
 
 /**
- * @ignore
+ * Attributes of video canvas object.
  */
 export class VideoCanvas {
   /**
-   * @ignore
+   * Video display window.
    */
   view?: any;
   /**
-   * @ignore
+   * The rendering mode of the video. See RenderModeType .
    */
   renderMode?: RenderModeType;
   /**
-   * @ignore
+   * The mirror mode of the view. See VideoMirrorModeType .For the mirror mode of the local video view: If you use a front camera, the SDK enables the mirror mode by default; if you use a rear camera, the SDK disables the mirror mode by default.For the remote user: The mirror mode is disabled by default.
    */
   mirrorMode?: VideoMirrorModeType;
   /**
-   * @ignore
+   * The user ID.
    */
   uid?: number;
   /**
@@ -3137,7 +3042,7 @@ export class VideoCanvas {
    */
   priv_size?: number;
   /**
-   * @ignore
+   * The type of the video source, see VideoSourceType .
    */
   sourceType?: VideoSourceType;
   /**
@@ -3159,11 +3064,11 @@ export enum LighteningContrastLevel {
    */
   LighteningContrastLow = 0,
   /**
-   * Normal contrast level.
+   * 1: (Default) Normal contrast level.
    */
   LighteningContrastNormal = 1,
   /**
-   * High contrast level.
+   * 2: High contrast level.
    */
   LighteningContrastHigh = 2,
 }
@@ -3173,125 +3078,125 @@ export enum LighteningContrastLevel {
  */
 export class BeautyOptions {
   /**
-   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel .
+   * The contrast level, used with thelighteningLevel parameter. The larger the value, the greater the contrast between light and dark.
    */
   lighteningContrastLevel?: LighteningContrastLevel;
   /**
-   * The brightness level. The value ranges from 0.0 (original) to 1.0. The default value is 0.0. The greater the value, the greater the degree of whitening.
+   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is
    */
   lighteningLevel?: number;
   /**
-   * The value ranges from 0.0 (original) to 1.0. The default value is 0.0. The greater the value, the greater the degree of skin grinding.
+   * The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is
    */
   smoothnessLevel?: number;
   /**
-   * The redness level. The value ranges from 0.0 (original) to 1.0. The default value is 0.0. The larger the value, the greater the rosy degree.
+   * The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is
    */
   rednessLevel?: number;
   /**
-   * The sharpness level. The value ranges from 0.0 (original) to 1.0. The default value is 0.0. The larger the value, the greater the sharpening degree.
+   * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is
    */
   sharpnessLevel?: number;
 }
 
 /**
- * @ignore
+ * The low-light enhancement mode.
  */
 export enum LowLightEnhanceMode {
   /**
-   * @ignore
+   * 0: (Default) Automatic mode. The SDK automatically enables or disables the low-light enhancement feature according to the ambient light to compensate for the lighting level or prevent overexposure, as necessary.
    */
   LowLightEnhanceAuto = 0,
   /**
-   * @ignore
+   * 1: Manual mode. Users need to enable or disable the low-light enhancement feature manually.
    */
   LowLightEnhanceManual = 1,
 }
 
 /**
- * @ignore
+ * The low-light enhancement level.
  */
 export enum LowLightEnhanceLevel {
   /**
-   * @ignore
+   * 0: (Default) Promotes video quality during low-light enhancement. It processes the brightness, details, and noise of the video image. The performance consumption is moderate, the processing speed is moderate, and the overall video quality is optimal.
    */
   LowLightEnhanceLevelHighQuality = 0,
   /**
-   * @ignore
+   * 1: Promotes performance during low-light enhancement. It processes the brightness and details of the video image. The processing speed is faster.
    */
   LowLightEnhanceLevelFast = 1,
 }
 
 /**
- * @ignore
+ * The low-light enhancement options.
  */
 export class LowlightEnhanceOptions {
   /**
-   * @ignore
+   * The low-light enhancement mode.See LowLightEnhanceMode .
    */
   mode?: LowLightEnhanceMode;
   /**
-   * @ignore
+   * The low-light enhancement level.See LowLightEnhanceLevel .
    */
   level?: LowLightEnhanceLevel;
 }
 
 /**
- * @ignore
+ * Video noise reduction mode.
  */
 export enum VideoDenoiserMode {
   /**
-   * @ignore
+   * 0: (Default) Automatic mode. The SDK automatically enables or disables the video noise reduction feature according to the ambient light.
    */
   VideoDenoiserAuto = 0,
   /**
-   * @ignore
+   * 1: Manual mode. Users need to enable or disable the video noise reduction feature manually.
    */
   VideoDenoiserManual = 1,
 }
 
 /**
- * @ignore
+ * The video noise reduction level.
  */
 export enum VideoDenoiserLevel {
   /**
-   * @ignore
+   * 0: (Default) Promotes video quality during video noise reduction. balances performance consumption and video noise reduction quality. The performance consumption is moderate, the video noise reduction speed is moderate, and the overall video quality is optimal.
    */
   VideoDenoiserLevelHighQuality = 0,
   /**
-   * @ignore
+   * 1: Promotes reducing performance consumption during video noise reduction. It prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use FAST when the camera is fixed.
    */
   VideoDenoiserLevelFast = 1,
   /**
-   * @ignore
+   * 2: Enhanced video noise reduction. It prioritizes video noise reduction quality over reducing performance consumption. The performance consumption is higher, the video noise reduction speed is slower, and the video noise reduction quality is better. If is not enough for your video noise reduction needs, you can use this enumerator.VideoDenoiserLevelHighQuality
    */
   VideoDenoiserLevelStrength = 2,
 }
 
 /**
- * @ignore
+ * Video noise reduction options.
  */
 export class VideoDenoiserOptions {
   /**
-   * @ignore
+   * Video noise reduction mode.
    */
   mode?: VideoDenoiserMode;
   /**
-   * @ignore
+   * Video noise reduction level.
    */
   level?: VideoDenoiserLevel;
 }
 
 /**
- * @ignore
+ * The color enhancement options.
  */
 export class ColorEnhanceOptions {
   /**
-   * @ignore
+   * The level of color enhancement. The value range is [0.0, 1.0].0.0 is the default value, which means no color enhancement is applied to the video. The higher the value, the higher the level of color enhancement. The default value is0.5.
    */
   strengthLevel?: number;
   /**
-   * @ignore
+   * The level of skin tone protection. The value range is [0.0, 1.0].0.0 means no skin tone protection. The higher the value, the higher the level of skin tone protection. The default value is1.0.When the level of color enhancement is higher, the portrait skin tone can be significantly distorted, so you need to set the level of skin tone protection.When the level of skin tone protection is higher, the color enhancement effect can be slightly reduced.Therefore, to get the best color enhancement effect, Agora recommends that you adjuststrengthLevel andskinProtectLevel to get the most appropriate values.
    */
   skinProtectLevel?: number;
 }
@@ -3341,43 +3246,43 @@ export class VirtualBackgroundSource {
    */
   background_source_type?: BackgroundSourceType;
   /**
-   * The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image.This parameter takes effect only when the type of the custom background image is BackgroundColor.
+   * The type of the custom background image. The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image.This parameter takes effect only when the type of the custom background image isBackgroundColor.
    */
   color?: number;
   /**
-   * The local absolute path of the custom background image. PNG and JPG formats are supported. If the path is invalid, the SDK replaces the original background image with a white background image.This parameter takes effect only when the type of the custom background image is BackgroundImg.
+   * The local absolute path of the custom background image. PNG and JPG formats are supported. If the path is invalid, the SDK replaces the original background image with a white background image.This parameter takes effect only when the type of the custom background image isBackgroundImg.
    */
   source?: string;
   /**
-   * The degree of blurring applied to the custom background image. This parameter takes effect only when the type of the custom background image is BackgroundBlur.
+   * The degree of blurring applied to the custom background image.This parameter takes effect only when the type of the custom background image isBackgroundBlur.
    */
   blur_degree?: BackgroundBlurDegree;
 }
 
 /**
- * @ignore
+ * The type of algorithms to user for background processing.
  */
 export enum SegModelType {
   /**
-   * @ignore
+   * 1: (Default) Use the algorithm suitable for all scenarios.
    */
   SegModelAi = 1,
   /**
-   * @ignore
+   * 2: Use the algorithm designed specifically for scenarios with a green screen background.
    */
   SegModelGreen = 2,
 }
 
 /**
- * @ignore
+ * Processing properties for background images.
  */
 export class SegmentationProperty {
   /**
-   * @ignore
+   * The type of algorithms to user for background processing.
    */
   modelType?: SegModelType;
   /**
-   * @ignore
+   * The range of accuracy for identifying green colors (different shades of green) in the view. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of green. When the value of this parameter is too large, the edge of the portrait and the green color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect.This parameter only takes effect whenmodelType is set toSegModelGreen.
    */
   greenCapacity?: number;
 }
@@ -3391,23 +3296,19 @@ export enum VoiceBeautifierPreset {
    */
   VoiceBeautifierOff = 0x00000000,
   /**
-   * A more magnetic voice.
-   * Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may experience vocal distortion.
+   * A more magnetic voice.Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may experience vocal distortion.
    */
   ChatBeautifierMagnetic = 0x01010100,
   /**
-   * A fresher voice.
-   * Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+   * A fresher voice.Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
    */
   ChatBeautifierFresh = 0x01010200,
   /**
-   * A more vital voice.
-   * Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+   * A more vital voice.Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
    */
   ChatBeautifierVitality = 0x01010300,
   /**
-   * Singing beautifier effect. If you call setVoiceBeautifierPreset (SingingBeautifier), you can beautify a male-sounding voice and add a reverberation effect that sounds like singing in a small room. Agora recommends using this enumerator to process a male-sounding voice; otherwise, you might experience vocal distortion.
-   * If you call setVoiceBeautifierParameters (SingingBeautifier, param1, param2), you can beautify a male- or female-sounding voice and add a reverberation effect.
+   * Singing beautifier effect.If you call setVoiceBeautifierPreset (SingingBeautifier), you can beautify a male-sounding voice and add a reverberation effect that sounds like singing in a small room. Agora recommends using this enumerator to process a male-sounding voice; otherwise, you might experience vocal distortion.If you call setVoiceBeautifierParameters (SingingBeautifier, param1, param2), you can beautify a male or female-sounding voice and add a reverberation effect.
    */
   SingingBeautifier = 0x01020100,
   /**
@@ -3443,29 +3344,14 @@ export enum VoiceBeautifierPreset {
    */
   TimbreTransformationRinging = 0x01030800,
   /**
-   * A ultra-high quality voice, which makes the audio clearer and restores more details.
-   * To achieve better audio effect quality, Agora recommends that you set the profile of setAudioProfile to AudioProfileMusicHighQuality (4) or AudioProfileMusicHighQualityStereo (5) and scenario to AudioScenarioHighDefinition(6) before calling setVoiceBeautifierPreset .
-   * If you have an audio capturing device that can already restore audio details to a high degree, Agora recommends that you do not enable ultra-high quality; otherwise, the SDK may over-restore audio details, and you may not hear the anticipated voice effect.
+   * A ultra-high quality voice, which makes the audio clearer and restores more details.To achieve better audio effect quality, Agora recommends that you set theprofile of setAudioProfile [2/2] toAudioProfileMusicHighQuality(4) orAudioProfileMusicHighQualityStereo(5) andscenario toAudioScenarioGameStreaming(3) before calling setVoiceBeautifierPreset .If you have an audio capturing device that can already restore audio details to a high degree, Agora recommends that you do not enable ultra-high quality; otherwise, the SDK may over-restore audio details, and you may not hear the anticipated voice effect.
    */
   UltraHighQualityVoice = 0x01040100,
 }
 
 /**
- * Preset voice effects.
- * For better voice effects, Agora recommends settingthe profile parameter of setAudioProfile to AudioProfileMusicHighQuality or AudioProfileMusicHighQualityStereo before using the following presets: RoomAcousticsKtv
- * RoomAcousticsVocalConcert
- * RoomAcousticsStudio
- * RoomAcousticsPhonograph
- * RoomAcousticsSpacial
- * RoomAcousticsEthereal
- * VoiceChangerEffectUncle
- * VoiceChangerEffectOldman
- * VoiceChangerEffectBoy
- * VoiceChangerEffectSister
- * VoiceChangerEffectGirl
- * VoiceChangerEffectPigking
- * VoiceChangerEffectHulk
- * PitchCorrection
+ * Preset audio effects.
+ * To get better audio effects, Agora recommends calling setAudioProfile and setting theprofile parameter as recommended below before using the preset audio effects.
  */
 export enum AudioEffectPreset {
   /**
@@ -3490,7 +3376,6 @@ export enum AudioEffectPreset {
   RoomAcousticsPhonograph = 0x02010400,
   /**
    * The virtual stereo effect, which renders monophonic audio as stereo audio.
-   * Before using this preset, set the profile parameter of setAudioProfile to AudioProfileMusicHighQuality or AudioProfileMusicHighQualityStereo; otherwise, the preset setting is invalid.
    */
   RoomAcousticsVirtualStereo = 0x02010500,
   /**
@@ -3502,37 +3387,31 @@ export enum AudioEffectPreset {
    */
   RoomAcousticsEthereal = 0x02010700,
   /**
-   * A 3D voice effect that makes the voice appear to be moving around the user. The default movement cycle is 10 seconds. After setting this effect, you can call to setAudioEffectParameters modify the movement period. Before using this preset, set the profile parameter of setAudioProfile to AudioProfileMusicStandardStereo or AudioProfileMusicHighQualityStereo; otherwise, the preset setting is invalid.
-   * If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
+   * A 3D voice effect that makes the voice appear to be moving around the user. The default cycle period is 10 seconds. After setting this effect, you can call setAudioEffectParameters to modify the movement period.If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
    */
   RoomAcoustics3dVoice = 0x02010800,
   /**
-   * @ignore
+   * Virtual surround sound, that is, the SDK generates a simulated surround sound field on the basis of stereo channels, thereby creating a surround sound effect.If the virtual surround sound is enabled, users need to use stereo audio playback devices to hear the anticipated audio effect.
    */
   RoomAcousticsVirtualSurroundSound = 0x02010900,
   /**
-   * A middle-aged man's voice.
-   * Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+   * A middle-aged man's voice.Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectUncle = 0x02020100,
   /**
-   * A senior man's voice.
-   * Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+   * An older man's voice.Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectOldman = 0x02020200,
   /**
-   * A boy's voice.
-   * Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+   * A boy's voice.Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectBoy = 0x02020300,
   /**
-   * A young woman's voice.
-   * Agora recommends using this preset to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
+   * A young woman's voice.Agora recommends using this preset to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectSister = 0x02020400,
   /**
-   * A girl's voice.
-   * Agora recommends using this preset to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
+   * A girl's voice.Agora recommends using this preset to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectGirl = 0x02020500,
   /**
@@ -3545,12 +3424,10 @@ export enum AudioEffectPreset {
   VoiceChangerEffectHulk = 0x02020700,
   /**
    * The voice effect typical of R&B music.
-   * Before using this preset, set the profile parameter of setAudioProfile to AudioProfileMusicHighQuality or AudioProfileMusicHighQualityStereo; otherwise, the preset setting is invalid.
    */
   StyleTransformationRnb = 0x02030100,
   /**
    * The voice effect typical of popular music.
-   * Before using this preset, set the profile parameter of setAudioProfile to AudioProfileMusicHighQuality or AudioProfileMusicHighQualityStereo; otherwise, the preset setting is invalid.
    */
   StyleTransformationPopular = 0x02030200,
   /**
@@ -3590,34 +3467,27 @@ export enum VoiceConversionPreset {
  */
 export class ScreenCaptureParameters {
   /**
-   * The maximum dimensions of encoding the shared region.  The default value is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. VideoDimensions
-   * If the aspect ratio is different between the encoding dimensions and screen dimensions, Agora applies the following algorithms for encoding. Suppose dimensions are 1920 x 1080:
-   * If the value of the screen dimensions is lower than that of dimensions, for example, 1000 x 1000 pixels, the SDK uses 1000 x 1000 pixels for encoding.
-   * If the value of the screen dimensions is higher than that of dimensions, for example, 2000 x 1500, the SDK uses the maximum value under dimensions with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 x 1080.
+   * If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. SupposeIf the value of the screen dimensions is lower than that ofIf the value of the screen dimensions is higher than that of
    */
   dimensions?: VideoDimensions;
   /**
-   * On Windows and macOS, it represents the video encoding frame rate (fps) of the shared screen stream. The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
+   * The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
    */
   frameRate?: number;
   /**
-   * On Windows and macOS, it represents the video encoding bitrate of the shared screen stream. The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+   * The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
    */
   bitrate?: number;
   /**
-   * Whether to capture the mouse in screen sharing:
-   * true: (Default) Capture the mouse.
-   * false: Do not capture the mouse.
+   * Whether to capture the mouse in screen sharing:true: (Default) Capture the mouse.false: Do not capture the mouse.
    */
   captureMouseCursor?: boolean;
   /**
-   *  startScreenCaptureByWindowId Whether to bring the window to the front when calling the method to share it:
-   * true:Bring the window to the front.
-   * false: (Default) Do not bring the window to the front.
+   * Whether to bring the window to the front when calling the startScreenCaptureByWindowId method to share it:true:Bring the window to the front.false: (Default) Do not bring the window to the front.
    */
   windowFocus?: boolean;
   /**
-   * A list of IDs of windows to be blocked. When calling startScreenCaptureByScreenRect to start screen sharing, you can use this parameter to block a specified window. When calling to updateScreenCaptureParameters update screen sharing configurations, you can use this parameter to dynamically block the specified windows during screen sharing.
+   * The ID list of the windows to be blocked. When calling startScreenCaptureByDisplayId to start screen sharing, you can use this parameter to block a specified window. When calling updateScreenCaptureParameters to update screen sharing configurations, you can use this parameter to dynamically block a specified window.
    */
   excludeWindowList?: any[];
   /**
@@ -3625,37 +3495,37 @@ export class ScreenCaptureParameters {
    */
   excludeWindowCount?: number;
   /**
-   * @ignore
+   * (For macOS only) The width (px) of the border. The default value is 5, and the value range is (0, 50].This parameter only takes effect whenhighLighted is set totrue.
    */
   highLightWidth?: number;
   /**
-   * @ignore
+   * (For macOS only) The color of the border in RGBA format. The default value is 0xFF8CBF26.On macOS,COLOR_CLASS refers toNSColor.
    */
   highLightColor?: number;
   /**
-   * @ignore
+   * (For macOS only)Whether to place a border around the shared window or screen:true: Place a border.false: (Default) Do not place a border.When you share a part of a window or screen, the SDK places a border around the entire window or screen if you set this parameter totrue.
    */
   enableHighLight?: boolean;
 }
 
 /**
- * @ignore
+ * Recording quality.
  */
 export enum AudioRecordingQualityType {
   /**
-   * @ignore
+   * 0: Low quality. The sample rate is 32 kHz, and the file size is around 1.2 MB after 10 minutes of recording.
    */
   AudioRecordingQualityLow = 0,
   /**
-   * @ignore
+   * 1: Medium quality. The sample rate is 32 kHz, and the file size is around 2 MB after 10 minutes of recording.
    */
   AudioRecordingQualityMedium = 1,
   /**
-   * @ignore
+   * 2: High quality. The sample rate is 32 kHz, and the file size is around 3.75 MB after 10 minutes of recording.
    */
   AudioRecordingQualityHigh = 2,
   /**
-   * @ignore
+   * 3: Ultra high quality. The sample rate is 32 kHz, and the file size is around 7.5 MB after 10 minutes of recording.
    */
   AudioRecordingQualityUltraHigh = 3,
 }
@@ -3679,45 +3549,45 @@ export enum AudioFileRecordingType {
 }
 
 /**
- * @ignore
+ * Audio profile.
  */
 export enum AudioEncodedFrameObserverPosition {
   /**
-   * @ignore
+   * 1: Only records the audio of the local user.
    */
   AudioEncodedFrameObserverPositionRecord = 1,
   /**
-   * @ignore
+   * 2: Only records the audio of all remote users.
    */
   AudioEncodedFrameObserverPositionPlayback = 2,
   /**
-   * @ignore
+   * 3: Records the mixed audio of the local and all remote users.
    */
   AudioEncodedFrameObserverPositionMixed = 3,
 }
 
 /**
- * @ignore
+ * Recording configuration.
  */
 export class AudioRecordingConfiguration {
   /**
-   * @ignore
+   * The absolute path (including the filename extensions) of the recording file. For example:C:\music\audio.mp4.Ensure that the path for the recording file exists and is writable.
    */
   filePath?: string;
   /**
-   * @ignore
+   * Whether to encode the audio data:true: Encode audio data in AAC.false: (Default) Do not encode audio data, but save the recorded audio data directly.
    */
   encode?: boolean;
   /**
-   * @ignore
+   * Recording sample rate (Hz).16000(Default) 320004410048000If you set this parameter to 44100 or 48000, Agora recommends recording WAV files, or AAC files withquality to be AgoraAudioRecordingQualityMedium or AgoraAudioRecordingQualityHigh for better recording quality.
    */
   sampleRate?: number;
   /**
-   * @ignore
+   *
    */
   fileRecordingType?: AudioFileRecordingType;
   /**
-   * @ignore
+   * Recording quality. See AudioRecordingQualityType .Note: This parameter applies to AAC files only.
    */
   quality?: AudioRecordingQualityType;
   /**
@@ -3727,25 +3597,34 @@ export class AudioRecordingConfiguration {
 }
 
 /**
- * @ignore
+ * Observer settings for encoded audio.
  */
 export class AudioEncodedFrameObserverConfig {
   /**
-   * @ignore
+   *
    */
   postionType?: AudioEncodedFrameObserverPosition;
   /**
-   * @ignore
+   *
    */
   encodingType?: AudioEncodingType;
 }
 
 /**
- * @ignore
+ * The encoded audio observer.
  */
 export interface IAudioEncodedFrameObserver {
   /**
-   * @ignore
+   * Gets the encoded audio data of the local user.
+   * After calling registerAudioEncodedFrameObserver and setting the encoded audio asAudioEncodedFrameObserverPositionRecord, you can get the encoded audio data of the local user from this callback.
+   *
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
+   * @param frameBuffer The audio buffer.
+   *
+   * @param length The data length (byte).
+   *
+   * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onRecordAudioEncodedFrame?(
     frameBuffer: Uint8Array,
@@ -3754,7 +3633,22 @@ export interface IAudioEncodedFrameObserver {
   ): void;
 
   /**
-   * @ignore
+   * Gets the encoded audio data of all remote users.
+   * After calling registerAudioEncodedFrameObserver and setting the encoded audio asAudioEncodedFrameObserverPositionPlayback, you can get encoded audio data of all remote users through this callback.
+   *
+   * @param samplesPerSec Recording sample rate (Hz).
+   *
+   * @param channels The number of channels.
+   *  1: Mono.
+   *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
+   * @param samplesPerChannel The number of samples per channel in the audio frame.
+   *
+   * @param frameBuffer The audio buffer.
+   *
+   * @param length The data length (byte).
+   *
+   * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onPlaybackAudioEncodedFrame?(
     frameBuffer: Uint8Array,
@@ -3763,7 +3657,20 @@ export interface IAudioEncodedFrameObserver {
   ): void;
 
   /**
-   * @ignore
+   * Gets the mixed and encoded audio data of the local and all remote users.
+   * After calling registerAudioEncodedFrameObserver and setting the audio profile asAudioEncodedFrameObserverPositionMixed, you can get the mixed and encoded audio data of the local and all remote users through this callback.
+   *
+   * @param samplesPerSec Recording sample rate (Hz).
+   *
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
+   * @param samplesPerChannel The number of samples per channel in the audio frame.
+   *
+   * @param frameBuffer The audio buffer.
+   *
+   * @param length The data length (byte).
+   *
+   * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onMixedAudioEncodedFrame?(
     frameBuffer: Uint8Array,
@@ -3773,7 +3680,7 @@ export interface IAudioEncodedFrameObserver {
 }
 
 /**
- * The region for connection, i.e., the region where the server the SDK connects to is located.
+ * The region for connection, which is the region where the server the SDK connects to is located.
  */
 export enum AreaCode {
   /**
@@ -3853,9 +3760,7 @@ export enum ChannelMediaRelayError {
    */
   RelayErrorServerErrorResponse = 1,
   /**
-   * 2: No server response.
-   * You can call leaveChannel to leave the channel.
-   * This error can also occur if your project has not enabled co-host token authentication. You can to enable the service for cohosting across channels before starting a channel media relay.
+   * 2: No server response.You can call leaveChannel to leave the channel.This error can also occur if your project has not enabled co-host token authentication. You can to enable the service for cohosting across channels before starting a channel media relay.
    */
   RelayErrorServerNoResponse = 2,
   /**
@@ -3879,7 +3784,7 @@ export enum ChannelMediaRelayError {
    */
   RelayErrorFailedPacketSentToDest = 7,
   /**
-   * 8: The SDK disconnects from the server due to poor network connections. You can call leaveChannel method to leave the channel.
+   * 8: The SDK disconnects from the server due to poor network connections. You can call leaveChannel to leave the channel.
    */
   RelayErrorServerConnectionLost = 8,
   /**
@@ -3941,7 +3846,7 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketUpdateDestChannelNotChange = 9,
   /**
-   * 10: The destination channel name is NULL.
+   * 10: The destination channel name isNULL.
    */
   RelayEventPacketUpdateDestChannelIsNull = 10,
   /**
@@ -3971,7 +3876,7 @@ export enum ChannelMediaRelayEvent {
  */
 export enum ChannelMediaRelayState {
   /**
-   * 0: The initial state. After you successfullystop the channel media relay by calling stopChannelMediaRelay , the onChannelMediaRelayStateChanged callback returns this state.
+   * 0: The initial state. After you successfully stop the channel media relay by calling stopChannelMediaRelay , the onChannelMediaRelayStateChanged callback returns this state.
    */
   RelayStateIdle = 0,
   /**
@@ -3983,13 +3888,13 @@ export enum ChannelMediaRelayState {
    */
   RelayStateRunning = 2,
   /**
-   * 3: An error occurs. See code in onChannelMediaRelayStateChanged for the error code.
+   * 3: An error occurs. Seecode in onChannelMediaRelayStateChanged for the error code.
    */
   RelayStateFailure = 3,
 }
 
 /**
- * The definition of ChannelMediaInfo.
+ * The definition ofChannelMediaInfo.
  */
 export class ChannelMediaInfo {
   /**
@@ -4007,29 +3912,19 @@ export class ChannelMediaInfo {
 }
 
 /**
- * The definition of ChannelMediaRelayConfiguration.
+ * The definition ofChannelMediaRelayConfiguration.
  */
 export class ChannelMediaRelayConfiguration {
   /**
-   * The information of the source channel ChannelMediaInfo . It contains the following members:
-   * channelName: The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel.
-   * uid: The unique ID to identify the relay stream in the source channel. The default value is 0, which means the SDK generates a random uid. You must set it as 0.
-   * token: The token for joining the source channel. It is generated with the channelName and uid you set in srcInfo.
-   * If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
-   * If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0.
+   * The information of the source channel ChannelMediaInfo . It contains the following members:channelName: The name of the source channel. The default value isNULL, which means the SDK applies the name of the current channel.uid: The unique ID to identify the relay stream in the source channel. The default value is 0, which means the SDK generates a randomuid. You must set it as 0.token: Thetoken for joining the source channel. It is generated with thechannelName anduid you set insrcInfo.If you have not enabled the App Certificate, set this parameter as the default valueNULL, which means the SDK applies the App ID.If you have enabled the App Certificate, you must use thetoken generated with thechannelName anduid, and theuid must be set as 0.
    */
   srcInfo?: ChannelMediaInfo;
   /**
-   * The information of the destination channel ChannelMediaInfo. It contains the following members:
-   * channelName : The name of the destination channel.
-   * uid: The unique ID to identify the relay stream in the destination channel. The value ranges from 0 to (232-1). To avoid UID conflicts, this UID must be different from any other UID in the destination channel. The default value is 0, which means the SDK generates a random UID. Do not set this parameter as the UID of the host in the destination channel, and ensure that this UID is different from any other UID in the channel.
-   * token: The token for joining the destination channel. It is generated with the channelName and uid you set in destInfos.
-   * If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
-   * If you have enabled the App Certificate, you must use the token generated with the channelName and uid.
+   * The information of the destination channelChannelMediaInfo. It contains the following members:channelName: The name of the destination channel.uid: The unique ID to identify the relay stream in the destination channel. The value ranges from 0 to (232-1). To avoid UID conflicts, this UID must be different from any other UID in the destination channel. The default value is 0, which means the SDK generates a random UID. Do not set this parameter as the UID of the host in the destination channel, and ensure that this UID is different from any other UID in the channel.token: Thetoken for joining the destination channel. It is generated with thechannelName anduid you set indestInfos.If you have not enabled the App Certificate, set this parameter as the default valueNULL, which means the SDK applies the App ID.If you have enabled the App Certificate, you must use thetoken generated with thechannelName anduid.
    */
   destInfos?: ChannelMediaInfo[];
   /**
-   * The number of destination channels. The default value is 0, and the value range is from 0 to 4. Ensure that the value of this parameter corresponds to the number of ChannelMediaInfo structs you define in destInfo.
+   * The number of destination channels. The default value is 0, and the value range is from 0 to 4. Ensure that the value of this parameter corresponds to the number ofChannelMediaInfo structs you define indestInfo.
    */
   destCount?: number;
 }
@@ -4094,7 +3989,7 @@ export class DownlinkNetworkInfo {
 
 /**
  * The built-in encryption mode.
- * Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
+ * Agora recommends usingAes128Gcm2 orAes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
  */
 export enum EncryptionMode {
   /**
@@ -4130,7 +4025,7 @@ export enum EncryptionMode {
    */
   Aes256Gcm2 = 8,
   /**
-   * Enumeration boundary.
+   * Enumerator boundary.
    */
   ModeEnd = 9,
 }
@@ -4140,17 +4035,15 @@ export enum EncryptionMode {
  */
 export class EncryptionConfig {
   /**
-   * The built-in encryption mode. See EncryptionMode . Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
+   * The built-in encryption mode. See EncryptionMode . Agora recommends usingAes128Gcm2 orAes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
    */
   encryptionMode?: EncryptionMode;
   /**
-   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key.
-   * If you do not set an encryption key or set it as NULL, you cannot use the built-in encryption, and the SDK returns -2.
+   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key.If you do not set an encryption key or set it asNULL, you cannot use the built-in encryption, and the SDK returns-2.
    */
   encryptionKey?: string;
   /**
-   * Salt, 32 bytes in length. Agora recommends that you use OpenSSL to generate salt on the server side. See Media Stream Encryption for details.
-   * This parameter takes effect only in Aes128Gcm2 or Aes256Gcm2 encrypted mode. In this case, ensure that this parameter is not 0.
+   * Salt, 32 bytes in length. Agora recommends that you use OpenSSL to generate salt on the server side. See Media Stream Encryption for details.This parameter takes effect only inAes128Gcm2 orAes256Gcm2 encrypted mode. In this case, ensure that this parameter is not0.
    */
   encryptionKdfSalt?: number[];
 }
@@ -4164,8 +4057,7 @@ export enum EncryptionErrorType {
    */
   EncryptionErrorInternalFailure = 0,
   /**
-   * 1: Decryption errors.
-   * Ensure that the receiver and the sender use the same encryption mode and key.
+   * 1: Decryption errors. Ensure that the receiver and the sender use the same encryption mode and key.
    */
   EncryptionErrorDecryptionFailure = 1,
   /**
@@ -4229,18 +4121,11 @@ export enum StreamSubscribeState {
    */
   SubStateIdle = 0,
   /**
-   * 1: Fails to subscribe to the remote stream. Possible reasons:
-   * Remote users:
-   * Calls muteLocalAudioStream (true) or muteLocalVideoStream (true) to stop sending local media streams.
-   * Calls disableAudio or disableVideo to disable the local audio or video module.
-   * Calls enableLocalAudio (false) or enableLocalVideo (false) to disable local audio or video capture.
-   * The role of the local user is audience. The local user calls the following method to stop receiving the remote media stream:
-   * Call muteRemoteAudioStream (true), muteAllRemoteAudioStreams (true) or setDefaultMuteAllRemoteAudioStreams (true) to stop receiving the remote audio stream.
-   * Call muteRemoteVideoStream (true), muteAllRemoteVideoStreams (true) or setDefaultMuteAllRemoteVideoStreams (true) to stop receiving the remote video stream.
+   * 1: Fails to subscribe to the remote stream. Possible reasons:The remote user:Calls muteLocalAudioStream (true) or muteLocalVideoStream (true) to stop sending local media stream.Calls disableAudio or disableVideo to disable the local audio or video module.Calls enableLocalAudio (false) or enableLocalVideo (false) to disable local audio or video capture.The role of the remote user is audience.The local user calls the following methods to stop receiving remote streams:Call muteRemoteAudioStream (true) or muteAllRemoteAudioStreams (true) to stop receiving the remote audio stream.Call muteRemoteVideoStream (true) or muteAllRemoteVideoStreams (true) to stop receiving the remote video stream.
    */
   SubStateNoSubscribed = 1,
   /**
-   * 2: Publishing.
+   * 2: Subscribing.
    */
   SubStateSubscribing = 2,
   /**
@@ -4258,11 +4143,7 @@ export enum StreamPublishState {
    */
   PubStateIdle = 0,
   /**
-   * 1: Fails to publish the local stream. Possible reasons:
-   * Local user calls muteLocalAudioStream (true) or muteLocalVideoStream (true) to stop sending local media streams.
-   * The local user calls disableAudio or disableVideo to disable the local audio or video module.
-   * The local user calls enableLocalAudio (false) or enableLocalVideo (false) to disable the local audio or video capture.
-   * The role of the local user is audience.
+   * 1: Fails to publish the local stream. Possible reasons:The local user calls muteLocalAudioStream (true) or muteLocalVideoStream (true) to stop sending local media streams.The local user calls disableAudio or disableVideo to disable the local audio or video module.The local user calls enableLocalAudio (false) or enableLocalVideo (false) to disable the local audio or video capture.The role of the local user is audience.
    */
   PubStateNoPublished = 1,
   /**
@@ -4276,27 +4157,27 @@ export enum StreamPublishState {
 }
 
 /**
- * @ignore
+ * The configuration of the audio and video call loop test.
  */
 export class EchoTestConfiguration {
   /**
-   * @ignore
+   * The view used to render the local user's video. This parameter is only applicable to scenarios testing video devices, that is, whenenableVideo istrue.
    */
   view?: any;
   /**
-   * @ignore
+   * Whether to enable the audio device for the loop test:true: (Default) Enable the audio device. To test the audio device, set this parameter astrue.false: Disable the audio device.
    */
   enableAudio?: boolean;
   /**
-   * @ignore
+   * Whether to enable the video device for the loop test:true: (Default) Enable the video device. To test the video device, set this parameter astrue.false: Disable the video device.
    */
   enableVideo?: boolean;
   /**
-   * @ignore
+   * The token used to secure the audio and video call loop test. If you do not enable App Certificate in Agora Console, you do not need to pass a value in this parameter; if you have enabled App Certificate in Agora Console, you must pass a token in this parameter; theuid used when you generate the token must be 0xFFFFFFFF, and the channel name used must be the channel name that identifies each audio and video call loop tested. For server-side token generation, seeAuthenticate Your Users with Tokens.
    */
   token?: string;
   /**
-   * @ignore
+   * The channel name that identifies each audio and video call loop. To ensure proper loop test functionality, the channel name passed in to identify each loop test cannot be the same when users of the same project (App ID) perform audio and video call loop tests on different devices.
    */
   channelId?: string;
 }
@@ -4310,7 +4191,7 @@ export class UserInfo {
    */
   uid?: number;
   /**
-   * User account. The maximum data length is MaxUserAccountLengthType .
+   * User account.The maximum data length is MaxUserAccountLengthType .
    */
   userAccount?: string;
 }
@@ -4324,8 +4205,7 @@ export enum EarMonitoringFilterType {
    */
   EarMonitoringFilterNone = 1 << 0,
   /**
-   * 2: Add an audio filter to the in-ear monitor.
-   * If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
+   * 2: Add an audio filter to the in-ear monitor. If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
    */
   EarMonitoringFilterBuiltInAudioFilters = 1 << 1,
   /**
@@ -4365,63 +4245,64 @@ export enum ThreadPriorityType {
 }
 
 /**
- * @ignore
+ * The video configuration for the shared screen stream.
  */
 export class ScreenVideoParameters {
   /**
-   * @ignore
+   * The video encoding dimension. The default value is 1280 × 720.
    */
   dimensions?: VideoDimensions;
   /**
-   * @ignore
+   * The video encoding frame rate (fps). The default value is 15.
    */
   frameRate?: number;
   /**
-   * @ignore
+   * The video encoding bitrate (Kbps).
    */
   bitrate?: number;
   /**
-   * @ignore
+   * The content hint for screen sharing.
    */
   contentHint?: VideoContentHint;
 }
 
 /**
- * @ignore
+ * The audio configuration for the shared screen stream.
+ * Only available wherecaptureAudio istrue.
  */
 export class ScreenAudioParameters {
   /**
-   * @ignore
+   * Audio sample rate (Hz). The default value is 16000.
    */
   sampleRate?: number;
   /**
-   * @ignore
+   * The number of audio channels. The default value is 2, which means stereo.
    */
   channels?: number;
   /**
-   * @ignore
+   * The volume of the captured system audio. The value range is [0, 100]. The default value is 100.
    */
   captureSignalVolume?: number;
 }
 
 /**
- * @ignore
+ * Screen sharing configurations.
  */
 export class ScreenCaptureParameters2 {
   /**
-   * @ignore
+   * Determines whether to capture system audio during screen sharing:true: Capture system audio.false: (Default) Do not capture system audio.
    */
   captureAudio?: boolean;
   /**
-   * @ignore
+   * The audio configuration for the shared screen stream. See ScreenAudioParameters .This parameter only takes effect whencaptureAudio istrue.
    */
   audioParams?: ScreenAudioParameters;
   /**
-   * @ignore
+   * Whether to capture the screen when screen sharing:true: (Default) Capture the screen.false: Do not capture the screen.
    */
   captureVideo?: boolean;
   /**
-   * @ignore
+   * The video configuration for the shared screen stream. See ScreenVideoParameters .This parameter only takes effect whencaptureVideo istrue.
    */
   videoParams?: ScreenVideoParameters;
 }

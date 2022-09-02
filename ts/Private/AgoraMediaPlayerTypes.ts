@@ -4,8 +4,7 @@ import './extension/AgoraMediaPlayerTypesExtension';
  */
 export enum MediaPlayerState {
   /**
-   * 0: The default state.
-   * The media player returns this state code before you open the media resource or after you stop the playback.
+   * 0: The default state. The media player returns this state code before you open the media resource or after you stop the playback.
    */
   PlayerStateIdle = 0,
   /**
@@ -83,7 +82,7 @@ export enum MediaPlayerError {
    */
   PlayerErrorInvalidArguments = -1,
   /**
-   * @ignore
+   * -2: Internal error.
    */
   PlayerErrorInternal = -2,
   /**
@@ -95,7 +94,7 @@ export enum MediaPlayerError {
    */
   PlayerErrorInvalidMediaSource = -4,
   /**
-   * -5: The type of the media stream is unknown.
+   * -5: The media stream type is unknown.
    */
   PlayerErrorUnknownStreamType = -5,
   /**
@@ -115,11 +114,11 @@ export enum MediaPlayerError {
    */
   PlayerErrorInvalidState = -9,
   /**
-   * -10: The URL of the media resource can not be found.
+   * -10: The URL of the media resource cannot be found.
    */
   PlayerErrorUrlNotFound = -10,
   /**
-   * -11: Invalid connection between the player and Agora's server.
+   * -11: Invalid connection between the player and the Agora Server.
    */
   PlayerErrorInvalidConnectionState = -11,
   /**
@@ -131,7 +130,7 @@ export enum MediaPlayerError {
    */
   PlayerErrorInterrupted = -13,
   /**
-   * -14: The SDK does support the method being called.
+   * -14: The SDK does not support the method being called.
    */
   PlayerErrorNotSupported = -14,
   /**
@@ -223,11 +222,11 @@ export enum MediaPlayerEvent {
    */
   PlayerEventFirstDisplayed = 13,
   /**
-   * @ignore
+   * 14: The cached media files reach the limit in number.
    */
   PlayerEventReachCacheFileMaxCount = 14,
   /**
-   * @ignore
+   * 15: The cached media files reach the limit in aggregate storage space.
    */
   PlayerEventReachCacheFileMaxSize = 15,
   /**
@@ -271,7 +270,7 @@ export class PlayerStreamInfo {
    */
   streamIndex?: number;
   /**
-   * The type of the media stream. See MediaStreamType .
+   * The type of the media stream.See MediaStreamType .
    */
   streamType?: MediaStreamType;
   /**
@@ -349,19 +348,19 @@ export enum MediaPlayerMetadataType {
 }
 
 /**
- * @ignore
+ * Statistics about the media files being cached.
  */
 export class CacheStatistics {
   /**
-   * @ignore
+   * The size (bytes) of the media file being played.
    */
   fileSize?: number;
   /**
-   * @ignore
+   * The size (bytes) of the media file that you want to cache.
    */
   cacheSize?: number;
   /**
-   * @ignore
+   * The size (bytes) of the media file that has been downloaded.
    */
   downloadSize?: number;
 }
@@ -385,35 +384,35 @@ export class PlayerUpdatedInfo {
 }
 
 /**
- * @ignore
+ * Information related to the media file to be played and the playback scenario configurations.
  */
 export class MediaSource {
   /**
-   * @ignore
+   * The URL of the media file to be played.If you need to open a custom media resource, you do not have to pass in a value to theurl.
    */
   url?: string;
   /**
-   * @ignore
+   * The URI (Uniform Resource Identifier) of the media file.
    */
   uri?: string;
   /**
-   * @ignore
+   * The starting position (ms) for playback. The default value is 0.
    */
   startPos?: number;
   /**
-   * @ignore
+   * Whether to enable autoplay once the media file is opened:true: (Default) Enable autoplay.false: Disable autoplay.If autoplay is disabled, you need to call the play method to play a media file after it is opened.
    */
   autoPlay?: boolean;
   /**
-   * @ignore
+   * Whether to cache the media file when it is being played:true:Enable caching.false: (Default) Disable caching.If you need to enable caching, pass in a value touri; otherwise, caching is based on theurl of the media file.If you enable this function, the Media Player caches part of the media file being played on your local device, and you can play the cached media file without internet connection. The statistics about the media file being cached are updated every second after the media file is played. See CacheStatistics .
    */
   enableCache?: boolean;
   /**
-   * @ignore
+   * Whether the media resource to be opened is a live stream or on-demand video distributed through Media Broadcast service:true: The media resource is a live stream or on-demand video distributed through Media Broadcast service.false: The media resource is not a live stream or on-demand video distributed through Media Broadcast service.If you need to open a live stream or on-demand video distributed through Broadcast Streaming service, pass in the URL of the media resource tourl, and setisAgoraSource astrue; otherwise, you don't need to set theisAgoraSource parameter.
    */
   isAgoraSource?: boolean;
   /**
-   * @ignore
+   * Whether the media resource to be opened is a live stream:true: The media resource is a live stream.false: (Default) The media resource is not a live stream.If the media resource you want to open is a live stream, Agora recommends that you set this parameter astrue so that the live stream can be loaded more quickly.If the media resource you open is not a live stream, but you setisLiveSource astrue, the media resource is not to be loaded more quickly.
    */
   isLiveSource?: boolean;
 }

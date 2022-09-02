@@ -19,7 +19,7 @@ const observedAttributes = [
 declare global {
   /**
    * Attributes of the Agora custom element.
-   * You can use this custom element as follows: <agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}"></agora-view>
+   * You can use this custom element as follows:<agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}"></agora-view>
    */
   interface AgoraView {
     /**
