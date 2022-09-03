@@ -323,7 +323,9 @@ export default class MediaPlayer
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ loopCount: +text });
+            this.setState({
+              loopCount: text === '' ? this.createState().loopCount : +text,
+            });
           }}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />

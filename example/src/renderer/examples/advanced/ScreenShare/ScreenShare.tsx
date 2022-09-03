@@ -432,7 +432,9 @@ export default class ScreenShare
           editable={!publishScreenCapture}
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ uid2: +text });
+            this.setState({
+              uid2: text === '' ? this.createState().uid2 : +text,
+            });
           }}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
@@ -441,14 +443,18 @@ export default class ScreenShare
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              this.setState({ width: +text });
+              this.setState({
+                width: text === '' ? this.createState().width : +text,
+              });
             }}
             placeholder={`width (defaults: ${this.createState().width})`}
           />
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              this.setState({ height: +text });
+              this.setState({
+                height: text === '' ? this.createState().height : +text,
+              });
             }}
             placeholder={`height (defaults: ${this.createState().height})`}
           />
@@ -456,14 +462,18 @@ export default class ScreenShare
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ frameRate: +text });
+            this.setState({
+              frameRate: text === '' ? this.createState().frameRate : +text,
+            });
           }}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
         />
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ bitrate: +text });
+            this.setState({
+              bitrate: text === '' ? this.createState().bitrate : +text,
+            });
           }}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
         />

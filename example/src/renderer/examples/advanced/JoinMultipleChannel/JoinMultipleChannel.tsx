@@ -349,7 +349,9 @@ export default class JoinMultipleChannel
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ uid: +text });
+            this.setState({
+              uid: text === '' ? this.createState().uid : +text,
+            });
           }}
           placeholder={`uid (must > 0)`}
           value={uid > 0 ? uid.toString() : ''}
@@ -370,7 +372,9 @@ export default class JoinMultipleChannel
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ uid2: +text });
+            this.setState({
+              uid2: text === '' ? this.createState().uid2 : +text,
+            });
           }}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}

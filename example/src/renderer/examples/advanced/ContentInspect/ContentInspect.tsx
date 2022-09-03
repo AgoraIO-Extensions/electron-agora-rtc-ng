@@ -189,7 +189,9 @@ export default class ContentInspect
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ interval: +text });
+            this.setState({
+              interval: text === '' ? this.createState().interval : +text,
+            });
           }}
           placeholder={`interval (defaults: ${this.createState().interval})`}
         />

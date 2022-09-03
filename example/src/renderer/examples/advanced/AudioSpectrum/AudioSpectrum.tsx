@@ -196,7 +196,10 @@ export default class AudioSpectrum
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ intervalInMS: +text });
+            this.setState({
+              intervalInMS:
+                text === '' ? this.createState().intervalInMS : +text,
+            });
           }}
           placeholder={`intervalInMS (defaults: ${
             this.createState().intervalInMS

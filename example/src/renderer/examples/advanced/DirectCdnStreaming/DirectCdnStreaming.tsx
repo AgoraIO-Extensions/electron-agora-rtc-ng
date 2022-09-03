@@ -261,7 +261,9 @@ export default class DirectCdnStreaming
             style={AgoraStyle.fullSize}
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              this.setState({ width: +text });
+              this.setState({
+                width: text === '' ? this.createState().width : +text,
+              });
             }}
             placeholder={`width (defaults: ${this.createState().width})`}
           />
@@ -269,7 +271,9 @@ export default class DirectCdnStreaming
             style={AgoraStyle.fullSize}
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              this.setState({ height: +text });
+              this.setState({
+                height: text === '' ? this.createState().height : +text,
+              });
             }}
             placeholder={`height (defaults: ${this.createState().height})`}
           />
@@ -277,21 +281,27 @@ export default class DirectCdnStreaming
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ frameRate: +text });
+            this.setState({
+              frameRate: text === '' ? this.createState().frameRate : +text,
+            });
           }}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
         />
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ bitrate: +text });
+            this.setState({
+              bitrate: text === '' ? this.createState().bitrate : +text,
+            });
           }}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
         />
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ minBitrate: +text });
+            this.setState({
+              minBitrate: text === '' ? this.createState().minBitrate : +text,
+            });
           }}
           placeholder={`minBitrate (defaults: ${
             this.createState().minBitrate

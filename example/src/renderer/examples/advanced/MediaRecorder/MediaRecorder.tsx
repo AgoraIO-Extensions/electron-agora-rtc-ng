@@ -217,7 +217,10 @@ export default class MediaRecorder
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ maxDurationMs: +text });
+            this.setState({
+              maxDurationMs:
+                text === '' ? this.createState().maxDurationMs : +text,
+            });
           }}
           placeholder={`maxDurationMs (defaults: ${
             this.createState().maxDurationMs

@@ -368,7 +368,9 @@ export default class RTMPStreaming
                 style={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
-                  this.setState({ width: +text });
+                  this.setState({
+                    width: text === '' ? this.createState().width : +text,
+                  });
                 }}
                 placeholder={`width (defaults: ${this.createState().width})`}
               />
@@ -376,7 +378,9 @@ export default class RTMPStreaming
                 style={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
-                  this.setState({ height: +text });
+                  this.setState({
+                    height: text === '' ? this.createState().height : +text,
+                  });
                 }}
                 placeholder={`height (defaults: ${this.createState().height})`}
               />
@@ -384,7 +388,10 @@ export default class RTMPStreaming
             <AgoraTextInput
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
-                this.setState({ videoBitrate: +text });
+                this.setState({
+                  videoBitrate:
+                    text === '' ? this.createState().videoBitrate : +text,
+                });
               }}
               placeholder={`videoBitrate (defaults: ${
                 this.createState().videoBitrate
@@ -393,7 +400,10 @@ export default class RTMPStreaming
             <AgoraTextInput
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
-                this.setState({ videoFramerate: +text });
+                this.setState({
+                  videoFramerate:
+                    text === '' ? this.createState().videoFramerate : +text,
+                });
               }}
               placeholder={`videoFramerate (defaults: ${
                 this.createState().videoFramerate
@@ -402,7 +412,9 @@ export default class RTMPStreaming
             <AgoraTextInput
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
-                this.setState({ videoGop: +text });
+                this.setState({
+                  videoGop: text === '' ? this.createState().videoGop : +text,
+                });
               }}
               placeholder={`videoGop (defaults: ${
                 this.createState().videoGop
@@ -452,7 +464,10 @@ export default class RTMPStreaming
             <AgoraTextInput
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
-                this.setState({ audioBitrate: +text });
+                this.setState({
+                  audioBitrate:
+                    text === '' ? this.createState().audioBitrate : +text,
+                });
               }}
               placeholder={`audioBitrate (defaults: ${
                 this.createState().audioBitrate

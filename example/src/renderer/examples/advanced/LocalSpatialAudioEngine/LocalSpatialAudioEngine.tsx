@@ -182,7 +182,9 @@ export default class LocalSpatialAudioEngine
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ range: +text });
+            this.setState({
+              range: text === '' ? this.createState().range : +text,
+            });
           }}
           placeholder={`range (defaults: ${this.createState().range})`}
         />

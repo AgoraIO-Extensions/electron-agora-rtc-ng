@@ -248,7 +248,9 @@ export default class SendMultiVideoStream
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ uid2: +text });
+            this.setState({
+              uid2: text === '' ? this.createState().uid2 : +text,
+            });
           }}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}

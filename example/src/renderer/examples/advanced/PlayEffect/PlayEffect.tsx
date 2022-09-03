@@ -196,7 +196,9 @@ export default class PlayEffect
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ soundId: +text });
+            this.setState({
+              soundId: text === '' ? this.createState().soundId : +text,
+            });
           }}
           placeholder={`soundId (defaults: ${this.createState().soundId})`}
         />
@@ -210,7 +212,9 @@ export default class PlayEffect
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ loopCount: +text });
+            this.setState({
+              loopCount: text === '' ? this.createState().loopCount : +text,
+            });
           }}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
@@ -258,7 +262,9 @@ export default class PlayEffect
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ startPos: +text });
+            this.setState({
+              startPos: text === '' ? this.createState().startPos : +text,
+            });
           }}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />

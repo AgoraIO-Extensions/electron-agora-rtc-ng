@@ -216,14 +216,18 @@ export default class AudioMixing
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ cycle: +text });
+            this.setState({
+              cycle: text === '' ? this.createState().cycle : +text,
+            });
           }}
           placeholder={`cycle (defaults: ${this.createState().cycle})`}
         />
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            this.setState({ startPos: +text });
+            this.setState({
+              startPos: text === '' ? this.createState().startPos : +text,
+            });
           }}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />
