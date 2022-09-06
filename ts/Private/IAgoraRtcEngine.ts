@@ -2936,7 +2936,7 @@ export abstract class IRtcEngine {
    *
    * @param enabled Whether to enable virtual background:true: Enable virtual background.false: Disable virtual background.
    *
-   * @param backgroundSource
+   * @param backgroundSource The custom background image. See VirtualBackgroundSource . To adapt the resolution of the custom background image to that of the video captured by the SDK, the SDK scales and crops the custom background image while ensuring that the content of the custom background image is not distorted.
    *
    * @param type Type of the video source. See MediaSourceType .In this method, this parameter supports only the following two settings:The default value is PrimaryCameraSource.If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
    *
@@ -5104,7 +5104,7 @@ export abstract class IRtcEngine {
    * Joins the channel with a user account, and configures whether to automatically subscribe to audio or video streams after joining the channel.
    * This method allows a user to join the channel with the user account. After the user successfully joins the channel, the SDK triggers the following callbacks:The local client: onLocalUserRegistered , onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: The onUserJoined callback if the user is in the COMMUNICATION profile, and the onUserInfoUpdated callback if the user is a host in the LIVE_BROADCASTING profile.Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods.To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
-   * @param token The token generated on your server for authentication. See
+   * @param token The token generated on your server for authentication.
    *
    * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    *
@@ -5411,7 +5411,7 @@ export abstract class IRtcEngine {
    *  Space
    *  "!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    *
-   * @param token The token generated on your server for authentication. See
+   * @param token The token generated on your server for authentication.
    *
    * @param info (Optional) Reserved for future use.
    *
@@ -5600,7 +5600,7 @@ export abstract class IRtcEngine {
    *
    * @param options The channel media options. See ChannelMediaOptions .
    *
-   * @param token The token generated on your server for authentication. See
+   * @param token The token generated on your server for authentication.
    *
    * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    *

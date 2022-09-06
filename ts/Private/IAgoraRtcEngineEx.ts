@@ -42,7 +42,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *
    * @param options The channel media options. See ChannelMediaOptions .
    *
-   * @param token The token generated on your server for authentication. See
+   * @param token The token generated on your server for authentication.
    *
    * @param connection
    *
