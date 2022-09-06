@@ -75,7 +75,7 @@ export abstract class BaseComponent<
   protected abstract releaseRtcEngine(): void;
 
   onError(err: ErrorCodeType, msg: string) {
-    this.error('onError', 'err', err, 'msg', msg);
+    this.info('onError', 'err', err, 'msg', msg);
   }
 
   onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
