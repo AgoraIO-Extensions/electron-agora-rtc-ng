@@ -16,18 +16,18 @@ export class RemoteVoicePositionInfo {
 
 /**
  * This class contains some of the APIs in the ILocalSpatialAudioEngine class.
- * TheILocalSpatialAudioEngine class inherits fromIBaseSpatialAudioEngine.
+ * The ILocalSpatialAudioEngine class inherits from IBaseSpatialAudioEngine.
  */
 export abstract class IBaseSpatialAudioEngine {
   /**
    * Destroys IBaseSpatialAudioEngine .
-   * This method releases all resources underIBaseSpatialAudioEngine. When the user does not need to use the spatial audio effect, you can call this method to release resources for other operations.After calling this method, you can no longer use any of the APIs underIBaseSpatialAudioEngine.Call this method before the release method under IRtcEngine .
+   * This method releases all resources under IBaseSpatialAudioEngine. When the user does not need to use the spatial audio effect, you can call this method to release resources for other operations.After calling this method, you can no longer use any of the APIs under IBaseSpatialAudioEngine.Call this method before the release method under IRtcEngine .
    */
   abstract release(): void;
 
   /**
    * Sets the maximum number of streams that a user can receive in a specified audio reception range.
-   * If the number of receivable streams exceeds the set value, the local user receives themaxCount streams that are closest to the local user. If there are users who belong to the same team as the local user in the room, the local user receives the audio of the teammates first. For example, whenmaxCount is set to 3, if there are five remote users in the room, two of whom belong to the same team as the local user, and three of whom belong to different teams but are within the audio reception range of the local user, the local user can hear the two teammates and the one user from a different team closest to the local user.
+   * If the number of receivable streams exceeds the set value, the local user receives the maxCount streams that are closest to the local user. If there are users who belong to the same team as the local user in the room, the local user receives the audio of the teammates first. For example, when maxCount is set to 3, if there are five remote users in the room, two of whom belong to the same team as the local user, and three of whom belong to different teams but are within the audio reception range of the local user, the local user can hear the two teammates and the one user from a different team closest to the local user.
    *
    * @param maxCount The maximum number of streams that a user can receive within a specified audio reception range.
    *
@@ -60,7 +60,7 @@ export abstract class IBaseSpatialAudioEngine {
 
   /**
    * Updates the spatial position of the local user.
-   * Under the ILocalSpatialAudioEngine class, this method needs to be used with updateRemotePosition . The SDK calculates the relative position between the local and remote users according to this method and the parameter settings inupdateRemotePosition, and then calculates the user's spatial audio effect parameters.
+   * Under the ILocalSpatialAudioEngine class, this method needs to be used with updateRemotePosition . The SDK calculates the relative position between the local and remote users according to this method and the parameter settings in updateRemotePosition, and then calculates the user's spatial audio effect parameters.
    *
    * @param position The coordinates in the world coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
    *
@@ -141,7 +141,7 @@ export abstract class IBaseSpatialAudioEngine {
 export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
   /**
    * Initializes ILocalSpatialAudioEngine .
-   * Before calling other methods of theILocalSpatialAudioEngine class, you need to call this method to initializeILocalSpatialAudioEngine.The SDK supports creating only oneILocalSpatialAudioEngine instance for an app.
+   * Before calling other methods of the ILocalSpatialAudioEngine class, you need to call this method to initialize ILocalSpatialAudioEngine.The SDK supports creating only one ILocalSpatialAudioEngine instance for an app.
    *
    * @returns
    * 0: Success.< 0: Failure.

@@ -270,7 +270,7 @@ export class PlayerStreamInfo {
    */
   streamIndex?: number;
   /**
-   * The type of the media stream.See MediaStreamType .
+   * The type of the media stream. See MediaStreamType .
    */
   streamType?: MediaStreamType;
   /**
@@ -378,7 +378,7 @@ export class PlayerUpdatedInfo {
    */
   deviceId?: string;
   /**
-   * @ignore
+   * The statistics about the media file being cached.If you call the openWithMediaSource method and set enableCache as true, the statistics about the media file being cached is updated every second after the media file is played. See CacheStatistics .
    */
   cacheStatistics?: CacheStatistics;
 }
@@ -388,7 +388,7 @@ export class PlayerUpdatedInfo {
  */
 export class MediaSource {
   /**
-   * The URL of the media file to be played.If you need to open a custom media resource, you do not have to pass in a value to theurl.
+   * The URL of the media file to be played.If you need to open a custom media resource, you do not have to pass in a value to the url.
    */
   url?: string;
   /**
@@ -404,15 +404,15 @@ export class MediaSource {
    */
   autoPlay?: boolean;
   /**
-   * Whether to cache the media file when it is being played:true:Enable caching.false: (Default) Disable caching.If you need to enable caching, pass in a value touri; otherwise, caching is based on theurl of the media file.If you enable this function, the Media Player caches part of the media file being played on your local device, and you can play the cached media file without internet connection. The statistics about the media file being cached are updated every second after the media file is played. See CacheStatistics .
+   * Whether to cache the media file when it is being played:true:Enable caching.false: (Default) Disable caching.If you need to enable caching, pass in a value to uri; otherwise, caching is based on the url of the media file.If you enable this function, the Media Player caches part of the media file being played on your local device, and you can play the cached media file without internet connection. The statistics about the media file being cached are updated every second after the media file is played. See CacheStatistics .
    */
   enableCache?: boolean;
   /**
-   * Whether the media resource to be opened is a live stream or on-demand video distributed through Media Broadcast service:true: The media resource is a live stream or on-demand video distributed through Media Broadcast service.false: The media resource is not a live stream or on-demand video distributed through Media Broadcast service.If you need to open a live stream or on-demand video distributed through Broadcast Streaming service, pass in the URL of the media resource tourl, and setisAgoraSource astrue; otherwise, you don't need to set theisAgoraSource parameter.
+   * Whether the media resource to be opened is a live stream or on-demand video distributed through Media Broadcast service:true: The media resource is a live stream or on-demand video distributed through Media Broadcast service.false: (Default) The media resource is not a live stream or on-demand video distributed through Media Broadcast service.If you need to open a live stream or on-demand video distributed through Broadcast Streaming service, pass in the URL of the media resource to url, and set isAgoraSource as true; otherwise, you don't need to set the isAgoraSource parameter.
    */
   isAgoraSource?: boolean;
   /**
-   * Whether the media resource to be opened is a live stream:true: The media resource is a live stream.false: (Default) The media resource is not a live stream.If the media resource you want to open is a live stream, Agora recommends that you set this parameter astrue so that the live stream can be loaded more quickly.If the media resource you open is not a live stream, but you setisLiveSource astrue, the media resource is not to be loaded more quickly.
+   * Whether the media resource to be opened is a live stream:true: The media resource is a live stream.false: (Default) The media resource is not a live stream.If the media resource you want to open is a live stream, Agora recommends that you set this parameter as true so that the live stream can be loaded more quickly.If the media resource you open is not a live stream, but you set isLiveSource as true, the media resource is not to be loaded more quickly.
    */
   isLiveSource?: boolean;
 }

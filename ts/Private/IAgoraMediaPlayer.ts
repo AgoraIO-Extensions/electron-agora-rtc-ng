@@ -27,7 +27,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Opens the media resource.
-   * This method is called asynchronously. If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reportingPlayerStateOpenCompleted before calling the play method to play the file.
+   * This method is called asynchronously. If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reporting PlayerStateOpenCompleted before calling the play method to play the file.
    *
    * @param url The path of the media file. Both local path and online path are supported.On the Android platform, if you need to open a file in URI format, use open .
    *
@@ -51,7 +51,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Plays the media file.
-   * After callingopen orseek, you can call this method to play the media file.
+   * After calling open or seek, you can call this method to play the media file.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -136,13 +136,13 @@ export abstract class IMediaPlayer {
    * @param index The index of the media stream.
    *
    * @returns
-   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo .If the call fails, returnsNULL.
+   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo .If the call fails, returns NULL.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 
   /**
    * Sets the loop playback.
-   * If you want to loop, call this method and set the number of the loops.When the loop finishes, the SDK triggers onPlayerSourceStateChanged and reports the playback state asPlayerStatePlaybackAllLoopsCompleted.
+   * If you want to loop, call this method and set the number of the loops.When the loop finishes, the SDK triggers onPlayerSourceStateChanged and reports the playback state as PlayerStatePlaybackAllLoopsCompleted.
    *
    * @param loopCount The number of times the audio effect loops:
    *
@@ -166,7 +166,8 @@ export abstract class IMediaPlayer {
    * Selects the audio track used during playback.
    * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.You need to call this method after calling getStreamInfo to get the audio stream index value.
    *
-   * @param index The index of the audio track.
+   * @param index
+ The index of the audio track.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -312,7 +313,7 @@ export abstract class IMediaPlayer {
    * Sets the channel mode of the current audio file.
    * In a stereo music file, the left and right channels can store different audio data. According to your needs, you can set the channel mode to original mode, left channel mode, right channel mode, or mixed channel mode. For example, in the KTV scenario, the left channel of the music file stores the musical accompaniment, and the right channel stores the singing voice. If you only need to listen to the accompaniment, call this method to set the channel mode of the music file to left channel mode; if you need to listen to the accompaniment and the singing voice at the same time, call this method to set the channel mode to mixed channel mode.Call this method after calling open .This method only applies to stereo audio files.
    *
-   * @param mode The channel mode.See AudioDualMonoMode .
+   * @param mode The channel mode. See AudioDualMonoMode .
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -331,7 +332,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Opens a media resource and requests all the CDN routes of the media resources through the self-developed scheduling center.
-   * This method is called asynchronously. If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reportingPlayerStateOpenCompleted before calling the play method to play the file.After you call this method, Agora opens the media resources and tries to obtain all the CDN routes for playing the media resource. By default, Agora uses the first CDN route for playing, and you can call the switchAgoraCDNLineByIndex method to switch routes.If you want to ensure the security of the connection and media files, to determine thesign and thets fields for authentication. Once the fields are determined, use them as thequery parameter of the URL to update the URL of the media resource. For example:The URL of the media file to be opened:rtmp://$domain/$appName/$streamNameThe URL updated by the authentication of the media file to be opened:rtmp://$domain/$appName/$streamName?ts=$ts&sign=$signAuthentication information:sign: An encrypted string calculated according to the MD5 algorithm based onauthKey,appName,streamName, andts. You need to for yourauthKey.ts: The timestamp when the authentication information expires. You can set the validity period of the authentication information according to your scenarios. For example,24h or1h30m20s.
+   * This method is called asynchronously. If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reporting PlayerStateOpenCompleted before calling the play method to play the file.After you call this method, Agora opens the media resources and tries to obtain all the CDN routes for playing the media resource. By default, Agora uses the first CDN route for playing, and you can call the switchAgoraCDNLineByIndex method to switch routes.If you want to ensure the security of the connection and media files, to determine the sign and the ts fields for authentication. Once the fields are determined, use them as the query parameter of the URL to update the URL of the media resource. For example:The URL of the media file to be opened: rtmp://$domain/$appName/$streamNameThe URL updated by the authentication of the media file to be opened: rtmp://$domain/$appName/$streamName?ts=$ts&sign=$signAuthentication information:sign: An encrypted string calculated according to the MD5 algorithm based on authKey, appName, streamName, and ts. You need to for your authKey.ts: The timestamp when the authentication information expires. You can set the validity period of the authentication information according to your scenarios. For example, 24h or 1h30m20s.
    *
    * @param src The URL of the media resource.
    *
@@ -352,7 +353,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Changes the CDN route for playing the media resource.
-   * After calling openWithAgoraCDNSrc to open the media resource, you can call this method if you want to change the CDN routes for playing the media resource.Call this method after calling openWithAgoraCDNSrc .You can call this method either before or after play . If you call this method beforeplay, the switch does not take effect immediately. The SDK waits for the playback to complete before switching the CDN line of the media resource.
+   * After calling openWithAgoraCDNSrc to open the media resource, you can call this method if you want to change the CDN routes for playing the media resource.Call this method after calling openWithAgoraCDNSrc .You can call this method either before or after play . If you call this method before play, the switch does not take effect immediately. The SDK waits for the playback to complete before switching the CDN line of the media resource.
    *
    * @param index The index of the CDN routes.
    *
@@ -365,7 +366,7 @@ export abstract class IMediaPlayer {
    * Gets the CDN routes index of the current media resource.
    *
    * @returns
-   * The number of CDN routes for the media resource, if the method call succeeds. The value range is [0,getAgoraCDNLineCount()).< 0: Failure.
+   * The number of CDN routes for the media resource, if the method call succeeds. The value range is [0, getAgoraCDNLineCount()).< 0: Failure.
    */
   abstract getCurrentAgoraCDNIndex(): number;
 
@@ -382,11 +383,11 @@ export abstract class IMediaPlayer {
 
   /**
    * Renew the authentication information for the URL of the media resource to be played.
-   * When the authentication information expires (exceeds thets field), you can call the openWithAgoraCDNSrc method to reopen the media resource or the switchAgoraCDNSrc method to switch the media resource, and then pass in the authenticated URL (with thets field updated) of the media resource.If your authentication information expires when you call the switchAgoraCDNLineByIndex to switch the CDN route for playing the media resource, you need to call this method to pass in the updated authentication information to update the authentication information of the media resource URL. After updating the authentication information, you need to call switchAgoraCDNLineByIndex to complete the route switching.To avoid frequent expiration of authentication information, ensure that you set thets field appropriately or according to the scenario requirements.
+   * When the authentication information expires (exceeds the ts field), you can call the openWithAgoraCDNSrc method to reopen the media resource or the switchAgoraCDNSrc method to switch the media resource, and then pass in the authenticated URL (with the ts field updated) of the media resource.If your authentication information expires when you call the switchAgoraCDNLineByIndex to switch the CDN route for playing the media resource, you need to call this method to pass in the updated authentication information to update the authentication information of the media resource URL. After updating the authentication information, you need to call switchAgoraCDNLineByIndex to complete the route switching.To avoid frequent expiration of authentication information, ensure that you set the ts field appropriately or according to the scenario requirements.
    *
-   * @param token The authentication field. See thesign field of the authentication information.
+   * @param token The authentication field. See the sign field of the authentication information.
    *
-   * @param ts The timestamp when the authentication information expires. See thets field of the authentication information.
+   * @param ts The timestamp when the authentication information expires. See the ts field of the authentication information.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -395,7 +396,8 @@ export abstract class IMediaPlayer {
 
   /**
    * Switches the media resource being played.
-   * If you want to ensure the security of the connection and media files, to determine thesign and thets fields for authentication. Once the fields are determined, use them as thequery parameter of the URL to update the URL of the media resource. For example:The URL of the media file to be opened:rtmp://$domain/$appName/$streamNameThe URL updated by the authentication of the media file to be opened:rtmp://$domain/$appName/$streamName?ts=$ts&sign=$signAuthentication information:sign: An encrypted string calculated according to the MD5 algorithm based onauthKey,appName,streamName, andts. You need to for yourauthKey.ts: The timestamp when the authentication information expires. You can set the validity period of the authentication information according to your scenarios. For example,24h or1h30m20s.If you want to customize the CDN routes for playing the media resource, call this method to switch media resources. Agora changes the CDN route through the self-developed scheduling center to improve the viewing experience. If you do not need to customize CDN routes for playing the media resource, call the switchSrc method to switch media resources.Call this method after calling openWithAgoraCDNSrc .You can call this method either before or after play . If you call this method beforeplay, the SDK waits for you to callplay before completing the route switch.
+   * If you want to ensure the security of the connection and media files, to determine the sign and the ts fields for authentication. Once the fields are determined, use them as the query parameter of the URL to update the URL of the media resource. For example:The URL of the media file to be opened: rtmp://$domain/$appName/$streamNameThe URL updated by the authentication of the media file to be opened: rtmp://$domain/$appName/$streamName?ts=$ts&sign=$signAuthentication information:sign: An encrypted string calculated according to the MD5 algorithm based on authKey, appName, streamName, and ts. You need to for your authKey.ts: The timestamp when the authentication information expires. You can set the validity period of the authentication information according to your scenarios. For example, 24h or 1h30m20s.If you want to customize the CDN routes for playing the media resource, call this method to switch media resources. Agora changes the CDN route through the self-developed scheduling center to improve the viewing experience. If you do not need to customize CDN routes for playing the media resource, call the switchSrc method to switch media resources.
+   * Call this method after calling openWithAgoraCDNSrc .You can call this method either before or after play . If you call this method before play, the SDK waits for you to call play before completing the route switch.
    *
    * @param src The URL of the media resource.
    *
@@ -408,11 +410,11 @@ export abstract class IMediaPlayer {
 
   /**
    * Switches the media resource being played.
-   * You can call this method to switch the media resource to be played according to the current network status. For example:When the network is poor, the media resource to be played is switched to a media resource address with a lower bitrate.When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate.After calling this method, if you receive the onPlayerEvent event in thePlayerEventSwitchComplete callback, the switch is successful; If you receive the onPlayerEvent event in thePlayerEventSwitchError callback, the switch fails.Ensure that you call this method after open .To ensure normal playback, pay attention to the following when calling this method:Do not call this method when playback is paused.Do not call the seek method during switching.Before switching the media resource, make sure that the playback position does not exceed the total duration of the media resource to be switched.
+   * You can call this method to switch the media resource to be played according to the current network status. For example:When the network is poor, the media resource to be played is switched to a media resource address with a lower bitrate.When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate.After calling this method, if you receive the onPlayerEvent event in the PlayerEventSwitchComplete callback, the switch is successful; If you receive the onPlayerEvent event in the PlayerEventSwitchError callback, the switch fails.Ensure that you call this method after open .To ensure normal playback, pay attention to the following when calling this method:Do not call this method when playback is paused.Do not call the seek method during switching.Before switching the media resource, make sure that the playback position does not exceed the total duration of the media resource to be switched.
    *
    * @param src The URL of the media resource.
    *
-   * @param syncPts Whether to synchronize the playback position (ms) before and after the switch:true: Synchronize the playback position before and after the switch.false: (Default) Do not synchronize the playback position before and after the switch.Make sure to set this parameter asfalse if you need to play live streams, or the switch fails. If you need to play on-demand streams, you can set the value of this parameter according to your scenarios.
+   * @param syncPts Whether to synchronize the playback position (ms) before and after the switch:true: Synchronize the playback position before and after the switch.false: (Default) Do not synchronize the playback position before and after the switch.Make sure to set this parameter as false if you need to play live streams, or the switch fails. If you need to play on-demand streams, you can set the value of this parameter according to your scenarios.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -421,7 +423,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Preloads a media resource.
-   * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times.After calling this method, if you receive thePlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive thePlayerPreloadEventError event in the onPreloadEvent callback, the preload fails.If the preload is successful and you want to play the media resource, call playPreloadedSrc ; if you want to clear the playlist, call stop .Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
+   * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times.After calling this method, if you receive the PlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive the PlayerPreloadEventError event in the onPreloadEvent callback, the preload fails.If the preload is successful and you want to play the media resource, call playPreloadedSrc ; if you want to clear the playlist, call stop .Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
    *
    * @param src The URL of the media resource.
    *
@@ -434,9 +436,9 @@ export abstract class IMediaPlayer {
 
   /**
    * Plays preloaded media resources.
-   * After calling the preloadSrc method to preload the media resource into the playlist, you can call this method to play the preloaded media resource. After calling this method, if you receive the onPlayerSourceStateChanged callback which reports thePlayerStatePlaying state, the playback is successful.If you want to change the preloaded media resource to be played, you can call this method again and specify the URL of the new media resource that you want to preload. If you want to replay the media resource, you need to call preloadSrc to preload the media resource to the playlist again before playing. If you want to clear the playlist, call the stop method.If you call this method when playback is paused, this method does not take effect until playback is resumed.
+   * After calling the preloadSrc method to preload the media resource into the playlist, you can call this method to play the preloaded media resource. After calling this method, if you receive the onPlayerSourceStateChanged callback which reports the PlayerStatePlaying state, the playback is successful.If you want to change the preloaded media resource to be played, you can call this method again and specify the URL of the new media resource that you want to preload. If you want to replay the media resource, you need to call preloadSrc to preload the media resource to the playlist again before playing. If you want to clear the playlist, call the stop method.If you call this method when playback is paused, this method does not take effect until playback is resumed.
    *
-   * @param src The URL of the media resource in the playlist must be consistent with thesrc set by thepreloadSrc method; otherwise, the media resource cannot be played.
+   * @param src The URL of the media resource in the playlist must be consistent with the src set by the preloadSrc method; otherwise, the media resource cannot be played.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -466,7 +468,7 @@ export abstract class IMediaPlayer {
 
   /**
    * Registers an audio frame observer object.
-   * You need to implement the IMediaPlayerAudioFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the audio frame observer, the SDK triggers the registered callbacks each time a audio frame is received.
+   * You need to implement the IMediaPlayerAudioFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
    *
    * @param observer The audio frame observer, reporting the reception of each audio frame. See IMediaPlayerAudioFrameObserver .
    *

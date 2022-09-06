@@ -44,7 +44,7 @@ declare global {
      */
     'renderer-content-mode': RenderModeType;
     /**
-     * Whether to enable mirror mode when rendering video:true: Enable mirror mode.false: Do not enable mirror mode.
+     * Whether to enable mirror mode when rendering video: true: Enable mirror mode.false: Do not enable mirror mode.
      */
     'renderer-mirror': boolean;
     /**
@@ -58,7 +58,7 @@ declare global {
      */
     interface IntrinsicElements {
       /**
-       * The name of the custom element, which supports rendering an AgoraView orHTMLElement object.
+       * The name of the custom element, which supports rendering an AgoraView or HTMLElement object.
        */
       'agora-view': AgoraView | HTMLElement;
     }

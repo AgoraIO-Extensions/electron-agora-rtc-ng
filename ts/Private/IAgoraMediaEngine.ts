@@ -32,14 +32,14 @@ export enum AudioMixingDualMonoMode {
 }
 
 /**
- * TheIMediaEngine class.
+ * The IMediaEngine class.
  */
 export abstract class IMediaEngine {
   /**
    * Registers an audio frame observer object.
    * Ensure that you call this method before joining a channel.
    *
-   * @param observer The observer object instance. See IAudioFrameObserver .Agora recommends calling after receiving onLeaveChannel to release the audio observer object.
+   * @param observer The observer object instance. See IAudioFrameObserver . Agora recommends calling after receiving onLeaveChannel to release the audio observer object.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -48,7 +48,7 @@ export abstract class IMediaEngine {
 
   /**
    * Registers a video frame observer object.
-   * You need to implement the IVideoFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.When handling the video data returned in the callbacks, pay attention to the changes in thewidth andheight parameters, which may be adapted under the following circumstances:When the network condition deteriorates, the video resolution decreases incrementally.If the user adjusts the video profile, the resolution of the video returned in the callbacks also changes.Ensure that you call this method before joining a channel.
+   * You need to implement the IVideoFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.When handling the video data returned in the callbacks, pay attention to the changes in the width and height parameters, which may be adapted under the following circumstances:When the network condition deteriorates, the video resolution decreases incrementally.If the user adjusts the video profile, the resolution of the video returned in the callbacks also changes.Ensure that you call this method before joining a channel.
    *
    * @param observer The observer object instance. See IVideoFrameObserver .
    */
@@ -105,7 +105,7 @@ export abstract class IMediaEngine {
 
   /**
    * Pulls the remote audio data.
-   * Before calling this method, you need to call setExternalAudioSink to notify the app to enable and set the external rendering.After a successful method call, the app pulls the decoded and mixed audio data for playback.This method only supports pulling data from custom audio source. If you need to pull the data captured by the SDK, do not call this method.Call this method after joining a channel.Once you enable the external audio sink, the app will not retrieve any audio data from the onPlaybackAudioFrame callback.The difference between this method and theonPlaybackAudioFrame callback is as follows:The SDK sends the audio data to the app through theonPlaybackAudioFrame callback. Any delay in processing the audio frames may result in audio jitter.After a successful method call, the app automatically pulls the audio data from the SDK. After setting the audio data parameters, the SDK adjusts the frame buffer and avoids problems caused by jitter in the external audio playback.
+   * Before calling this method, you need to call setExternalAudioSink to notify the app to enable and set the external rendering.After a successful method call, the app pulls the decoded and mixed audio data for playback.This method only supports pulling data from custom audio source. If you need to pull the data captured by the SDK, do not call this method.Call this method after joining a channel.Once you enable the external audio sink, the app will not retrieve any audio data from the onPlaybackAudioFrame callback.The difference between this method and the onPlaybackAudioFrame callback is as follows:The SDK sends the audio data to the app through the onPlaybackAudioFrame callback. Any delay in processing the audio frames may result in audio jitter.After a successful method call, the app automatically pulls the audio data from the SDK. After setting the audio data parameters, the SDK adjusts the frame buffer and avoids problems caused by jitter in the external audio playback.
    */
   abstract pullAudioFrame(): AudioFrame;
 
@@ -119,7 +119,7 @@ export abstract class IMediaEngine {
    *
    * @param sourceType Whether to encode the external video frame, see ExternalVideoSourceType .
    *
-   * @param encodedVideoOption Video encoding options. This parameter needs to be set ifsourceType isEncodedVideoFrame. To set this parameter, contact.
+   * @param encodedVideoOption Video encoding options. This parameter needs to be set if sourceType is EncodedVideoFrame. To set this parameter, contact .
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -137,11 +137,11 @@ export abstract class IMediaEngine {
    *
    * @param enabled Whether to enable the external audio source:true: Enable the external audio source.false: (Default) Disable the external audio source.
    *
-   * @param sampleRate The sample rate (Hz) of the external audio source, which can be set as8000,16000,32000,44100, or48000.
+   * @param sampleRate The sample rate (Hz) of the external audio source, which can be set as 8000, 16000, 32000, 44100, or 48000.
    *
-   * @param channels The number of channels of the external audio source, which can be set as1 (Mono) or2 (Stereo).
+   * @param channels The number of channels of the external audio source, which can be set as 1 (Mono) or 2 (Stereo).
    *
-   * @param sourceNumber The number of external audio sources. The value of this parameter should be larger than 0.The SDK creates a corresponding number of custom audio tracks based on this parameter value and names the audio tracks starting from 0. In ChannelMediaOptions , you can setpublishCustomAudioSourceId to the ID of the audio track you want to publish.
+   * @param sourceNumber The number of external audio sources. The value of this parameter should be larger than 0. The SDK creates a corresponding number of custom audio tracks based on this parameter value and names the audio tracks starting from 0. In ChannelMediaOptions , you can set publishCustomAudioSourceId to the ID of the audio track you want to publish.
    *
    * @param localPlayback Whether to play the external audio source:true: Play the external audio source.false: (Default) Do not play the external source.
    *
@@ -196,7 +196,7 @@ export abstract class IMediaEngine {
 
   /**
    * Pushes the external raw video frame to the SDK.
-   * To push the unencoded external raw video frame to the SDK, call createCustomVideoTrack to get the video track ID, setcustomVideoTrackId as the video track ID you want to publish in the ChannelMediaOptions of each channel, and setpublishCustomVideoTrack astrue.
+   * To push the unencoded external raw video frame to the SDK, call createCustomVideoTrack to get the video track ID, set customVideoTrackId as the video track ID you want to publish in the ChannelMediaOptions of each channel, and set publishCustomVideoTrack as true.
    *
    * @param frame The external raw video frame to be pushed. See ExternalVideoFrame .
    *

@@ -8,19 +8,19 @@ export enum LogLevel {
    */
   LogLevelNone = 0x0000,
   /**
-   * 0x0001: (Default) OutputFATAL,ERROR,WARN, andINFO level log information. We recommend setting your log filter to this level.
+   * 0x0001: (Default) Output FATAL, ERROR, WARN, and INFO level log information. We recommend setting your log filter to this level.
    */
   LogLevelInfo = 0x0001,
   /**
-   * 0x0002: OutputFATAL,ERROR, andWARN level log information.
+   * 0x0002: Output FATAL, ERROR, and WARN level log information.
    */
   LogLevelWarn = 0x0002,
   /**
-   * 0x0004: OutputFATAL andERROR level log information.
+   * 0x0004: Output FATAL and ERROR level log information.
    */
   LogLevelError = 0x0004,
   /**
-   * 0x0008: OutputFATAL level log information.
+   * 0x0008: Output FATAL level log information.
    */
   LogLevelFatal = 0x0008,
   /**
@@ -42,19 +42,19 @@ export enum LogFilterType {
    */
   LogFilterDebug = 0x080f,
   /**
-   * 0x000f: OutputLogFilterCritical,LogFilterError,LogFilterWarn, andLogFilterInfo level log information. We recommend setting your log filter to this level.
+   * 0x000f: Output LogFilterCritical, LogFilterError, LogFilterWarn, and LogFilterInfo level log information. We recommend setting your log filter to this level.
    */
   LogFilterInfo = 0x000f,
   /**
-   * 0x000e: OutputLogFilterCritical,LogFilterError, andLogFilterWarn level log information.
+   * 0x000e: Output LogFilterCritical, LogFilterError, and LogFilterWarn level log information.
    */
   LogFilterWarn = 0x000e,
   /**
-   * 0x000c: OutputLogFilterCritical andLogFilterError level log information.
+   * 0x000c: Output LogFilterCritical and LogFilterError level log information.
    */
   LogFilterError = 0x000c,
   /**
-   * 0x0008: OutputLogFilterCritical level log information.
+   * 0x0008: Output LogFilterCritical level log information.
    */
   LogFilterCritical = 0x0008,
   /**
@@ -68,11 +68,11 @@ export enum LogFilterType {
  */
 export class LogConfig {
   /**
-   * The complete path of the log files. Ensure that the path for the log file exists and is writable. You can use this parameter to rename the log files.The default file path is:macOSIf Sandbox is enabled: App~/Library/Logs/agorasdk.log. For example,/Users/<username>/Library/Containers/<AppBundleIdentifier>/Data/Library/Logs/agorasdk.log.If Sandbox is disabled:~/Library/Logs/agorasdk.log.Windows：C:\Users\<user_name>\AppData\Local\Agora\<process_name>\agorasdk.log。
+   * The complete path of the log files. Ensure that the path for the log file exists and is writable. You can use this parameter to rename the log files.The default file path is:macOSIf Sandbox is enabled: App~/Library/Logs/agorasdk.log. For example, /Users/<username>/Library/Containers/<AppBundleIdentifier>/Data/Library/Logs/agorasdk.log.If Sandbox is disabled: ~/Library/Logs/agorasdk.log.Windows：C:\Users\<user_name>\AppData\Local\Agora\<process_name>\agorasdk.log。
    */
   filePath?: string;
   /**
-   * The size (KB) of anagorasdk.log file. The value range is [128,1024]. The default value is 1,024 KB. If you setfileSizeInKByte to a value lower than 128 KB, the SDK adjusts it to 128 KB. If you setfileSizeInKBytes to a value higher than 1,024 KB, the SDK adjusts it to 1,024 KB.
+   * The size (KB) of an agorasdk.log file. The value range is [128,1024]. The default value is 1,024 KB. If you set fileSizeInKByte to a value lower than 128 KB, the SDK adjusts it to 128 KB. If you set fileSizeInKBytes to a value higher than 1,024 KB, the SDK adjusts it to 1,024 KB.
    */
   fileSizeInKB?: number;
   /**

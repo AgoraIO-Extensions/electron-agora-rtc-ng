@@ -23,8 +23,8 @@ export * from './Utils';
 const instance = new RtcEngineExInternal();
 
 /**
- * Creates theIRtcEngine object.
- * Currently, the Agora RTC SDK v4.0.0 supports creating only oneIRtcEngine object for an app.
+ * Creates the IRtcEngine object.
+ * Currently, the Agora RTC SDK v4.0.0 supports creating only one IRtcEngine object for an app.
  *
  * @returns
  * IRtcEngine object.
@@ -34,7 +34,11 @@ export function createAgoraRtcEngine(): IRtcEngineEx {
 }
 
 /**
- * @ignore
+ * Gets an IMediaPlayerCacheManager instance.
+ * Make sure the IRtcEngine is initialized before you call this method.
+ *
+ * @returns
+ * The IMediaPlayerCacheManager instance.
  */
 export function getMediaPlayerCacheManager(): IMediaPlayerCacheManager {
   return new IMediaPlayerCacheManagerImpl();
