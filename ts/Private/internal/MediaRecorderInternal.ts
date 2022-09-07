@@ -1,5 +1,6 @@
 import { IMediaRecorderImpl } from '../impl/IAgoraMediaRecorderImpl';
 import { RtcConnection } from '../IAgoraRtcEngineEx';
+import { ErrorCodeType } from '../AgoraBase';
 import { IMediaRecorderObserver } from '../AgoraMediaBase';
 import { IMediaRecorderEvent } from '../extension/IAgoraMediaRecorderExtension';
 import { processIMediaRecorderObserver } from '../impl/AgoraMediaBaseImpl';
@@ -20,6 +21,9 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
     callback: IMediaRecorderObserver
   ): number {
     const key = (connection.channelId ?? '') + connection.localUid;
+    if (MediaRecorderInternal._observers.has(key)) {
+      return ErrorCodeType.ErrOk;
+    }
     MediaRecorderInternal._observers.set(key, callback);
     return super.setMediaRecorderObserver(connection, callback);
   }

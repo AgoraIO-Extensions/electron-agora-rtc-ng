@@ -136,6 +136,10 @@ export default class SendMultiVideoStream
       token2,
       { channelId, localUid: uid2 },
       {
+        autoSubscribeAudio: false,
+        autoSubscribeVideo: false,
+        publishMicrophoneTrack: false,
+        publishCameraTrack: false,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
         publishMediaPlayerAudioTrack: true,
         publishMediaPlayerVideoTrack: true,

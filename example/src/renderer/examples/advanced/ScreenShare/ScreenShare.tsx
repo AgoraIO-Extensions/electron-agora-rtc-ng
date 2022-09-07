@@ -7,6 +7,7 @@ import {
   IRtcEngineEx,
   LocalVideoStreamError,
   LocalVideoStreamState,
+  RenderModeType,
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
@@ -216,6 +217,7 @@ export default class ScreenShare
         }
       );
     }
+    this.setState({ startScreenCapture: true });
   };
 
   /**
@@ -267,6 +269,10 @@ export default class ScreenShare
       token2,
       { channelId, localUid: uid2 },
       {
+        autoSubscribeAudio: false,
+        autoSubscribeVideo: false,
+        publishMicrophoneTrack: false,
+        publishCameraTrack: false,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
         publishScreenTrack: true,
       }
@@ -278,6 +284,7 @@ export default class ScreenShare
    */
   stopScreenCapture = () => {
     this.engine?.stopScreenCapture();
+    this.setState({ startScreenCapture: false });
   };
 
   /**
@@ -366,9 +373,6 @@ export default class ScreenShare
       switch (state) {
         case LocalVideoStreamState.LocalVideoStreamStateStopped:
         case LocalVideoStreamState.LocalVideoStreamStateFailed:
-          this.setState({
-            startScreenCapture: false,
-          });
           break;
         case LocalVideoStreamState.LocalVideoStreamStateCapturing:
         case LocalVideoStreamState.LocalVideoStreamStateEncoding:
@@ -388,6 +392,7 @@ export default class ScreenShare
             canvas={{
               uid: 0,
               sourceType: VideoSourceType.VideoSourceScreen,
+              renderMode: RenderModeType.RenderModeFit,
             }}
           />
         ) : undefined}
