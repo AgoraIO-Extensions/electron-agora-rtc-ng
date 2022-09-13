@@ -16,7 +16,7 @@ import './App.global.scss';
 import { Layout, Menu } from 'antd';
 import AuthInfoScreen from './examples/config/AuthInfoScreen';
 import basicRoute from './examples/basic';
-import listenerRoutes from './examples/addlistener';
+import hooksRoutes from './examples/hooks';
 import advanceRoute from './examples/advanced';
 import Config from './config/agora.config';
 
@@ -62,8 +62,8 @@ class App extends React.Component {
                   );
                 })}
               </SubMenu>
-              <SubMenu key="sub2" icon={<HomeOutlined />} title="AddListener">
-                {listenerRoutes.map(({ path, title }, index) => {
+              <SubMenu key="sub2" icon={<HomeOutlined />} title="Hooks">
+                {hooksRoutes.map(({ path, title }, index) => {
                   console.log('path, title---> ', path, title);
                   return (
                     <Menu.Item key={`${index} ${title}`}>
@@ -95,7 +95,7 @@ class App extends React.Component {
                     children={<route.component />}
                   />
                 ))}
-                {listenerRoutes.map((route: any, index) => (
+                {hooksRoutes.map((route: any, index) => (
                   <Route
                     key={`${index}`}
                     path={route.path}
