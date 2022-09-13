@@ -5,7 +5,7 @@ import {
   createAgoraRtcEngine,
   IRtcEngine,
   RtcConnection,
-  RtcStats
+  RtcStats,
 } from 'electron-agora-rtc-ng';
 
 import Config from '../../../config/agora.config';
@@ -17,12 +17,11 @@ import {
   AgoraButton,
   AgoraText,
   AgoraTextInput,
-  AgoraView
+  AgoraView,
 } from '../../../components/ui';
 import AgoraStyle from '../../config/public.scss';
 
 export default function JoinChannelVideoWithAddlisten() {
-
   const [appId] = useState(Config.appId);
   const [enableVideo, setEnableVideo] = useState(true);
   const [channelId] = useState(Config.channelId);
@@ -43,32 +42,43 @@ export default function JoinChannelVideoWithAddlisten() {
 
     engine.enableVideo();
     engine.startPreview();
+  };
 
-  }
+  useEffect(() => {
+    initRtcEngine();
+    engine.addListener(
+      'onJoinChannelSuccess',
+      (connection: RtcConnection, elapsed: number) => {
+        setJoinChannelSuccess(true);
+        console.log('addListener:onJoinChannelSuccess', {
+          connection,
+          elapsed,
+        });
+      }
+    );
 
-
-
-  useEffect(
-    () => {
-      initRtcEngine();
-      engine.addListener('onJoinChannelSuccess', (connection: RtcConnection, elapsed: number) => {
-        setJoinChannelSuccess(true)
-        console.log('addListener:onJoinChannelSuccess', { connection, elapsed });
-      });
-
-      engine.addListener('onLeaveChannel', (connection: RtcConnection, stats: RtcStats) => {
-        setJoinChannelSuccess(false)
-        console.log('addListener:onLeaveChannel', 'connection', connection, 'stats', stats);
-      });
-      return () => {
-        engine.removeAllListeners('onJoinChannelSuccess');
-        engine.removeAllListeners('onLeaveChannel');
-      };
-    },
-    []);
+    engine.addListener(
+      'onLeaveChannel',
+      (connection: RtcConnection, stats: RtcStats) => {
+        setJoinChannelSuccess(false);
+        console.log(
+          'addListener:onLeaveChannel',
+          'connection',
+          connection,
+          'stats',
+          stats
+        );
+      }
+    );
+    return () => {
+      engine.removeAllListeners('onJoinChannelSuccess');
+      engine.removeAllListeners('onLeaveChannel');
+      engine.release();
+    };
+  }, []);
 
   return (
-    < AgoraView className={AgoraStyle.screen}>
+    <AgoraView className={AgoraStyle.screen}>
       <AgoraView className={AgoraStyle.content}>
         <RenderVideo
           uid={uid}
@@ -89,26 +99,37 @@ export default function JoinChannelVideoWithAddlisten() {
   );
 }
 
-function RenderVideo(props: { uid: number, channelId: string, enableVideo: boolean }) {
+function RenderVideo(props: {
+  uid: number;
+  channelId: string;
+  enableVideo: boolean;
+}) {
   const { uid, channelId, enableVideo } = props;
   return (
     <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
       <AgoraText>Click view to mirror</AgoraText>
-      {enableVideo ?
+      {enableVideo ? (
         <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
-        : <div></div>}
+      ) : (
+        <div></div>
+      )}
       {/* <AgoraButton/> */}
     </Card>
   );
 }
 
-function RenderChannel(props: { engine: IRtcEngine, channelId: string, joinChannelSuccess: boolean, uid: number, token: string }) {
+function RenderChannel(props: {
+  engine: IRtcEngine;
+  channelId: string;
+  joinChannelSuccess: boolean;
+  uid: number;
+  token: string;
+}) {
   const { engine, channelId, joinChannelSuccess, uid, token } = props;
   const leaveChannel = () => {
     engine.leaveChannel();
-  }
+  };
   const joinChannel = () => {
-
     if (!channelId) {
       this.error('channelId is invalid');
       return;
@@ -120,17 +141,11 @@ function RenderChannel(props: { engine: IRtcEngine, channelId: string, joinChann
     engine.joinChannel(token, channelId, uid, {
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
-  }
+  };
 
   return (
     <>
-      <AgoraTextInput
-        onChangeText={(text) => {
-          this.setState({ channelId: text });
-        }}
-        placeholder={`channelId`}
-        value={channelId}
-      />
+      <AgoraTextInput placeholder={`channelId`} value={channelId} />
       <AgoraButton
         title={`${joinChannelSuccess ? 'leave' : 'join'} Channe`}
         onPress={() => {
