@@ -1,3 +1,7 @@
+## This repo is archived ⚠️⚠️⚠️
+
+please go to https://github.com/AgoraIO-Extensions/Electron-SDK
+
 # Agora RTC SDK for Electron
 
 <div align="left">
