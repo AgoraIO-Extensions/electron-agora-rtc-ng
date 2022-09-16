@@ -1,3 +1,5 @@
+![deprecated.jpeg](deprecated.jpeg)
+
 ## This repo is archived ⚠️⚠️⚠️
 
 please go to https://github.com/AgoraIO-Extensions/Electron-SDK
